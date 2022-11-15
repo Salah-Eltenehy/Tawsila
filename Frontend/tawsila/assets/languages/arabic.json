@@ -1,0 +1,16 @@
+{
+    "SignUp": 
+        {
+            "title1":"Hello1111111111111",
+            "title2":"Create Your Free Account",
+            "Fname": "First Name",
+            "Lname": "Last Name",
+            "email": "Email Address",
+            "password": "Password",
+            "confirmPassword":"ConfirmPassword",
+            "city": "City of Residence",
+            "phone": "Phone Number",
+            "nameError": "Name is too short"
+        }
+    
+}
