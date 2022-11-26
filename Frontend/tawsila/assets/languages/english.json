@@ -11,12 +11,14 @@
             "city": "City of Residence",
             "phone": "Phone Number",
             "nameError": "Name is too short",
-            "emailError": "Name is too short",
-            "confirmPasswordError": "Passwords ar'nt identical",
+            "emailError": "Invalid Email",
+            "confirmPasswordError": "Passwords are not identical",
             "cityError": "Enter your city",
             "phoneError": "Phone is invalid",
             "whatsappCheckBox": "My phone number is associated with an active Whatsapp account.",
-            "termsAndConditions": "I agree to Tawsila "
+            "termsAndConditions": "I agree to Tawsila ",
+            "termsAndConditionsPage": "Terms and Conditions",
+            "signUp": "Create Account"
         }
     
 }
