@@ -58,7 +58,8 @@ namespace Backend.Controllers
         [HttpPost]
         public async Task<ActionResult<Car>> PostCar(Car car)
         {
-            return await _carRepo.PostCar(car);
+            await _carRepo.PostCar(car);
+            return CreatedAtAction("GetCar", new { id = car.id }, car);
         }
 
 

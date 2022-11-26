@@ -49,20 +49,10 @@ namespace Backend.Controllers
                 return BadRequest();
             }
 
-            try
+            await _reviewRepo.PutReview(id, review);
+            if (!ReviewExists(id))
             {
-                await _reviewRepo.PutReview(id, review);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ReviewExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return NotFound();
             }
 
             return NoContent();

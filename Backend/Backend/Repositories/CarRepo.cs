@@ -24,12 +24,10 @@ namespace Backend.Repositories
             return await _context.Cars.FindAsync(id);
         }
 
-        public async Task<Car> PostCar(Car car)
+        public async Task PostCar(Car car)
         {
             _context.Cars.Add(car);
             await _context.SaveChangesAsync();
-
-            return car;
         }
 
         public async Task<Car> PutCar(int id, Car car)

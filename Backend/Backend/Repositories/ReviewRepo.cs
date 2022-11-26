@@ -22,21 +22,11 @@ namespace Backend.Repositories
         public async Task<Review> GetReview(int id)
         {
             var review = await _context.Reviews.FindAsync(id);
-
-            if (review == null)
-            {
-                return null ;
-            }
-
             return review;
         }
 
         public async Task<Review> PutReview(int id, Review review)
         {
-            if (id != review.id)
-            {
-                return null;
-            }
 
             _context.Entry(review).State = EntityState.Modified;
 
@@ -65,7 +55,7 @@ namespace Backend.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IActionResult> DeleteReview(int id)
+        public async Task<Review> DeleteReview(int id)
         {
             var review = await _context.Reviews.FindAsync(id);
             if (review == null)
@@ -76,7 +66,7 @@ namespace Backend.Repositories
             _context.Reviews.Remove(review);
             await _context.SaveChangesAsync();
 
-            return null;
+            return review;
         }
 
         public bool ReviewExists(int id)
