@@ -3,8 +3,8 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Backend.Contexts;
-
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,9 +12,9 @@ var configuration = builder.Configuration;
 
 
 builder.Services.AddDbContext<TawsilaContext>(options => options.UseSqlServer(
-               builder.Configuration.GetConnectionString("DefaultConnection")
-               )
-            );
+        builder.Configuration.GetConnectionString("DefaultConnection")
+    )
+);
 
 
 builder.Services.AddAuthentication(options =>
@@ -37,8 +37,9 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddControllers();
+
 builder.Services.AddEndpointsApiExplorer();
-/*builder.Services.AddSwaggerGen(c =>
+builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Wedding Planner API", Version = "v1" });
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
@@ -70,33 +71,23 @@ builder.Services.AddEndpointsApiExplorer();
             new List<string>()
         }
     });
-});*/
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
-
-// Configure the HTTP request pipeline.
-/*if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-}*/
+}
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
 
-app.UseRouting();
+app.UseAuthentication();
 
 app.UseAuthorization();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapControllers();
 
 app.Run();
