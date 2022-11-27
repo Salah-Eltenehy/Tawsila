@@ -25,30 +25,6 @@ namespace Backend.Repositories
             return review;
         }
 
-        public async Task<Review> PutReview(int id, Review review)
-        {
-
-            _context.Entry(review).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ReviewExists(id))
-                {
-                    return null; 
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return review;
-        }
-
         public async Task PostReview(Review review)
         {
             _context.Reviews.Add(review);

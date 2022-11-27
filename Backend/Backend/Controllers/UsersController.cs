@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Backend.Models;
 using Backend.Repositories;
+using Microsoft.Win32;
+using System.Web;
+using System.Net.WebSockets;
 
 namespace Backend.Controllers
 {
@@ -15,10 +18,10 @@ namespace Backend.Controllers
             _userRepo = userRepo;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        [HttpGet]  
+        public async Task<IEnumerable<User>> GetAll()
         {
-            return await _userRepo.GetUsers();
+            return await _userRepo.GetAll();
         }
 
         [HttpGet("{id}")]
@@ -35,23 +38,45 @@ namespace Backend.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, User user)
+        public async Task<string> UpdateUser(int id, RegisterRec update_user)
         {
-            if (id != user.userId)
-            {
-                return BadRequest();
-            }
 
-            await _userRepo.PutUser(id, user);    
 
-            return NoContent();
+            return "Not implemented";
+        }
+
+
+        
+        [HttpPost("login")]
+        public async Task<string> Login(LoginRec log)
+        {
+            User user = new User();
+            user.email = log.email;
+            user.password = log.password;
+            _userRepo.Login(user);
+            return "LOG IN NOT IMPLEMENTED";
         }
 
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        public async Task<string> RegisterUser(RegisterRec register)
         {
-            await _userRepo.PostUser(user);
-            return CreatedAtAction("GetUser", new { id = user.userId }, user);
+            // Console.WriteLine(register.LastName);
+            User user = new User();
+            user.email = register.email;
+            user.firstName = register.FirstName;
+            user.phoneNumber = register.phone;
+            user.hasWhatsapp = register.hasWhatsapp;
+            user.lastName = register.LastName;
+            user.password = register.password;
+            try
+            {
+                await _userRepo.RegisterUser(user);
+            }catch(Exception e)
+            {
+                return e.Message;
+            }
+            
+            return "OK";
         }
 
         [HttpDelete("{id}")]
@@ -63,7 +88,14 @@ namespace Backend.Controllers
                 return NotFound();
             }
 
-            return NoContent();
+            return Ok();
+        }
+
+        [HttpGet("reviews/{id}")]
+        public async Task<IEnumerable<Review>> GetOpinions(int id)
+        {
+            
+            return await _userRepo.GetReviews(id);
         }
     }
 }

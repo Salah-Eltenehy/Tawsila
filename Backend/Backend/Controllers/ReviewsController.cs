@@ -41,27 +41,16 @@ namespace Backend.Controllers
             return review;
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutReview(int id, Review review)
-        {
-            if (id != review.id)
-            {
-                return BadRequest();
-            }
-
-            await _reviewRepo.PutReview(id, review);
-            if (!ReviewExists(id))
-            {
-                return NotFound();
-            }
-
-            return NoContent();
-        }
 
         [HttpPost]
-        public async Task<ActionResult<Review>> PostReview(Review review)
+        public async Task<ActionResult<Review>> PostReview(ReviewRec reviewRc)
         {
+            Review review = new Review();
+            review.revieweeId = reviewRc.reviewee;
+            review.rating = reviewRc.rating;
+            review.comment = reviewRc.comment;
             await _reviewRepo.PostReview(review);
+
             return CreatedAtAction("GetReview", new { id = review.id }, review);
         }
 

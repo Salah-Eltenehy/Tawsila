@@ -1,7 +1,9 @@
 ﻿using Backend.Contexts;
 using Backend.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace Backend.Repositories
 {
@@ -14,56 +16,27 @@ namespace Backend.Repositories
             _context = context;
         }
 
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public async Task<IEnumerable<User>> GetAll()
         {
-            return await _context.Users.ToListAsync();
+           return await _context.Set<User>().ToListAsync();
         }
 
-        public async Task<ActionResult<User>> GetUser(int id)
+        public async Task<User> GetUser(int id)
         {
-            var user = await _context.Users.FindAsync(id);
-
-            if (user == null)
-            {
-                return null;
-            }
-
-            return user;
+            return await _context.Users.FindAsync(id);
         }
 
-        public async Task<User> PutUser(int id, User user)
+        public void Login(User user)
         {
-            if (id != user.userId)
-            {
-                return null;
-            }
-
-            _context.Entry(user).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserExists(id))
-                {
-                    return null;
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return user;
+            // to do 
+            // 
+         
         }
 
-        public async Task  PostUser(User user)
+        public async Task RegisterUser(User user)
         {
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
-
         }
 
         public async Task<User> DeleteUser(int id)
@@ -78,6 +51,17 @@ namespace Backend.Repositories
             await _context.SaveChangesAsync();
 
             return user;
+        }
+
+        public async Task<IEnumerable<Review>> GetReviews(int id)
+        {
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
+            {
+                return null;
+            }
+            Console.WriteLine(user.reviews);
+            return user.reviews;
         }
 
         public bool UserExists(int id)
