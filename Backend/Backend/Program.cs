@@ -40,6 +40,11 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddControllers();
 builder.Services.AddScoped<CarsController>();
 builder.Services.AddScoped<CarRepo>();
+builder.Services.AddScoped<UsersController>();
+builder.Services.AddScoped<UserRepo>();
+builder.Services.AddScoped<ReviewsController>();
+builder.Services.AddScoped<ReviewRepo>();
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>

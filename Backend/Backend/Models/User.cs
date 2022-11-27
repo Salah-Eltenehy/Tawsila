@@ -44,8 +44,8 @@ public class User
     [Required]
     public DateTime updatedAt { get; set; }
 
-    public virtual Car[] cars { get; set; }
-    public virtual Review[] reviews { get; set; }
-    public virtual Review[] reviewsCreated { get; set; }
+    public virtual List<Car> cars { get; set; }
+    public virtual List<Review> reviews { get; set; }
+    public virtual List<Review> reviewsCreated { get; set; }
     
 }
