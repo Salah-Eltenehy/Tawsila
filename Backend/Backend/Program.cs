@@ -21,16 +21,9 @@ builder.Services.AddDbContext<TawsilaContext>(options => options.UseSqlServer(
     )
 );
 
+builder.Services.AddControllers()
+    .AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
-
-builder.Services.AddControllers(options =>
-{
-    options.OutputFormatters.RemoveType<SystemTextJsonOutputFormatter>();
-    options.OutputFormatters.Add(new SystemTextJsonOutputFormatter(new JsonSerializerOptions(JsonSerializerDefaults.Web)
-    {
-        ReferenceHandler = ReferenceHandler.Preserve,
-    }));
-});
 
 builder.Services.AddAuthentication(options =>
 {
