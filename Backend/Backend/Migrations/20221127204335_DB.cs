@@ -13,7 +13,7 @@ namespace Backend.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    userId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     email = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     password = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: false),
@@ -28,7 +28,7 @@ namespace Backend.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.userId);
+                    table.PrimaryKey("PK_Users", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -57,16 +57,16 @@ namespace Backend.Migrations
                     createdAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     updatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ownerId = table.Column<int>(type: "int", nullable: false),
-                    userId = table.Column<int>(type: "int", nullable: true)
+                    UserId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Cars", x => x.id);
                     table.ForeignKey(
-                        name: "FK_Cars_Users_userId",
-                        column: x => x.userId,
+                        name: "FK_Cars_Users_UserId",
+                        column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "userId");
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -79,40 +79,38 @@ namespace Backend.Migrations
                     comment = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     createdAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     updatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    revieweeId = table.Column<int>(type: "int", nullable: false),
                     reviewerId = table.Column<int>(type: "int", nullable: false),
-                    userId = table.Column<int>(type: "int", nullable: true),
-                    userId1 = table.Column<int>(type: "int", nullable: true)
+                    revieweeId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Reviews", x => x.id);
                     table.ForeignKey(
-                        name: "FK_Reviews_Users_userId",
-                        column: x => x.userId,
+                        name: "FK_Reviews_Users_revieweeId",
+                        column: x => x.revieweeId,
                         principalTable: "Users",
-                        principalColumn: "userId");
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Reviews_Users_userId1",
-                        column: x => x.userId1,
+                        name: "FK_Reviews_Users_reviewerId",
+                        column: x => x.reviewerId,
                         principalTable: "Users",
-                        principalColumn: "userId");
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Cars_userId",
+                name: "IX_Cars_UserId",
                 table: "Cars",
-                column: "userId");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reviews_userId",
+                name: "IX_Reviews_revieweeId",
                 table: "Reviews",
-                column: "userId");
+                column: "revieweeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reviews_userId1",
+                name: "IX_Reviews_reviewerId",
                 table: "Reviews",
-                column: "userId1");
+                column: "reviewerId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

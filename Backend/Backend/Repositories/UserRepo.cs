@@ -55,7 +55,7 @@ namespace Backend.Repositories
 
         public async Task<IEnumerable<Review>> GetReviews(int id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await _context.Users.Include(p => p.reviews).SingleOrDefaultAsync(i => i.Id == id);
             if (user == null)
             {
                 return null;
@@ -66,7 +66,7 @@ namespace Backend.Repositories
 
         public bool UserExists(int id)
         {
-            return _context.Users.Any(e => e.userId == id);
+            return _context.Users.Any(e => e.Id == id);
         }
     }
 }

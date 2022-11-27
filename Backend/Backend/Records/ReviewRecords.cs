@@ -1,1 +1,1 @@
-﻿public record ReviewRec(int rating, string comment, int reviewee);
+﻿public record ReviewRec(int rating, string comment, int reviewee, int reviewer);

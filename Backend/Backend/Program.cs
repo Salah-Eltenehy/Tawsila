@@ -7,6 +7,10 @@ using Microsoft.OpenApi.Models;
 using Backend.Contexts;
 using Backend.Repositories;
 using Backend.Controllers;
+using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Http.Json;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -17,6 +21,16 @@ builder.Services.AddDbContext<TawsilaContext>(options => options.UseSqlServer(
     )
 );
 
+
+
+builder.Services.AddControllers(options =>
+{
+    options.OutputFormatters.RemoveType<SystemTextJsonOutputFormatter>();
+    options.OutputFormatters.Add(new SystemTextJsonOutputFormatter(new JsonSerializerOptions(JsonSerializerDefaults.Web)
+    {
+        ReferenceHandler = ReferenceHandler.Preserve,
+    }));
+});
 
 builder.Services.AddAuthentication(options =>
 {

@@ -49,6 +49,7 @@ namespace Backend.Controllers
             review.revieweeId = reviewRc.reviewee;
             review.rating = reviewRc.rating;
             review.comment = reviewRc.comment;
+            review.reviewerId = reviewRc.reviewer;
             await _reviewRepo.PostReview(review);
 
             return CreatedAtAction("GetReview", new { id = review.id }, review);

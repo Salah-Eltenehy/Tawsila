@@ -6,9 +6,8 @@ namespace Backend.Models;
 
 public class User
 {
-    [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int userId { get; set; }
+    [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int Id { get; set; }
     
     [Required]
     [Unicode]
@@ -44,8 +43,7 @@ public class User
     [Required]
     public DateTime updatedAt { get; set; }
 
-    public virtual List<Car> cars { get; set; }
-    public virtual List<Review> reviews { get; set; }
-    public virtual List<Review> reviewsCreated { get; set; }
+    public List<Car> cars { get; set; }
+    public List<Review> reviews { get; set; }
     
 }

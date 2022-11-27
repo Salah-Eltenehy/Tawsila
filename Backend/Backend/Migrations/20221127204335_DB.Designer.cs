@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(TawsilaContext))]
-    [Migration("20221127104238_DB")]
+    [Migration("20221127204335_DB")]
     partial class DB
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -70,6 +70,9 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Year")
                         .HasColumnType("int");
 
@@ -98,12 +101,9 @@ namespace Backend.Migrations
                     b.Property<DateTime>("updatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("userId")
-                        .HasColumnType("int");
-
                     b.HasKey("id");
 
-                    b.HasIndex("userId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Cars");
                 });
@@ -135,28 +135,22 @@ namespace Backend.Migrations
                     b.Property<DateTime>("updatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("userId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("userId1")
-                        .HasColumnType("int");
-
                     b.HasKey("id");
 
-                    b.HasIndex("userId");
+                    b.HasIndex("revieweeId");
 
-                    b.HasIndex("userId1");
+                    b.HasIndex("reviewerId");
 
                     b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("Backend.Models.User", b =>
                 {
-                    b.Property<int>("userId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("userId"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<DateTime>("createdAt")
                         .HasColumnType("datetime2");
@@ -203,7 +197,7 @@ namespace Backend.Migrations
                     b.Property<DateTime>("updatedAt")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("userId");
+                    b.HasKey("Id");
 
                     b.ToTable("Users");
                 });
@@ -212,18 +206,26 @@ namespace Backend.Migrations
                 {
                     b.HasOne("Backend.Models.User", null)
                         .WithMany("cars")
-                        .HasForeignKey("userId");
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Backend.Models.Review", b =>
                 {
-                    b.HasOne("Backend.Models.User", null)
+                    b.HasOne("Backend.Models.User", "reviewee")
                         .WithMany("reviews")
-                        .HasForeignKey("userId");
+                        .HasForeignKey("revieweeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
-                    b.HasOne("Backend.Models.User", null)
-                        .WithMany("reviewsCreated")
-                        .HasForeignKey("userId1");
+                    b.HasOne("Backend.Models.User", "reviewer")
+                        .WithMany()
+                        .HasForeignKey("reviewerId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("reviewee");
+
+                    b.Navigation("reviewer");
                 });
 
             modelBuilder.Entity("Backend.Models.User", b =>
@@ -231,8 +233,6 @@ namespace Backend.Migrations
                     b.Navigation("cars");
 
                     b.Navigation("reviews");
-
-                    b.Navigation("reviewsCreated");
                 });
 #pragma warning restore 612, 618
         }

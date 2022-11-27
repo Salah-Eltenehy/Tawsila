@@ -95,7 +95,7 @@ namespace Backend.Controllers
         public async Task<IEnumerable<Review>> GetOpinions(int id)
         {
             
-            return await _userRepo.GetReviews(id);
+             return await _userRepo.GetReviews(id);
         }
     }
 }
