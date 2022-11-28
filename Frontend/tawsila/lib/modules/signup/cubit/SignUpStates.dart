@@ -11,3 +11,18 @@ class ChangePasswordVisibiltyState extends SignUpStates {}
 class ChangeConfirmPasswordVisibiltyState extends SignUpStates {}
 
 class HasWhatsAppChangeState extends SignUpStates {}
+
+class SignUpLoadingState extends SignUpStates {}
+
+class SignUpSuccessState extends SignUpStates {}
+
+
+class TawsilaLoginLoadingState extends SignUpStates {}
+
+
+class TawsilaLoginSuccessState extends SignUpStates {}
+
+
+class TawsilaLoginErrorState extends SignUpStates {}
+class HasNoWhatsAppState extends SignUpStates {}
+class AgreeTermsAndConditionsColorState extends SignUpStates {}

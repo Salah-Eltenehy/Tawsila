@@ -1,0 +1,95 @@
+
+  /**
+   * another  way to call backend but i prefer to use DIO package
+   */
+  Future<bool> login(
+    {
+      required String email,
+      required String password
+    }
+  ) async {
+  var url = Uri.parse('${baseUrl}/login');
+  var response = await http.post(url,
+                  headers: {
+                    'lang':'en',
+                    // 'Content-Type': 'application/json'
+                  }, 
+                  body: {
+                    "email": email,
+                    "password": password
+                });
+  print('Response Body > ${response.body}');
+  print('status code > ${response.statusCode}');
+  if (jsonDecode(response.body)['status'] == true) {
+    Fluttertoast.showToast(
+        msg: jsonDecode(response.body)['message'],
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red);
+  } else {
+    Fluttertoast.showToast(
+        msg: jsonDecode(response.body)['message'],
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red);
+  }
+  var responsebody=jsonDecode(response.body)['data'];
+  String message = jsonDecode(response.body)['message'];
+  var state = jsonDecode(response.body)['status'];
+  String token = jsonDecode(response.body)['data']['token'];
+  return state;
+  }
+
+
+  void userLogin({
+    required String email,
+    required String password,
+  })
+  {
+    emit(TawsilaLoginLoadingState());
+
+    DioHelper.postData(
+      url: LOGIN,
+      data:
+      {
+        'email': email,
+        'password': password,
+      },
+    ).then((value)
+    {
+      print(value.data);
+      emit(TawsilaLoginSuccessState());
+    }).catchError((error)
+    {
+      print("BOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+      emit(TawsilaLoginErrorState());
+    });
+  }
+
+  void userSignUp(
+  {
+    required String name,
+    required String email,
+    required String password,
+    required String phone,
+  }) {
+    emit(SignUpLoadingState());
+    DioHelper.postData(
+        url: REGISTER,
+        data: {
+          'name': name,
+          'email': email,
+          'password': password,
+          'phone': phone
+        }
+    ).then((value) {
+      print("Success state");
+      print(value.data);
+      emit(SignUpSuccessState());
+    } ).catchError((error) {
+      print("BOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+      print(error.toString());
+    });
+  }

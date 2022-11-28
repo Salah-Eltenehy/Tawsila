@@ -4,13 +4,25 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../shared/network/remote/DioHelper.dart';
+import '../../../shared/constants.dart';
 import 'SignUpStates.dart';
 
-class SignUpProvider extends Cubit<SignUpStates> {
-  
-  SignUpProvider(): super(InitialSignUpState());
 
-  static SignUpProvider get(context) => BlocProvider.of(context);
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+
+class SignUpCubit extends Cubit<SignUpStates> {
+  
+  SignUpCubit(): super(InitialSignUpState());
+
+  static SignUpCubit get(context) => BlocProvider.of(context);
+
+
+
   var items = {};
   String language = "English";
 
@@ -27,7 +39,6 @@ class SignUpProvider extends Cubit<SignUpStates> {
     final String response = await rootBundle.loadString('assets/languages/${fileName}.json');
     final data = await json.decode(response);
     items = data['SignUp'];
-    print(items);
     emit(GetLanguageFromDatabaseState());
   }
 
@@ -54,5 +65,16 @@ class SignUpProvider extends Cubit<SignUpStates> {
     emit(HasWhatsAppChangeState()); 
   }
 
-  
+  var hasWhatsAppColor = Color.fromARGB(255, 214, 214, 214);
+  void changeHasWhatsApp() {
+      hasWhatsAppColor = Colors.red;
+      emit(HasNoWhatsAppState());
+  }
+
+  var agreeColor = Color.fromARGB(255, 214, 214, 214);
+  void agreeTermsAndConditionsColor() {
+      agreeColor = Colors.red;
+      emit(AgreeTermsAndConditionsColorState());
+  }
+
 }

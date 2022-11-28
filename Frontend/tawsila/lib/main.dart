@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tawsila/layout/cubit/AppProvider.dart';
 import 'package:tawsila/layout/cubit/AppStates.dart';
 import 'package:tawsila/shared/bloc_observer.dart';
+import 'package:tawsila/shared/network/remote/DioHelper.dart';
 
 import 'layout/CurrentScreen.dart';
 
@@ -15,6 +16,7 @@ void main() {
   
   
   Bloc.observer = MyBlocObserver();
+  DioHelper.init();
   runApp(MyApp());
 }
 

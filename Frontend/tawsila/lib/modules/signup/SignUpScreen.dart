@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tawsila/modules/signup/cubit/SignUpProvider.dart';
+import 'package:tawsila/modules/signup/cubit/SignUpCubit.dart';
 import 'package:tawsila/modules/signup/cubit/SignUpStates.dart';
 import 'package:tawsila/shared/components/Components.dart';
 
 class SignUpScreen extends StatelessWidget {
-  final String language;
-  
+  String language;
   SignUpScreen({super.key, required this.language});
   var fNameController = TextEditingController();
   var lNameController = TextEditingController();
@@ -16,15 +15,17 @@ class SignUpScreen extends StatelessWidget {
   var cityController = TextEditingController();
   var phoneController = TextEditingController();
   var formKey = GlobalKey<FormState>();
+  
   @override
   Widget build(BuildContext context) {
     
     return BlocProvider(
-      create: (context) => SignUpProvider()..setLanguage(l: language)..readJson(),
-      child: BlocConsumer<SignUpProvider, SignUpStates>( 
+      create: (context) => SignUpCubit()..setLanguage(l: language)..readJson(),
+      child: BlocConsumer<SignUpCubit, SignUpStates>(
         listener: (context, state) {},
         builder: (context, state) {
-          var signUpCubit = SignUpProvider.get(context);
+          var signUpCubit = SignUpCubit.get(context);
+          phoneController.text = "+2";
           return Scaffold(
             body: Directionality(
               textDirection: signUpCubit.language == "English" ? TextDirection.ltr: TextDirection.rtl,
@@ -37,11 +38,11 @@ class SignUpScreen extends StatelessWidget {
                     ),
                     child: Column(
                       children: [
-                        SizedBox(
+                        const SizedBox(
                           height: 50,
                         ),
                         Text(
-                          "${signUpCubit.items['title1']??'error'}",
+                          "${signUpCubit.items['title1']??''}",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 40,
@@ -49,61 +50,67 @@ class SignUpScreen extends StatelessWidget {
                           ),
                           ),
                         Text(
-                          "${signUpCubit.items['title2']??'error'}",
+                          "${signUpCubit.items['title2']??''}",
                           style: TextStyle(
                             fontSize: 20,
                             color: Colors.grey
                           ),
                           ),
-                        SizedBox(
+                        const SizedBox(
                             height: 30,
                           ),
                         Row(
                           children: [
                             defaultTextFormFieldRow(
+                              prefixIcon: Icon(Icons.text_fields),
                               controller: fNameController,
                               textInputType: TextInputType.name,
                               validatorFunction: (value) {
                                 if(value.length == 0)
-                                  return signUpCubit.items['nameError']??"Error";
+                                  return signUpCubit.items['nameError']??"";
                               },
-                              labelText: signUpCubit.items['Fname']??"Error"
+                              labelText: signUpCubit.items['Fname']??""
                             ),
                             SizedBox(
                               width: 20,
                             ),
                             defaultTextFormFieldRow(
+                              prefixIcon: Icon(Icons.text_fields),
                               controller: lNameController,
                               textInputType: TextInputType.name,
                               validatorFunction: (value) {
                                 if(value.length == 0)
-                                  return signUpCubit.items['nameError']??"Error";
+                                  return signUpCubit.items['nameError']??"";
                               },
-                              labelText: signUpCubit.items['Lname']??"Error"
+                              labelText: signUpCubit.items['Lname']??""
                             ),
                           ],
                         ),
-                        SizedBox(
+                        const SizedBox(
                             height: 20,
                           ),
                         defaultTextFormFieldColumn(
+                          prefixIcon: Icon(Icons.email),
                             controller: emailController, 
-                            labelText: signUpCubit.items['email']??"Error", 
+                            labelText: signUpCubit.items['email']??"", 
                             validatorFunction: (value) {
-                              if(value.length == 0)
-                                return signUpCubit.items['emailError']??"Error";
+                              if(value.length == 0) {
+                                return signUpCubit.items['emailError']??"";
+                              }
                             }, 
                             textInputType: TextInputType.emailAddress
                             ),  
-                        SizedBox(
+                        const SizedBox(
                             height: 20,
                           ),
                         defaultTextFormFieldColumn(
+                            prefixIcon: signUpCubit.passwordIsSecure ? Icon(Icons.lock): Icon(Icons.lock_open),
                             controller: passwordController, 
-                            labelText: signUpCubit.items['password']??"Error", 
+                            labelText: signUpCubit.items['password']??"", 
                             validatorFunction: (value) {
-                              if(value.length == 0)
-                                return signUpCubit.items['passwordError']??"Error";
+                              if(value.length == 0) {
+                                return signUpCubit.items['passwordError']??"";
+                              }
                             }, 
                             textInputType: TextInputType.text,
                             isSecure: signUpCubit.passwordIsSecure,
@@ -112,15 +119,17 @@ class SignUpScreen extends StatelessWidget {
                               signUpCubit.changePasswordVisibility();
                             }
                             ),
-                        SizedBox(
+                        const SizedBox(
                             height: 20,
                           ),
                         defaultTextFormFieldColumn(
+                            prefixIcon: signUpCubit.passwordIsSecure ? Icon(Icons.lock): Icon(Icons.lock_open),
                             controller: confirmPasswordController,
-                            labelText: signUpCubit.items['confirmPassword']??"Error", 
+                            labelText: signUpCubit.items['confirmPassword']??"", 
                             validatorFunction: (value) {
-                              if(value  != passwordController.text)
-                                return signUpCubit.items['confirmPasswordError']??"Error";
+                              if(value  != passwordController.text) {
+                                return signUpCubit.items['confirmPasswordError']??"";
+                              }
                             }, 
                             textInputType: TextInputType.text,
                             isSecure: signUpCubit.confirmPasswordIsSecure,
@@ -129,107 +138,147 @@ class SignUpScreen extends StatelessWidget {
                               signUpCubit.changeConfirmPasswordVisibility();
                             }
                             ),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         defaultTextFormFieldColumn(
+                          prefixIcon: Icon(Icons.location_city),
                           controller: cityController, 
-                          labelText: signUpCubit.items['city']??"Error", 
+                          labelText: signUpCubit.items['city']??"", 
                           validatorFunction: (value) {
-                            if(value.length == 0)
-                              return signUpCubit.items['cityError']??"Error";
+                            if(value.length == 0) {
+                              return signUpCubit.items['cityError']??"";
+                            }
                           }, 
                           textInputType: TextInputType.text
                           ),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         defaultTextFormFieldColumn(
+                          prefixIcon: Icon(Icons.phone),
                           controller: phoneController, 
-                          labelText: signUpCubit.items['phone']??"Error", 
+                          labelText: signUpCubit.items['phone']??"", 
                           validatorFunction: (value){
                             //+201021890205
-                            if(value.length != 13)
-                              return signUpCubit.items['phoneError']??"Error";
+                            if(value.length != 13) {
+                              return signUpCubit.items['phoneError']??"";
+                            }
                           }, 
                           textInputType: TextInputType.phone
                           ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        CheckboxListTile(
-                          controlAffinity: ListTileControlAffinity.leading,
-                          title: Text(
-                            "${signUpCubit.items['whatsappCheckBox']??"Error"}"
-                          ),
-                          value: signUpCubit.hasWhatsApp, 
-                          onChanged: (value) {
-                            signUpCubit.hasWhatsAppFun();
-                          },
-                          ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                child: CheckboxListTile(                         
-                                    controlAffinity: ListTileControlAffinity.leading,
-                                    title: Text(
-                                      "${signUpCubit.items['termsAndConditions']??"Error"}"
-                                    ),
-                                    value: signUpCubit.termsAndConditions, 
-                                    onChanged: (value) {
-                                      signUpCubit.termsAndConditionsFun();
-                                    }, 
-                                    ),
-                              ),
-                            ),
-                            Expanded(
-                              child: Column(
-                                // mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start, 
-                                children: [
-                                  TextButton(
-                                    onPressed: (){
-                                    }, 
-                                    child: Text(
-                                      "${signUpCubit.items['termsAndConditionsPage']??"Error"}",
-                                      style: TextStyle(
-                                        color: Colors.blue,
-                                      ),
-                                    ),),
-                                ],
-                              ),
-                            )
-                          ],
-                        ),     
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                         Container(
-                          width: double.infinity,
-                          height: 40,
                           decoration: BoxDecoration(
-                            color: Colors.blue,
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(
+                              color: signUpCubit.hasWhatsAppColor
+                            )
                           ),
-                          child: TextButton(
-                            child: Text(
-                              "${signUpCubit.items['signUp']??"Error"}",
-                              style: TextStyle(
-                                color: Colors.white,
-                              ),
+                          child: CheckboxListTile(
+                            controlAffinity: ListTileControlAffinity.leading,
+                            title: Text(
+                              "${signUpCubit.items['whatsappCheckBox']??""}"
                             ),
-                            onPressed: () {
-                              if(formKey.currentState!.validate() && signUpCubit.hasWhatsApp && signUpCubit.termsAndConditions) {
-                                print("ALL Done");
-                              }
+                            value: signUpCubit.hasWhatsApp, 
+                            onChanged: (value) {
+                              signUpCubit.hasWhatsAppFun();
                             },
                             ),
                         ),
-                        SizedBox(
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(
+                              color: signUpCubit.agreeColor
+                            )
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  child: CheckboxListTile(                         
+                                      controlAffinity: ListTileControlAffinity.leading,
+                                      title: Text(
+                                        "${signUpCubit.items['termsAndConditions']??""}"
+                                      ),
+                                      value: signUpCubit.termsAndConditions, 
+                                      onChanged: (value) {
+                                        signUpCubit.termsAndConditionsFun();
+                                      }, 
+                                      ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Column(
+                                  // mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start, 
+                                  children: [
+                                    TextButton(
+                                      onPressed: (){
+                                      }, 
+                                      child: Text(
+                                        "${signUpCubit.items['termsAndConditionsPage']??""}",
+                                        style: TextStyle(
+                                          color: Colors.blue,
+                                        ),
+                                      ),),
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        ),     
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        InkWell(
+                          onTap: () {
+                            if(!signUpCubit.hasWhatsApp) {
+                              signUpCubit.changeHasWhatsApp();
+                              return;
+                            }
+
+                            if(!signUpCubit.termsAndConditions) {
+                              signUpCubit.agreeTermsAndConditionsColor();
+                              return;
+                            }
+
+                            if(formKey.currentState!.validate()) {
+                              print("ALL RIGHT");
+                              // signUpCubit.userSignUp(
+                              //     name: "${fNameController.text} ${lNameController.text}",
+                              //     email: emailController.text,
+                              //     password: passwordController.text,
+                              //     phone: phoneController.text
+                              // );
+                            }
+                          },
+                          child: Container(
+                            width: double.infinity,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: Colors.blue,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Center(
+                              child: Text(
+                                "${signUpCubit.items['signUp']??""}",
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
                           height: 10,
                         ),
                       ],
