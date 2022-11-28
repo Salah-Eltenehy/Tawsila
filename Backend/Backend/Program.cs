@@ -52,7 +52,6 @@ builder.Services.AddScoped<UserRepo>();
 builder.Services.AddScoped<ReviewsController>();
 builder.Services.AddScoped<ReviewRepo>();
 
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -87,7 +86,6 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
-
 
 var app = builder.Build();
 

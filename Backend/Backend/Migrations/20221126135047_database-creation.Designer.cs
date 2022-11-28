@@ -4,6 +4,7 @@ using Backend.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(TawsilaContext))]
-    partial class TawsilaContextModelSnapshot : ModelSnapshot
+    [Migration("20221126135047_database-creation")]
+    partial class databasecreation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -68,8 +70,6 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int");
                     b.Property<int>("Year")
                         .HasColumnType("int");
 
@@ -98,9 +98,12 @@ namespace Backend.Migrations
                     b.Property<DateTime>("updatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("userId")
+                        .HasColumnType("int");
+
                     b.HasKey("id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("userId");
 
                     b.ToTable("Cars");
                 });
@@ -132,22 +135,28 @@ namespace Backend.Migrations
                     b.Property<DateTime>("updatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("userId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("userId1")
+                        .HasColumnType("int");
+
                     b.HasKey("id");
 
-                    b.HasIndex("revieweeId");
+                    b.HasIndex("userId");
 
-                    b.HasIndex("reviewerId");
+                    b.HasIndex("userId1");
 
                     b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("Backend.Models.User", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("userId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("userId"), 1L, 1);
 
                     b.Property<DateTime>("createdAt")
                         .HasColumnType("datetime2");
@@ -194,7 +203,7 @@ namespace Backend.Migrations
                     b.Property<DateTime>("updatedAt")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("Id");
+                    b.HasKey("userId");
 
                     b.ToTable("Users");
                 });
@@ -203,27 +212,18 @@ namespace Backend.Migrations
                 {
                     b.HasOne("Backend.Models.User", null)
                         .WithMany("cars")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("userId");
                 });
 
             modelBuilder.Entity("Backend.Models.Review", b =>
                 {
-                    b.HasOne("Backend.Models.User", "reviewee")
+                    b.HasOne("Backend.Models.User", null)
                         .WithMany("reviews")
-                        .HasForeignKey("revieweeId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .HasForeignKey("userId");
 
-                    b.HasOne("Backend.Models.User", "reviewer")
-                        .WithMany()
-                        .HasForeignKey("reviewerId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("reviewee");
-
-                    b.Navigation("reviewer");
-
+                    b.HasOne("Backend.Models.User", null)
+                        .WithMany("reviewsCreated")
+                        .HasForeignKey("userId1");
                 });
 
             modelBuilder.Entity("Backend.Models.User", b =>
@@ -231,6 +231,8 @@ namespace Backend.Migrations
                     b.Navigation("cars");
 
                     b.Navigation("reviews");
+
+                    b.Navigation("reviewsCreated");
                 });
 #pragma warning restore 612, 618
         }

@@ -42,7 +42,6 @@ public class User
     public DateTime createdAt { get; set; }
     [Required]
     public DateTime updatedAt { get; set; }
-
     public List<Car> cars { get; set; }
     public List<Review> reviews { get; set; }
     

@@ -6,7 +6,6 @@ namespace Backend.Contexts;
 
 public class TawsilaContext : DbContext
 {
-
     public TawsilaContext(DbContextOptions<TawsilaContext> options) : base(options)
     {
     }
