@@ -1,5 +1,7 @@
 ﻿using Backend.Contexts;
+using Backend.Migrations;
 using Backend.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -26,11 +28,31 @@ namespace Backend.Repositories
             return await _context.Users.FindAsync(id);
         }
 
-        public void Login(User user)
+        public User Login(LoginRec log)
         {
-            // to do 
-            // 
-         
+            var users = _context.Users.Where(e => e.email == log.email && e.password == log.password).ToList();
+            if(users.Count() == 0)
+            {
+                return null;
+            }
+            User user = users[0];
+            return user;
+        }
+
+        public async Task<User> UpdateUser(int id, UpdateRec update)
+        {
+            var user = await _context.Users.FindAsync(id);
+            if(user == null)
+            {
+                return null;
+            }
+            user.email = update.email;
+            user.firstName = update.FirstName;
+            user.lastName = update.LastName;
+            user.phoneNumber = update.Phone;
+            user.hasWhatsapp = update.HasWhatsapp;
+            _context.SaveChanges();
+            return user;
         }
 
         public async Task RegisterUser(User user)

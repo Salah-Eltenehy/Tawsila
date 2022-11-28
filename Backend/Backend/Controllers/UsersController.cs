@@ -38,29 +38,32 @@ namespace Backend.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<string> UpdateUser(int id, RegisterRec update_user)
+        public async Task<IActionResult> UpdateUser(int id, UpdateRec update)
         {
 
-
-            return "Not implemented";
+            var user = await _userRepo.UpdateUser(id, update);
+            if(user == null)
+            {
+                return BadRequest();
+            }
+            return Ok();
         }
 
 
-        
         [HttpPost("login")]
-        public async Task<string> Login(LoginRec log)
+        public async Task<IActionResult> Login(LoginRec log)
         {
-            User user = new User();
-            user.email = log.email;
-            user.password = log.password;
-            _userRepo.Login(user);
-            return "LOG IN NOT IMPLEMENTED";
+            var user  = _userRepo.Login(log);
+            if(user == null)
+            {
+                return NotFound();
+            }
+            return Ok();
         }
 
         [HttpPost]
-        public async Task<string> RegisterUser(RegisterRec register)
+        public async Task<IActionResult> RegisterUser(RegisterRec register)
         {
-            // Console.WriteLine(register.LastName);
             User user = new User();
             user.email = register.email;
             user.firstName = register.FirstName;
@@ -73,10 +76,10 @@ namespace Backend.Controllers
                 await _userRepo.RegisterUser(user);
             }catch(Exception e)
             {
-                return e.Message;
+                return BadRequest();
             }
             
-            return "OK";
+            return Ok();
         }
 
         [HttpDelete("{id}")]
@@ -87,10 +90,10 @@ namespace Backend.Controllers
             {
                 return NotFound();
             }
-
             return Ok();
         }
 
+        // API to get the opinions on the user
         [HttpGet("reviews/{id}")]
         public async Task<IEnumerable<Review>> GetOpinions(int id)
         {
