@@ -4,6 +4,7 @@ using Backend.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,13 +12,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(TawsilaContext))]
-    partial class TawsilaContextModelSnapshot : ModelSnapshot
+    [Migration("20221128114827_DB")]
+    partial class DB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.0")
+                .HasAnnotation("ProductVersion", "6.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
@@ -70,6 +72,7 @@ namespace Backend.Migrations
 
                     b.Property<int?>("UserId")
                         .HasColumnType("int");
+
                     b.Property<int>("Year")
                         .HasColumnType("int");
 
@@ -223,7 +226,6 @@ namespace Backend.Migrations
                     b.Navigation("reviewee");
 
                     b.Navigation("reviewer");
-
                 });
 
             modelBuilder.Entity("Backend.Models.User", b =>
