@@ -11,6 +11,7 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using System.Text.Json;
+using Backend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -45,12 +46,19 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddControllers();
-builder.Services.AddScoped<CarsController>();
-builder.Services.AddScoped<CarRepo>();
+
 builder.Services.AddScoped<UsersController>();
 builder.Services.AddScoped<UserRepo>();
+builder.Services.AddScoped<UserService>();
+
+
+builder.Services.AddScoped<CarsController>();
+builder.Services.AddScoped<CarRepo>();
+
 builder.Services.AddScoped<ReviewsController>();
 builder.Services.AddScoped<ReviewRepo>();
+
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -86,6 +94,7 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+
 
 var app = builder.Build();
 
