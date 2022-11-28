@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Backend.Models;
 
@@ -22,6 +23,7 @@ public class Review
 
 
     public int revieweeId { get; set; }
+    [JsonIgnore]
     public User reviewee { get; set; }
 
 }

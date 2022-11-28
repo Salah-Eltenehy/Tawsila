@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(TawsilaContext))]
-    [Migration("20221127204335_DB")]
+    [Migration("20221128114827_DB")]
     partial class DB
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

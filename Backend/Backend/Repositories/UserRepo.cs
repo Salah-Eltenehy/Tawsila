@@ -1,5 +1,4 @@
 ﻿using Backend.Contexts;
-using Backend.Migrations;
 using Backend.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -28,9 +27,9 @@ namespace Backend.Repositories
             return await _context.Users.FindAsync(id);
         }
 
-        public User Login(LoginRec log)
+        public async Task<User> Login(LoginRequest log)
         {
-            var users = _context.Users.Where(e => e.email == log.email && e.password == log.password).ToList();
+            var users =  _context.Users.Where(e => e.email == log.Email && e.password == log.Password).ToList();
             if(users.Count() == 0)
             {
                 return null;
@@ -39,7 +38,7 @@ namespace Backend.Repositories
             return user;
         }
 
-        public async Task<User> UpdateUser(int id, UpdateRec update)
+        public async Task<User> UpdateUser(int id, UpdateRequest update)
         {
             var user = await _context.Users.FindAsync(id);
             if(user == null)
@@ -82,7 +81,6 @@ namespace Backend.Repositories
             {
                 return null;
             }
-            Console.WriteLine(user.reviews);
             return user.reviews;
         }
 

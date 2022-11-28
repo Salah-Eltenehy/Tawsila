@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Backend.Models;
-using Backend.Repositories;
-using Microsoft.Win32;
-using System.Web;
-using System.Net.WebSockets;
+using Backend.AuthModels.Users;
+using Backend.Services;
 
 namespace Backend.Controllers
 {
@@ -11,23 +9,23 @@ namespace Backend.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly UserRepo _userRepo;
+        private readonly IUserService _userService;
 
-        public UsersController(UserRepo userRepo)
+        public UsersController(UserService userService)
         {
-            _userRepo = userRepo;
+            _userService = userService;
         }
 
         [HttpGet]  
         public async Task<IEnumerable<User>> GetAll()
         {
-            return await _userRepo.GetAll();
+            return await _userService.GetUsers();
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
-            var user = await _userRepo.GetUser(id);
+            var user = await _userService.GetUser(id);
 
             if (user == null)
             {
@@ -38,10 +36,10 @@ namespace Backend.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(int id, UpdateRec update)
+        public async Task<IActionResult> UpdateUser(int id, UpdateRequest update)
         {
 
-            var user = await _userRepo.UpdateUser(id, update);
+            var user = await _userService.UpdateUser(id, update);
             if(user == null)
             {
                 return BadRequest();
@@ -51,9 +49,9 @@ namespace Backend.Controllers
 
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginRec log)
+        public async Task<IActionResult> Login(LoginRequest log)
         {
-            var user  = _userRepo.Login(log);
+            var user  = await _userService.LoginUser(log);
             if(user == null)
             {
                 return NotFound();
@@ -62,19 +60,11 @@ namespace Backend.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> RegisterUser(RegisterRec register)
+        public async Task<IActionResult> RegisterUser(RegisterRequest register)
         {
-            User user = new User();
-            user.email = register.email;
-            user.firstName = register.FirstName;
-            user.phoneNumber = register.phone;
-            user.hasWhatsapp = register.hasWhatsapp;
-            user.lastName = register.LastName;
-            user.password = register.password;
-            try
-            {
-                await _userRepo.RegisterUser(user);
-            }catch(Exception e)
+           
+            User user = await _userService.RegisterUser(register);
+            if (user == null)
             {
                 return BadRequest();
             }
@@ -85,7 +75,7 @@ namespace Backend.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
-            var user = await _userRepo.DeleteUser(id);
+            var user = await _userService.DeleteUser(id);
             if (user == null)
             {
                 return NotFound();
@@ -93,12 +83,10 @@ namespace Backend.Controllers
             return Ok();
         }
 
-        // API to get the opinions on the user
-        [HttpGet("reviews/{id}")]
+        [HttpGet("{id}/reviews")]
         public async Task<IEnumerable<Review>> GetOpinions(int id)
         {
-            
-             return await _userRepo.GetReviews(id);
+             return await _userService.GetUserReviews(id);
         }
     }
 }

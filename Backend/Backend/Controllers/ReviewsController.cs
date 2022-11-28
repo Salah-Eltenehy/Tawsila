@@ -43,7 +43,7 @@ namespace Backend.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult<Review>> PostReview(ReviewRec reviewRc)
+        public async Task<ActionResult<Review>> PostReview(ReviewRequest reviewRc)
         {
             Review review = new Review();
             review.revieweeId = reviewRc.reviewee;

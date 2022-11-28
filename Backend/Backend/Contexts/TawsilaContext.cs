@@ -14,6 +14,7 @@ public class TawsilaContext : DbContext
     // Review this 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // On Delete should be modified 
         modelBuilder.Entity<Review>()
             .HasOne(p => p.reviewee)
             .WithMany(p => p.reviews)
