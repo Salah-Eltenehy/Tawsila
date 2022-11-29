@@ -2,163 +2,108 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tawsila/modules/home-page/Cubit/Cubit.dart';
+import 'package:tawsila/modules/home-page/Cubit/CubitStates.dart';
 
-class HomePageScreen extends StatefulWidget {
+class HomePageScreen extends StatelessWidget {
   final language;
 
-  const HomePageScreen({super.key, required this.language});
+  HomePageScreen({super.key, required this.language});
   
-  @override
-  State<HomePageScreen> createState() => _HomePageScreenState(language);
-}
-
-class _HomePageScreenState extends State<HomePageScreen> {
-  final language;
   var items = {};
+
   var rentCarPeriodController = TextEditingController();
+
   var addressOfPicupController = TextEditingController();
-  _HomePageScreenState(this.language) {
-    readJson();
-  }
-    void readJson() async{
-    items = {};
-    String fileName = language == "English"? "english": "arabic";
-    print(fileName);
-    final String response = await rootBundle.loadString('assets/languages/${fileName}.json');
-    final data = await json.decode(response);
-    items = data['HomePage'];
-  }
+
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "${items['title']}",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 20
-          ),
-        ),
-        actions: [
-          InkWell(
-            onTap: () {
-              print("User page");
-            },
-            child: CircleAvatar(
-              child: Image(
-                image: AssetImage('assets/iamges/owner.png'),
+    return BlocProvider(
+      create: (BuildContext context) => HomePageCubit()..setLanguage(l: language)..readJson('HomePage'),
+      child: BlocConsumer<HomePageCubit , HomePageStates>(
+        listener: (BuildContext context, state) {},
+        builder: (BuildContext context, state)
+        { var homePageCubit = HomePageCubit.get(context);
+          return Scaffold(
+          appBar: AppBar(
+              title: Text(
+                "${homePageCubit.items['title'] ?? ''}",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20
+                ),
               ),
-            ),
-          ),
-        ]
-      ),
-      body: Column(
-        children: [
-          Row(
-            children: [
-              InkWell(
-                onTap: () {
-                  print("Offer car page");
-                },
-                child: Expanded(
-                  child: Container(
-                    height: 120,
-                    child: Stack(
-                      alignment: AlignmentDirectional.bottomEnd,
-                      children: [
-                        Column(
-                          children: [
-                            Text(
-                              "${items['offerCar1']}",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
-                                color: Colors.white,
-                              ),
-                            ),
-                            Text(
-                              "${items['offerCar2']}",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Image(
-                          image: AssetImage('assets/iamges/car.png')
-                          ),
-                      ],
+              actions: [
+                InkWell(
+                  onTap: () {
+                    print("User page");
+                  },
+                  child: CircleAvatar(
+                    child: Image(
+                      image: NetworkImage('https://th.bing.com/th/id/OIP.ne2gc0vnnK8CH4r4AJNjFgAAAA?pid=ImgDet&rs=1'),
                     ),
                   ),
                 ),
-              ),
-              SizedBox(
-                width: 10,
-              ),
-              InkWell(
-                onTap: () {
-                  print("Offer car page");
-                },
-                child: Expanded(
-                  child: Container(
-                    height: 120,
-                    child: Stack(
-                      alignment: AlignmentDirectional.bottomEnd,
-                      children: [
-                        Column(
-                          children: [
-                            Text(
-                              "${items['offers1']}",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
-                                color: Colors.white,
-                              ),
-                            ),
-                            Text(
-                              "${items['offers2']}",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Image(
-                          image: AssetImage('assets/iamges/label.png')
-                          ),
-                      ],
+              ]
+          ),
+          body: Padding(
+            padding: const EdgeInsets.all(18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    buildPageItem(
+                      title1: homePageCubit.items['offerCar1']??'', 
+                      title2: homePageCubit.items['offerCar2']??'', 
+                      imageLink: 'https://th.bing.com/th/id/R.280fb39f068a60a24a394031803a8e57?rik=dN2s3DxSChBFvw&pid=ImgRaw&r=0', 
+                      onTapFunc: () {
+                        print("Offer Car page");
+                      }
+                      ),
+                    
+                    SizedBox(
+                      width: 10,
                     ),
+                    buildPageItem(
+                      title1: homePageCubit.items['offers1']??'', 
+                      title2: homePageCubit.items['offers2']??'', 
+                      imageLink: 'https://th.bing.com/th/id/R.280fb39f068a60a24a394031803a8e57?rik=dN2s3DxSChBFvw&pid=ImgRaw&r=0', 
+                      onTapFunc: () {
+                        print("Manage Your offer page");
+                      }
+                      )
+                  ],
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  '${homePageCubit.items['RentCar']??''}',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20
                   ),
                 ),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 4,
-          ),
-          Text(
-            '${items['RentCar']}',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 20
+                SizedBox(
+                  height: 8,
+                ),
+                Text(
+                    '${homePageCubit.items['RentalPeriod']??''}'
+                ),
+                buildTextField(controller: rentCarPeriodController, placeHolder: homePageCubit.items['RentalPeriodHint']?? ''),
+                SizedBox(
+                  height: 8,
+                ),
+                Text('${homePageCubit.items['AddressOfPickup'] ?? ''}'),
+                buildTextField(controller: addressOfPicupController, placeHolder: homePageCubit.items['AddressOfPickupHint']?? ''),
+              ],
             ),
           ),
-          SizedBox(
-            height: 4,
-          ),
-          Text(
-            '${items['RentalPeriod']}'
-          ),
-          buildTextField(controller: rentCarPeriodController, placeHolder: items['RentalPeriodHint']),
-          Text('${items['AddressOfPickup']}'),
-          buildTextField(controller: addressOfPicupController, placeHolder: items['AddressOfPickupHint']),
-        ],
+        );}
       ),
     );
   }
@@ -183,4 +128,68 @@ class _HomePageScreenState extends State<HomePageScreen> {
             ),
           );
   }
+//${homePageCubit.items['offerCar1']??''}
+//${homePageCubit.items['offerCar2']??''}
+  Widget buildPageItem({
+    required String title1,
+    required String title2,
+    required String imageLink,
+    required Function onTapFunc,
+  }) => Expanded(
+                      child: InkWell(
+                        onTap: () {
+                          onTapFunc();
+                        },
+                        child: Container(
+                          
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: Colors.black,
+                          ),
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Container(
+                                  alignment: Alignment.topLeft,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "${title1}",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      Text(
+                                        "${title2}",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Row(
+                                children: [
+                                  Text(''),
+                                  Spacer(),
+                                  Image( 
+                                    width: 140,
+                                    height: 140,
+                                    alignment: Alignment.bottomRight,
+                                    image: NetworkImage('${imageLink}')
+                                 ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
 }

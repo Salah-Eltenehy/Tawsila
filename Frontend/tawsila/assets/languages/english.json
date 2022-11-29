@@ -29,9 +29,9 @@
             "offers2": "Offers",
             "RentCar":"Rent Car",
             "RentalPeriod":"Rental Period",
-            "RentalPeriodHint":"Rental Period Hint",
+            "RentalPeriodHint":"Rent peroid in days",
             "AddressOfPickup":"Address Of Pickup",
-            "AddressOfPickupHint":"Address Of Pickup Hint"
+            "AddressOfPickupHint":"Leave blank of current location"
         }
     
 }
