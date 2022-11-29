@@ -66,13 +66,16 @@ class SignUpCubit extends Cubit<SignUpStates> {
   }
 
   var hasWhatsAppColor = Color.fromARGB(255, 214, 214, 214);
+  var agreeColor = Color.fromARGB(255, 214, 214, 214);
   void changeHasWhatsApp() {
       hasWhatsAppColor = Colors.red;
+      agreeColor = termsAndConditions ?  Color.fromARGB(255, 214, 214, 214):  Colors.red;
       emit(HasNoWhatsAppState());
   }
 
-  var agreeColor = Color.fromARGB(255, 214, 214, 214);
+  
   void agreeTermsAndConditionsColor() {
+      hasWhatsAppColor = hasWhatsApp ?  Color.fromARGB(255, 214, 214, 214):  Colors.red;
       agreeColor = Colors.red;
       emit(AgreeTermsAndConditionsColorState());
   }
