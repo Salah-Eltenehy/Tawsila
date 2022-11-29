@@ -21,7 +21,9 @@ Widget defaultTextFormFieldRow({
                   obscureText: isSecure,
                   controller: controller,
                   keyboardType: textInputType,
+                  
                   decoration: InputDecoration(
+                      
                     labelText: labelText,
                     border: OutlineInputBorder(),
                     prefix: Padding(
