@@ -32,13 +32,13 @@ class SignUpCubit extends Cubit<SignUpStates> {
     language = l;
     emit(SetLanguageState());
   }
-  void readJson() async{
+  void readJson(String get) async{
     items = {};
     String fileName = language == "English"? "english": "arabic";
     print(fileName);
     final String response = await rootBundle.loadString('assets/languages/${fileName}.json');
     final data = await json.decode(response);
-    items = data['SignUp'];
+    items = data[get];
     emit(GetLanguageFromDatabaseState());
   }
 
