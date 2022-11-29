@@ -32,6 +32,13 @@
             "RentalPeriodHint":"Rental Period Hint",
             "AddressOfPickup":"Address Of Pickup",
             "AddressOfPickupHint":"Address Of Pickup Hint"
-        }
+        },
+    "verify": 
+    {
+          "verify" : "verify",
+          "info"   : "enter verification code",
+          "resend" : "resend",
+          "enter"  : "enter"
+    }
     
 }
