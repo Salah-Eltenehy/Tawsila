@@ -19,6 +19,19 @@
         "termsAndConditionsPage": "الشروط والاحكام",
         "signUp": "انشاء حساب جديد"
     },
+    "HomePage": 
+        {
+            "title":"الرئيسيه",
+            "offerCar1":"ضع اعلانك"
+            "offerCar2":"مركبات",
+            "offers1": "اعداد",
+            "offers2": "اعلانات",
+            "RentCar":"استأجر",
+            "RentalPeriod":"مده الايجار",
+            "RentalPeriodHint":"مده الايجار (مساعده)",
+            "AddressOfPickup":"محل الاستلام",
+            "AddressOfPickupHint":"محل الاستلام (مساعده)"
+        },
     "verify": {
         "verify" : "تأكيد",
         "info"   : "أدخل رقم التأكيد",
