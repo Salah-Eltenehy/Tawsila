@@ -16,7 +16,7 @@ class HomePageScreen extends StatelessWidget {
   var rentCarPeriodController = TextEditingController();
 
   var addressOfPicupController = TextEditingController();
-
+  
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +59,7 @@ class HomePageScreen extends StatelessWidget {
                     buildPageItem(
                       title1: homePageCubit.items['offerCar1']??'', 
                       title2: homePageCubit.items['offerCar2']??'', 
-                      imageLink: 'https://th.bing.com/th/id/R.280fb39f068a60a24a394031803a8e57?rik=dN2s3DxSChBFvw&pid=ImgRaw&r=0', 
+                      image: AssetImage('assets/images/car.png'),
                       onTapFunc: () {
                         print("Offer Car page");
                       }
@@ -67,11 +67,11 @@ class HomePageScreen extends StatelessWidget {
                     
                     SizedBox(
                       width: 10,
-                    ),
+                    ),//NetworkImage('https://th.bing.com/th/id/R.280fb39f068a60a24a394031803a8e57?rik=dN2s3DxSChBFvw&pid=ImgRaw&r=0')
                     buildPageItem(
                       title1: homePageCubit.items['offers1']??'', 
                       title2: homePageCubit.items['offers2']??'', 
-                      imageLink: 'https://th.bing.com/th/id/R.280fb39f068a60a24a394031803a8e57?rik=dN2s3DxSChBFvw&pid=ImgRaw&r=0', 
+                      image: AssetImage('assets/images/label.png'),
                       onTapFunc: () {
                         print("Manage Your offer page");
                       }
@@ -100,6 +100,36 @@ class HomePageScreen extends StatelessWidget {
                 ),
                 Text('${homePageCubit.items['AddressOfPickup'] ?? ''}'),
                 buildTextField(controller: addressOfPicupController, placeHolder: homePageCubit.items['AddressOfPickupHint']?? ''),
+                SizedBox(
+                  height: 30,
+                ),
+                InkWell(
+                  onTap: () {
+                    homePageCubit.getLocation().then(
+                      (value) {
+                        homePageCubit.setLocation(value);
+                      }
+                      );
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    color: Colors.blue,
+                    child: Text(
+                      'Location',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20
+                      ),
+                    ),
+                  ),
+                ),
+                Text(
+                  "${homePageCubit.locationTTTT!=''? homePageCubit.locationTTTT: 'error'}"
+                  ,style: TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold
+                  ),
+                  ),
               ],
             ),
           ),
@@ -133,7 +163,7 @@ class HomePageScreen extends StatelessWidget {
   Widget buildPageItem({
     required String title1,
     required String title2,
-    required String imageLink,
+    required  image,
     required Function onTapFunc,
   }) => Expanded(
                       child: InkWell(
@@ -183,7 +213,7 @@ class HomePageScreen extends StatelessWidget {
                                     width: 140,
                                     height: 140,
                                     alignment: Alignment.bottomRight,
-                                    image: NetworkImage('${imageLink}')
+                                    image: image
                                  ),
                                 ],
                               ),

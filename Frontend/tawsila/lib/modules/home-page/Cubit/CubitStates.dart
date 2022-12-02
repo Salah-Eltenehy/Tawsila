@@ -5,3 +5,5 @@ class InitialHomePageStates extends HomePageStates {}
 class SetLanguageState extends HomePageStates {}
 
 class GetLanguageFromDatabaseState extends HomePageStates {}
+class GetLocationState extends HomePageStates {}
+class SetLocationState extends HomePageStates {}

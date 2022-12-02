@@ -5,14 +5,19 @@ import 'package:tawsila/modules/home-page/HomePage.dart';
 
 import '../shared/components/Components.dart';
 import 'cubit/AppProvider.dart';
+import 'dart:async';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class CurrentScreen extends StatelessWidget {
   List<DropdownMenuItem> items = [
     DropdownMenuItem(child: Text("English"), value: 'English',),
     DropdownMenuItem(child: Text("العربية"), value: 'العربية',),
   ];
-
-  
+  Completer<GoogleMapController> _controller = Completer();
+  static final CameraPosition _kGooglePlex = CameraPosition(
+    target: LatLng(37.42796133580664, -122.085749655962),
+    zoom: 14.4746,
+  );
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -32,7 +37,26 @@ class CurrentScreen extends StatelessWidget {
                     }),
               ],
             ),
-            body: Column(
+            body: Container(
+              width: 200,
+              height: 200,
+              child: GoogleMap(
+                mapType: MapType.hybrid,
+                initialCameraPosition: _kGooglePlex,
+                onMapCreated: (GoogleMapController controller) {
+                  _controller.complete(controller);
+                },
+              )
+            ),
+          );
+        },
+        ),
+      );
+  }
+
+}
+/*
+Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -69,10 +93,4 @@ class CurrentScreen extends StatelessWidget {
 
               ]
             )
-          );
-        },
-        ),
-      );
-  }
-
-}
+*/

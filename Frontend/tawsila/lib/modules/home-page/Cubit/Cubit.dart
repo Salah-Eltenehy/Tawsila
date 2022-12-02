@@ -12,6 +12,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:location/location.dart';
+
 import 'package:http/http.dart' as http;
 
 import 'CubitStates.dart';
@@ -41,5 +43,37 @@ class HomePageCubit extends Cubit<HomePageStates> {
     final data = await json.decode(response);
     items = data[get];
     emit(GetLanguageFromDatabaseState());
+  }
+
+  // late Position userCurrentPosition;
+  // var geolocator = Geolocator();
+
+  // void locatePosition() async {
+  //   Position position = await Geolocator.getCurrentPosition(
+  //     desiredAccuracy: LocationAccuracy.high
+  //   );
+  // }
+
+  Location location = new Location();
+  late bool serviceEnabled;
+  late PermissionStatus permissionGranted;
+  late LocationData locationData;
+
+  Future<dynamic> getLocation() async {
+    serviceEnabled = await location.serviceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await location.requestService();
+    }
+    permissionGranted = await location.hasPermission();
+    if (permissionGranted == PermissionStatus.denied) {
+      permissionGranted = await location.requestPermission();
+    }
+    locationData = await location.getLocation();
+    emit(GetLocationState());
+  }
+  var locationTTTT = "";
+  void setLocation(value) {
+    locationTTTT = value + "";
+    emit(SetLocationState());
   }
 }
