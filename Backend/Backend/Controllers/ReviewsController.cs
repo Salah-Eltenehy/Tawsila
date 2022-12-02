@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Backend.Contexts;
 using Backend.Models;
+using Backend.Models.API.Review;
+using Backend.Models.Entities;
 using Backend.Repositories;
 
 namespace Backend.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class ReviewsController : ControllerBase
     {
@@ -46,13 +48,13 @@ namespace Backend.Controllers
         public async Task<ActionResult<Review>> PostReview(ReviewRequest reviewRc)
         {
             Review review = new Review();
-            review.revieweeId = reviewRc.reviewee;
-            review.rating = reviewRc.rating;
-            review.comment = reviewRc.comment;
-            review.reviewerId = reviewRc.reviewer;
+            review.RevieweeId = reviewRc.reviewee;
+            review.Rating = reviewRc.rating;
+            review.Comment = reviewRc.comment;
+            review.ReviewerId = reviewRc.reviewer;
             await _reviewRepo.PostReview(review);
 
-            return CreatedAtAction("GetReview", new { id = review.id }, review);
+            return CreatedAtAction("GetReview", new { id = review.Id }, review);
         }
 
         [HttpDelete("{id}")]

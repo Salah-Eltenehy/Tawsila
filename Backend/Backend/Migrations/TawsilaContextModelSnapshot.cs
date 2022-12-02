@@ -17,18 +17,18 @@ namespace Backend.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.0")
+                .HasAnnotation("ProductVersion", "7.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Backend.Models.Car", b =>
+            modelBuilder.Entity("Backend.Models.Entities.Car", b =>
                 {
-                    b.Property<int>("id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("BodyType")
                         .IsRequired()
@@ -38,7 +38,14 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FeulType")
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FuelType")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -51,12 +58,27 @@ namespace Backend.Migrations
                     b.Property<bool>("HasRadio")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("HasSunRoof")
+                    b.Property<bool>("HasSunroof")
                         .HasColumnType("bit");
+
+                    b.Property<bool>("IsListed")
+                        .HasColumnType("bit");
+
+                    b.Property<double>("Latitude")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("float");
 
                     b.Property<string>("Model")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("OwnerId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Period")
+                        .HasColumnType("int");
 
                     b.Property<int>("Price")
                         .HasColumnType("int");
@@ -64,134 +86,111 @@ namespace Backend.Migrations
                     b.Property<int>("SeatsCount")
                         .HasColumnType("int");
 
-                    b.Property<string>("Transmision")
+                    b.Property<string>("Transmission")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("Year")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("createdAt")
-                        .HasColumnType("datetime2");
+                    b.HasKey("Id");
 
-                    b.Property<string>("description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("isListed")
-                        .HasColumnType("bit");
-
-                    b.Property<double>("latidude")
-                        .HasColumnType("float");
-
-                    b.Property<double>("longitude")
-                        .HasColumnType("float");
-
-                    b.Property<int>("ownerId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("period")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("updatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("UserId");
+                    b.HasIndex("OwnerId");
 
                     b.ToTable("Cars");
                 });
 
-            modelBuilder.Entity("Backend.Models.Review", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"), 1L, 1);
-
-                    b.Property<string>("comment")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("createdAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("rating")
-                        .HasColumnType("int");
-
-                    b.Property<int>("revieweeId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("reviewerId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("updatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("revieweeId");
-
-                    b.HasIndex("reviewerId");
-
-                    b.ToTable("Reviews");
-                });
-
-            modelBuilder.Entity("Backend.Models.User", b =>
+            modelBuilder.Entity("Backend.Models.Entities.Review", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("createdAt")
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("email")
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RevieweeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ReviewerId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RevieweeId");
+
+                    b.HasIndex("ReviewerId");
+
+                    b.ToTable("Reviews");
+                });
+
+            modelBuilder.Entity("Backend.Models.Entities.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(255)
                         .IsUnicode(true)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<string>("firstName")
+                    b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(255)
                         .IsUnicode(true)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<bool>("hasPhoto")
+                    b.Property<bool>("HasPhoto")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("hasWhatsapp")
+                    b.Property<bool>("HasWhatsapp")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("isEmailVerified")
+                    b.Property<bool>("IsEmailVerified")
                         .HasColumnType("bit");
 
-                    b.Property<string>("lastName")
+                    b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(255)
                         .IsUnicode(true)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<string>("password")
+                    b.Property<string>("Password")
                         .IsRequired()
                         .HasMaxLength(255)
                         .IsUnicode(false)
                         .HasColumnType("varchar(255)");
 
-                    b.Property<string>("phoneNumber")
+                    b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasMaxLength(255)
                         .IsUnicode(false)
                         .HasColumnType("varchar(255)");
 
-                    b.Property<DateTime>("updatedAt")
+                    b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
@@ -199,38 +198,41 @@ namespace Backend.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Backend.Models.Car", b =>
+            modelBuilder.Entity("Backend.Models.Entities.Car", b =>
                 {
-                    b.HasOne("Backend.Models.User", null)
-                        .WithMany("cars")
-                        .HasForeignKey("UserId");
+                    b.HasOne("Backend.Models.Entities.User", "Owner")
+                        .WithMany("Cars")
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("Backend.Models.Review", b =>
+            modelBuilder.Entity("Backend.Models.Entities.Review", b =>
                 {
-                    b.HasOne("Backend.Models.User", "reviewee")
-                        .WithMany("reviews")
-                        .HasForeignKey("revieweeId")
+                    b.HasOne("Backend.Models.Entities.User", "Reviewee")
+                        .WithMany("Reviews")
+                        .HasForeignKey("RevieweeId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("Backend.Models.User", "reviewer")
+                    b.HasOne("Backend.Models.Entities.User", "Reviewer")
                         .WithMany()
-                        .HasForeignKey("reviewerId")
+                        .HasForeignKey("ReviewerId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("reviewee");
+                    b.Navigation("Reviewee");
 
-                    b.Navigation("reviewer");
-
+                    b.Navigation("Reviewer");
                 });
 
-            modelBuilder.Entity("Backend.Models.User", b =>
+            modelBuilder.Entity("Backend.Models.Entities.User", b =>
                 {
-                    b.Navigation("cars");
+                    b.Navigation("Cars");
 
-                    b.Navigation("reviews");
+                    b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618
         }

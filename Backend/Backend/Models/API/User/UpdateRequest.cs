@@ -1,10 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
+namespace Backend.Models.API.User;
+
 public record UpdateRequest
-    (
-    [Required] string email,
+(
+    [Required] string Email,
     [Required] string FirstName,
     [Required] string LastName,
-    [Required] string Phone,
+    [Required] string PhoneNumber,
     [Required] bool HasWhatsapp
-    );
+);

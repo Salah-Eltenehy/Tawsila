@@ -1,5 +1,5 @@
 ﻿using Backend.Contexts;
-using Backend.Models;
+using Backend.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -47,7 +47,7 @@ namespace Backend.Repositories
 
         public bool ReviewExists(int id)
         {
-            return _context.Reviews.Any(e => e.id == id);
+            return _context.Reviews.Any(e => e.Id == id);
         }
     }
 }

@@ -1,0 +1,1449 @@
+{
+	"info": {
+		"_postman_id": "301c4ae3-cac7-470c-9cfa-c70cf0c13b01",
+		"name": "Tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "18969165"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Login user (not exists)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Error message is correct\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.message).to.eql('Invalid email or password');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"demo@example.com\",\r\n    \"password\": \"123456789STRONGpassword*\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify non-existent User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Error message is correct\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.message).to.eql('Login to access this resource');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"emailVerificationCode\": \"412374\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/5/verify",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"5",
+								"verify"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"JWT is sent correctly\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.token).to.be.a('string');\r",
+									"    pm.collectionVariables.set('token', jsonData.token);\r",
+									"    var parsedToken = CryptoJS.enc.Base64.parse(jsonData.token.split('.')[1]);\r",
+									"    var decodedToken = CryptoJS.enc.Utf8.stringify(parsedToken);\r",
+									"    var jsonToken = JSON.parse(decodedToken);\r",
+									"    var claimedEmail = jsonToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'];\r",
+									"    var claimedRole = jsonToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];\r",
+									"    pm.expect(claimedEmail).to.eql('demo@example.com');\r",
+									"    pm.expect(claimedRole).to.eql('UnverifiedUser');\r",
+									"});\r",
+									"\r",
+									"pm.test('Verfication code is sent', function() {\r",
+									"    new Promise((resolve, reject) => {\r",
+									"        pm.sendRequest('http://localhost:8025/api/v2/messages?limit=1', (error, response) => {\r",
+									"            if (error) {\r",
+									"                reject();\r",
+									"            } else {\r",
+									"                var jsonData = response.json();\r",
+									"                var verificationCode = /Your verification code is (\\d+)/.exec(jsonData.items[0].Content.Body)[1];\r",
+									"                pm.expect(verificationCode).to.have.lengthOf(6);\r",
+									"                pm.collectionVariables.set('verificationCode', verificationCode);\r",
+									"                resolve();\r",
+									"            }\r",
+									"        });\r",
+									"    }).then(() => {});\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"demo@example.com\",\r\n    \"firstName\": \"Joe\",\r\n    \"lastName\": \"Doe\",\r\n    \"password\": \"123456789GOODpassword*\",\r\n    \"phoneNumber\": \"00201123456789\",\r\n    \"hasWhatsapp\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify user (not exists)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Error message is correct\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.message).to.eql('You can only verify your own account');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"emailVerificationCode\": \"412374\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/5/verify",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"5",
+								"verify"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify user (invalid code)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Error message is correct\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.message).to.eql('Invalid or expired verification code');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"emailVerificationCode\": \"41ab74\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/1/verify",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"1",
+								"verify"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"JWT is sent correctly\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.token).to.be.a('string');\r",
+									"    pm.collectionVariables.set('token', jsonData.token);\r",
+									"    var parsedToken = CryptoJS.enc.Base64.parse(jsonData.token.split('.')[1]);\r",
+									"    var decodedToken = CryptoJS.enc.Utf8.stringify(parsedToken);\r",
+									"    var jsonToken = JSON.parse(decodedToken);\r",
+									"    var claimedEmail = jsonToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'];\r",
+									"    var claimedRole = jsonToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];\r",
+									"    pm.expect(claimedEmail).to.eql('demo@example.com');\r",
+									"    pm.expect(claimedRole).to.eql('VerifiedUser');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"emailVerificationCode\": \"{{verificationCode}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/1/verify",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"1",
+								"verify"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify user (verified)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 403\", function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Error message is correct\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.message).to.eql('Your email is already verified');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"emailVerificationCode\": \"{{verificationCode}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/1/verify",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"1",
+								"verify"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register user (exists)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 409\", function () {\r",
+									"    pm.response.to.have.status(409);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Error message is correct\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.message).to.eql('Email already registered');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"demo@example.com\",\r\n    \"firstName\": \"Joe\",\r\n    \"lastName\": \"Doe\",\r\n    \"password\": \"123456789GOODpassword*\",\r\n    \"phoneNumber\": \"00201123456789\",\r\n    \"hasWhatsapp\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login user (invalid password)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Error message is correct\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.message).to.eql('Invalid email or password');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"demo@example.com\",\r\n    \"password\": \"123456789STRONGpassword*\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login user (verified)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"JWT is sent correctly\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.token).to.be.a('string');\r",
+									"    pm.collectionVariables.set('token', jsonData.token);\r",
+									"    var parsedToken = CryptoJS.enc.Base64.parse(jsonData.token.split('.')[1]);\r",
+									"    var decodedToken = CryptoJS.enc.Utf8.stringify(parsedToken);\r",
+									"    var jsonToken = JSON.parse(decodedToken);\r",
+									"    var claimedEmail = jsonToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'];\r",
+									"    var claimedRole = jsonToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];\r",
+									"    pm.expect(claimedEmail).to.eql('demo@example.com');\r",
+									"    pm.expect(claimedRole).to.eql('VerifiedUser');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"demo@example.com\",\r\n    \"password\": \"123456789GOODpassword*\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get user (not exists)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Error message is correct\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.message).to.eql('User not found');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/2",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Exactly one user is returned\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.users).to.be.lengthOf(1);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"User 1 info is correct\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.users[0]).to.include({\r",
+									"        \"id\": 1,\r",
+									"        \"firstName\": \"Joe\",\r",
+									"        \"lastName\": \"Doe\",\r",
+									"        \"phoneNumber\": \"00201123456789\",\r",
+									"        \"hasWhatsapp\": true\r",
+									"    })\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update user (not exists)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Error message is correct\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.message).to.eql('You can only update your own account');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"demo@example.com\",\r\n    \"firstName\": \"Bill\",\r\n    \"lastName\": \"Doe\",\r\n    \"phoneNumber\": \"00201126456789\",\r\n    \"hasWhatsapp\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/2",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"JWT is sent correctly\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.token).to.be.a('string');\r",
+									"    pm.collectionVariables.set('token', jsonData.token);\r",
+									"    var parsedToken = CryptoJS.enc.Base64.parse(jsonData.token.split('.')[1]);\r",
+									"    var decodedToken = CryptoJS.enc.Utf8.stringify(parsedToken);\r",
+									"    var jsonToken = JSON.parse(decodedToken);\r",
+									"    var claimedEmail = jsonToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'];\r",
+									"    var claimedRole = jsonToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];\r",
+									"    pm.expect(claimedEmail).to.eql('demo@example.com');\r",
+									"    pm.expect(claimedRole).to.eql('VerifiedUser');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"demo@example.com\",\r\n    \"firstName\": \"Bill\",\r\n    \"lastName\": \"Doe\",\r\n    \"phoneNumber\": \"00201126456789\",\r\n    \"hasWhatsapp\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get user (updated)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Exactly one user is returned\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.users).to.be.lengthOf(1);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"User 1 info is correct\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.users[0]).to.include({\r",
+									"        \"id\": 1,\r",
+									"        \"firstName\": \"Bill\",\r",
+									"        \"lastName\": \"Doe\",\r",
+									"        \"phoneNumber\": \"00201126456789\",\r",
+									"        \"hasWhatsapp\": false\r",
+									"    })\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register second user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"JWT is sent correctly\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.token).to.be.a('string');\r",
+									"    pm.collectionVariables.set('token', jsonData.token);\r",
+									"    var parsedToken = CryptoJS.enc.Base64.parse(jsonData.token.split('.')[1]);\r",
+									"    var decodedToken = CryptoJS.enc.Utf8.stringify(parsedToken);\r",
+									"    var jsonToken = JSON.parse(decodedToken);\r",
+									"    var claimedEmail = jsonToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'];\r",
+									"    var claimedRole = jsonToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];\r",
+									"    pm.expect(claimedEmail).to.eql('test@example.com');\r",
+									"    pm.expect(claimedRole).to.eql('UnverifiedUser');\r",
+									"});\r",
+									"\r",
+									"pm.test('Verfication code is sent', function() {\r",
+									"    new Promise((resolve, reject) => {\r",
+									"        pm.sendRequest('http://localhost:8025/api/v2/messages?limit=1', (error, response) => {\r",
+									"            if (error) {\r",
+									"                reject();\r",
+									"            } else {\r",
+									"                var jsonData = response.json();\r",
+									"                var verificationCode = /Your verification code is (\\d+)/.exec(jsonData.items[0].Content.Body)[1];\r",
+									"                pm.expect(verificationCode).to.have.lengthOf(6);\r",
+									"                pm.collectionVariables.set('verificationCode', verificationCode);\r",
+									"                resolve();\r",
+									"            }\r",
+									"        });\r",
+									"    }).then(() => {});\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"test@example.com\",\r\n    \"firstName\": \"Jane\",\r\n    \"lastName\": \"Doe\",\r\n    \"password\": \"987654321SUPERpassword*\",\r\n    \"phoneNumber\": \"00201162856789\",\r\n    \"hasWhatsapp\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify second user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"JWT is sent correctly\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.token).to.be.a('string');\r",
+									"    pm.collectionVariables.set('token', jsonData.token);\r",
+									"    var parsedToken = CryptoJS.enc.Base64.parse(jsonData.token.split('.')[1]);\r",
+									"    var decodedToken = CryptoJS.enc.Utf8.stringify(parsedToken);\r",
+									"    var jsonToken = JSON.parse(decodedToken);\r",
+									"    var claimedEmail = jsonToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'];\r",
+									"    var claimedRole = jsonToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];\r",
+									"    pm.expect(claimedEmail).to.eql('test@example.com');\r",
+									"    pm.expect(claimedRole).to.eql('VerifiedUser');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"emailVerificationCode\": \"{{verificationCode}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/2/verify",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"2",
+								"verify"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get users (some not exists)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Error message is correct\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.message).to.eql('One or more users not found');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/1,2,3",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"1,2,3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Exactly two users are returned\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.users).to.be.lengthOf(2);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"User 1 info is correct\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.users[0]).to.include({\r",
+									"        \"id\": 1,\r",
+									"        \"firstName\": \"Bill\",\r",
+									"        \"lastName\": \"Doe\",\r",
+									"        \"phoneNumber\": \"00201126456789\",\r",
+									"        \"hasWhatsapp\": false,\r",
+									"    })\r",
+									"});\r",
+									"\r",
+									"pm.test(\"User 2 info is correct\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.users[1]).to.include({\r",
+									"        \"id\": 2,\r",
+									"        \"firstName\": \"Jane\",\r",
+									"        \"lastName\": \"Doe\",\r",
+									"        \"phoneNumber\": \"00201162856789\",\r",
+									"        \"hasWhatsapp\": true\r",
+									"    })\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/1,2",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"1,2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update first user (by second)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Error message is correct\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.message).to.eql('You can only update your own account');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"demo@example.com\",\r\n    \"firstName\": \"Joe\",\r\n    \"lastName\": \"Doe\",\r\n    \"phoneNumber\": \"00201126456789\",\r\n    \"hasWhatsapp\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get first user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Exactly one user is returned\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.users).to.be.lengthOf(1);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"User 1 info is correct\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.users[0]).to.include({\r",
+									"        \"id\": 1,\r",
+									"        \"firstName\": \"Bill\",\r",
+									"        \"lastName\": \"Doe\",\r",
+									"        \"phoneNumber\": \"00201126456789\",\r",
+									"        \"hasWhatsapp\": false\r",
+									"    })\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get second user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Exactly one user is returned\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.users).to.be.lengthOf(1);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"User 1 info is correct\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.users[0]).to.include({\r",
+									"        \"id\": 2,\r",
+									"        \"firstName\": \"Jane\",\r",
+									"        \"lastName\": \"Doe\",\r",
+									"        \"phoneNumber\": \"00201162856789\",\r",
+									"        \"hasWhatsapp\": true\r",
+									"    })\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/2",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete user (not exists)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Error message is correct\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.message).to.eql('You can only delete your own account');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"password\": \"123456789GOODpassword*\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/14",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"14"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete first user (by second)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Error message is correct\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.message).to.eql('You can only delete your own account');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"password\": \"123456789GOODpassword*\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login first user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"JWT is sent correctly\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.token).to.be.a('string');\r",
+									"    pm.collectionVariables.set('token', jsonData.token);\r",
+									"    var parsedToken = CryptoJS.enc.Base64.parse(jsonData.token.split('.')[1]);\r",
+									"    var decodedToken = CryptoJS.enc.Utf8.stringify(parsedToken);\r",
+									"    var jsonToken = JSON.parse(decodedToken);\r",
+									"    var claimedEmail = jsonToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'];\r",
+									"    var claimedRole = jsonToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];\r",
+									"    pm.expect(claimedEmail).to.eql('demo@example.com');\r",
+									"    pm.expect(claimedRole).to.eql('VerifiedUser');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"demo@example.com\",\r\n    \"password\": \"123456789GOODpassword*\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete first user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"User deleted successfully\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.message).to.eql('User deleted successfully');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"password\": \"123456789GOODpassword*\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get second user (by deleted user)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Error message is correct\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.message).to.eql('Your account might have been deleted');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/2",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login second user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"JWT is sent correctly\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.token).to.be.a('string');\r",
+									"    pm.collectionVariables.set('token', jsonData.token);\r",
+									"    var parsedToken = CryptoJS.enc.Base64.parse(jsonData.token.split('.')[1]);\r",
+									"    var decodedToken = CryptoJS.enc.Utf8.stringify(parsedToken);\r",
+									"    var jsonToken = JSON.parse(decodedToken);\r",
+									"    var claimedEmail = jsonToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'];\r",
+									"    var claimedRole = jsonToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];\r",
+									"    pm.expect(claimedEmail).to.eql('test@example.com');\r",
+									"    pm.expect(claimedRole).to.eql('VerifiedUser');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"test@example.com\",\r\n    \"password\": \"987654321SUPERpassword*\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get first user (not exists)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Error message is correct\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.message).to.eql('User not found');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "verificationCode",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

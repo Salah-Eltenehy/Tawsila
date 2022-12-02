@@ -1,5 +1,5 @@
 ﻿using Backend.Contexts;
-using Backend.Models;
+using Backend.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,7 +32,7 @@ namespace Backend.Repositories
 
         public async Task<Car> PutCar(int id, Car car)
         {
-            if (id != car.id)
+            if (id != car.Id)
             {
                 return car;
             }
@@ -75,7 +75,7 @@ namespace Backend.Repositories
 
         private bool CarExists(int id)
         {
-            return _context.Cars.Any(e => e.id == id);
+            return _context.Cars.Any(e => e.Id == id);
         }
 
 
