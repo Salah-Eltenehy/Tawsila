@@ -1,6 +1,5 @@
-﻿using Backend.Models;
+﻿using Backend.Models.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
 
 namespace Backend.Contexts;
 
@@ -9,23 +8,21 @@ public class TawsilaContext : DbContext
     public TawsilaContext(DbContextOptions<TawsilaContext> options) : base(options)
     {
     }
-
-    // Review this 
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // On Delete should be modified 
         modelBuilder.Entity<Review>()
-            .HasOne(p => p.reviewee)
-            .WithMany(p => p.reviews)
-            .HasForeignKey(p => p.revieweeId)
+            .HasOne(p => p.Reviewee)
+            .WithMany(p => p.Reviews)
+            .HasForeignKey(p => p.RevieweeId)
             .OnDelete(DeleteBehavior.NoAction);
 
         modelBuilder.Entity<Review>()
-            .HasOne(p => p.reviewer)
+            .HasOne(p => p.Reviewer)
             .WithMany()
-            .HasForeignKey(p => p.reviewerId)
+            .HasForeignKey(p => p.ReviewerId)
             .OnDelete(DeleteBehavior.NoAction);
-            
     }
 
     public DbSet<Car> Cars { get; set; } = null!;

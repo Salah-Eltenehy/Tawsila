@@ -7,11 +7,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Backend.Contexts;
 using Backend.Models;
+using Backend.Models.Entities;
 using Backend.Repositories;
 
 namespace Backend.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class CarsController : ControllerBase
     {
@@ -45,7 +46,7 @@ namespace Backend.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCar(int id, Car car)
         {
-            if (id != car.id)
+            if (id != car.Id)
             {
                 return BadRequest();
             }
@@ -59,7 +60,7 @@ namespace Backend.Controllers
         public async Task<ActionResult<Car>> PostCar(Car car)
         {
             await _carRepo.PostCar(car);
-            return CreatedAtAction("GetCar", new { id = car.id }, car);
+            return CreatedAtAction("GetCar", new { id = car.Id }, car);
         }
 
 

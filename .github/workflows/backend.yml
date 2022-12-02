@@ -1,0 +1,152 @@
+name: Test, build and deploy backend
+
+on: push
+
+jobs:
+  test:
+    name: Test Backend
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: ./Backend
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'yarn'
+          cache-dependency-path: ${{ github.workspace }}/Backend/tests/yarn.lock
+
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '6.0.x'
+      
+      - name: Install newman for API testing
+        working-directory: ./Backend/tests
+        run: yarn install --immutable --immutable-cache --check-cache
+
+      - name: Make Directory for downloaded executables
+        run: mkdir -p ${{ github.workspace }}/.workflow-data/bin
+
+      - name: Download MailHog
+        run: Invoke-WebRequest -Uri https://github.com/mailhog/MailHog/releases/download/v1.0.1/MailHog_windows_amd64.exe -OutFile ${{ github.workspace }}/.workflow-data/bin/MailHog.exe
+
+      - name: Make Directory for API test results
+        run: mkdir -p ${{ github.workspace }}/.workflow-data/results/api
+
+      - name: Build with dotnet
+        run: dotnet build --configuration Debug
+
+      - name: Run MailHog
+        run: |
+          cmd /c "START /b ${{ github.workspace }}/.workflow-data/bin/MailHog.exe"
+          sleep 5
+
+      - name: Run .NET Core
+        run: |
+          cmd /c "START /b dotnet run --project ./Backend --no-build"
+          sleep 15
+
+      - name: Test API
+        working-directory: ./Backend/tests
+        run: yarn newman run Tests.postman_collection.json -e tawsilaDevelopment.postman_environment.json --insecure -r "cli,htmlextra" --reporter-htmlextra-export ${{ github.workspace }}/.workflow-data/results/api/htmlreport.html --reporter-htmlextra-darkTheme
+
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: API Test Results
+          path: ${{ github.workspace }}/.workflow-data/results/api
+        
+  build:
+    if: github.ref == 'refs/heads/main'
+    name: Build Backend
+    runs-on: windows-latest
+    needs: test
+    defaults:
+      run:
+        working-directory: ./Backend
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Build with dotnet
+        run: dotnet build --configuration Release
+
+      - name: Install EF Tool
+        run: |
+          dotnet new tool-manifest
+          dotnet tool install dotnet-ef
+
+      - name: Make directory for built files
+        run: mkdir -p ${{ github.workspace }}/.workflow-data/build
+
+      - name: dotnet publish
+        run: dotnet publish -c Release -o ${{ github.workspace }}/.workflow-data/build/api-app
+
+      - name: Generate scripts
+        run: dotnet ef migrations script --output ${{ github.workspace }}/.workflow-data/build/sql/sql-script.sql --idempotent --context TawsilaContext --project ./Backend --configuration Release
+
+      - name: Cache built API application for application deployment job
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/.workflow-data/build/api-app
+          key: ${{ runner.os }}-built-api-app-${{ github.sha }}
+
+      - name: Cache SQL migration files for database deployment job
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/.workflow-data/build/sql
+          key: ${{ runner.os }}-built-sql-${{ github.sha }}
+
+  deploy-database:
+    if: github.ref == 'refs/heads/main'
+    name: Deploy Database
+    runs-on: windows-latest
+    needs: build
+
+    steps:
+      - name: Restore cached artifact from build job
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/.workflow-data/build/sql
+          key: ${{ runner.os }}-built-sql-${{ github.sha }}
+
+      - name: Azure SQL Deploy
+        uses: Azure/sql-action@v2
+        with:
+          connection-string: ${{ secrets.CONNECTION_STRING }}
+          path: ${{ github.workspace }}/.workflow-data/build/sql/sql-script.sql
+
+  deploy-api-application:
+    if: github.ref == 'refs/heads/main'
+    name: Deploy API Application
+    runs-on: windows-latest
+    needs: build
+    environment:
+      name: 'Production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+
+    steps:
+      - name: Restore cached artifact from build job
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/.workflow-data/build/api-app
+          key: ${{ runner.os }}-built-api-app-${{ github.sha }}
+
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'app-tawsila-api-prod-eastus-001'
+          slot-name: 'Production'
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: ${{ github.workspace }}/.workflow-data/build/api-app

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Backend.AuthModels.Users;
+namespace Backend.Models.API.User;
 
 /// <summary>Data required to log a user in.</summary>
 /// <param name = "Email">Email of the user to be logged in.</param>

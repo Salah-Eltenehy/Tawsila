@@ -1,86 +1,115 @@
-﻿using Backend.AuthModels.Users;
-using Backend.Models;
+﻿using Backend.Models.API.User;
+using Backend.Models.Entities;
+using Backend.Models.Exceptions;
 using Backend.Repositories;
-using Microsoft.AspNetCore.Mvc;
 
 public interface IUserService
 {
-    public Task<IEnumerable<User>> GetUsers();
-    public Task<User> GetUser(int id);  
-    public Task<IEnumerable<Review>> GetUserReviews(int id);
-    public Task<ActionResult<User>> LoginUser(LoginRequest log);
-    public Task<User> RegisterUser(RegisterRequest user);
-
-    public Task<IActionResult> VerifyUser(int id, User user);
-    public Task<User> UpdateUser(int id, UpdateRequest user);
-    public Task<User> DeleteUser(int id);
+    public Task<User[]> GetUsers(int[] ids);
+    public Task<string> LoginUser(LoginRequest req);
+    public Task<string> RegisterUser(RegisterRequest req);
+    public Task<string> VerifyUser(int id, string code, DateTime time);
+    public Task<string> UpdateUser(int id, UpdateRequest req);
+    public Task DeleteUser(int id, DeleteUserRequest req);
+    public Task<IEnumerable<Review>> GetUserReviews(int id, int offset, int pageSize);
 }
 
 namespace Backend.Services
 {
     public class UserService : IUserService
     {
-        private readonly UserRepo _userRepo;  
+        private readonly UserRepo _userRepo;
+        private readonly IJwtService _jwtService;
 
-        public UserService(UserRepo userRepo)
+        public UserService(UserRepo userRepo, IJwtService jwtService)
         {
-            _userRepo = userRepo;   
+            _userRepo = userRepo;
+            _jwtService = jwtService;
         }
 
-        public async Task<User> DeleteUser(int id)
+        public async Task<User[]> GetUsers(int[] ids)
         {
-           return await _userRepo.DeleteUser(id);
+            if (ids.Length > 1)
+            {
+                return await _userRepo.GetUsers(ids);
+            }
+
+            return new[] { await _userRepo.GetUser(ids[0]) };
         }
 
-        public async Task<IEnumerable<Review>> GetUserReviews(int id)
+        public async Task<string> LoginUser(LoginRequest req)
         {
-            return await _userRepo.GetReviews(id);
-        }
-
-        public async Task<IEnumerable<User>> GetUsers()
-        {
-            return await _userRepo.GetAll();
-        }
-
-        public async Task<User> GetUser(int id)
-        {
-            return await _userRepo.GetUser(id);
-        }
-
-        public async Task<ActionResult<User>> LoginUser(LoginRequest log)
-        {
-           return await _userRepo.Login(log);
-        }
-
-        public async Task<User> RegisterUser(RegisterRequest register)
-        {
-            User user = new User();
-            user.email = register.email;
-            user.firstName = register.FirstName;
-            user.phoneNumber = register.phone;
-            user.hasWhatsapp = register.hasWhatsapp;
-            user.lastName = register.LastName;
-            user.password = register.password;
             try
             {
-                await _userRepo.RegisterUser(user);
+                var user = await _userRepo.GetUser(req.Email);
+                if (!BCrypt.Net.BCrypt.Verify(req.Password, user.Password))
+                {
+                    throw new UnauthorizedException("Invalid email or password");
+                }
+
+                if (!user.IsEmailVerified)
+                {
+                    return await _jwtService.SendVerificationCode(user);
+                }
+
+                return _jwtService.IssueToken(user, DateTime.UtcNow);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                Console.WriteLine(e.Message);
-                return null;
+                throw new UnauthorizedException("Invalid email or password");
             }
-            return user;
         }
 
-        public async Task<User> UpdateUser(int id, UpdateRequest user)
+        public async Task<string> RegisterUser(RegisterRequest req)
         {
-            return await _userRepo.UpdateUser(id, user);
+            if (_userRepo.IsUserExists(req.Email))
+            {
+                throw new ConflictException("Email already registered");
+            }
+
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(req.Password);
+            var user = new User
+            {
+                Email = req.Email,
+                Password = hashedPassword,
+                FirstName = req.FirstName,
+                LastName = req.LastName,
+                PhoneNumber = req.PhoneNumber,
+                HasWhatsapp = req.HasWhatsapp
+            };
+            await _userRepo.RegisterUser(user);
+            return await _jwtService.SendVerificationCode(user);
         }
 
-        public Task<IActionResult> VerifyUser(int id, User user)
+        public async Task<string> UpdateUser(int id, UpdateRequest req)
         {
-            throw new NotImplementedException();
+            var user = await _userRepo.UpdateUser(id, req);
+            return _jwtService.IssueToken(user, DateTime.UtcNow);
+        }
+
+        public async Task<string> VerifyUser(int id, string code, DateTime time)
+        {
+            var user = await _userRepo.GetUser(id);
+            var correctCode = _jwtService.GetVerificationCode(user.Email, time);
+            if (code != correctCode) throw new UnauthorizedException("Invalid or expired verification code");
+            var verifiedUser = await _userRepo.VerifyUser(id);
+            return _jwtService.IssueToken(verifiedUser, DateTime.UtcNow);
+        }
+
+        public async Task DeleteUser(int id, DeleteUserRequest req)
+        {
+            var user = await _userRepo.GetUser(id);
+            if (!BCrypt.Net.BCrypt.Verify(req.Password, user.Password))
+            {
+                throw new UnauthorizedException("Invalid password");
+            }
+
+            await _userRepo.DeleteUser(id);
+        }
+
+        public async Task<IEnumerable<Review>> GetUserReviews(int id, int offset, int pageSize)
+        {
+            return await _userRepo.GetReviews(id, offset, pageSize);
         }
     }
 }

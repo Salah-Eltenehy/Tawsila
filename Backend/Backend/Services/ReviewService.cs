@@ -1,4 +1,4 @@
-﻿using Backend.Models;
+﻿using Backend.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 public interface IReviewService
