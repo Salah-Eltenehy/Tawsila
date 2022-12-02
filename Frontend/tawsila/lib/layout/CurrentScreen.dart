@@ -37,7 +37,50 @@ class CurrentScreen extends StatelessWidget {
                     }),
               ],
             ),
-            body: Container(
+            body: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(30),
+                  child: Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.blue,
+                    ),
+                    child: Center(
+                    child: TextButton(
+                      child: Text(
+                        "SignUp",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold
+                        ),
+              
+                        ),
+                      onPressed: () {
+                        navigateTo(
+                        context: context, 
+                        screen: HomePageScreen(language: currentCubit.dropDownValue));
+                      }),
+              ),
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+              ]
+            ),
+          );
+        },
+        ),
+      );
+  }
+
+}
+/*
+ Container(
               width: 200,
               height: 200,
               child: GoogleMap(
@@ -47,14 +90,8 @@ class CurrentScreen extends StatelessWidget {
                   _controller.complete(controller);
                 },
               )
-            ),
-          );
-        },
-        ),
-      );
-  }
-
-}
+            )
+*/
 /*
 Column(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -89,8 +126,6 @@ Column(
                 SizedBox(
                   height: 10,
                 ),
-                
-
               ]
             )
 */

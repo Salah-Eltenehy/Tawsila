@@ -2,9 +2,12 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:open_street_map_search_and_pick/open_street_map_search_and_pick.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tawsila/modules/home-page/Cubit/Cubit.dart';
 import 'package:tawsila/modules/home-page/Cubit/CubitStates.dart';
+import 'package:tawsila/modules/home-page/Map.dart';
+import 'package:tawsila/shared/components/Components.dart';
 
 class HomePageScreen extends StatelessWidget {
   final language;
@@ -16,10 +19,12 @@ class HomePageScreen extends StatelessWidget {
   var rentCarPeriodController = TextEditingController();
 
   var addressOfPicupController = TextEditingController();
-  
 
   @override
   Widget build(BuildContext context) {
+    double imageSize = (MediaQuery.of(context).size.width * 100.0) / 500.0;
+    double fontSize = (MediaQuery.of(context).size.width * 20.0) / 500.0;
+
     // TODO: implement build
     return BlocProvider(
       create: (BuildContext context) => HomePageCubit()..setLanguage(l: language)..readJson('HomePage'),
@@ -49,7 +54,8 @@ class HomePageScreen extends StatelessWidget {
                 ),
               ]
           ),
-          body: Padding(
+          body: SingleChildScrollView(
+            child: Padding(
             padding: const EdgeInsets.all(18),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,7 +68,10 @@ class HomePageScreen extends StatelessWidget {
                       image: AssetImage('assets/images/car.png'),
                       onTapFunc: () {
                         print("Offer Car page");
-                      }
+                        print("Width = ${imageSize}");
+                      },
+                      imageSize: imageSize,
+                      fontSize: fontSize,
                       ),
                     
                     SizedBox(
@@ -74,7 +83,10 @@ class HomePageScreen extends StatelessWidget {
                       image: AssetImage('assets/images/label.png'),
                       onTapFunc: () {
                         print("Manage Your offer page");
-                      }
+                        print("Width = ${imageSize}");
+                      },
+                      imageSize: imageSize,
+                      fontSize: fontSize,
                       )
                   ],
                 ),
@@ -103,35 +115,26 @@ class HomePageScreen extends StatelessWidget {
                 SizedBox(
                   height: 30,
                 ),
+                SizedBox(
+                  height: 30,
+                ),
                 InkWell(
                   onTap: () {
-                    homePageCubit.getLocation().then(
-                      (value) {
-                        homePageCubit.setLocation(value);
-                      }
-                      );
+                    navigateTo(context: context, screen: MapScreen());
+                    //print('returned location: lat: ${homePageCubit.userLocationLatidue} long: ${homePageCubit.userLocationLongitude}');
                   },
-                  child: Container(
-                    width: double.infinity,
-                    color: Colors.blue,
-                    child: Text(
-                      'Location',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20
-                      ),
+                  child: Center(
+                    child: Container(
+                      // width: double.infinity,
+                      child: Image(
+                        image: NetworkImage('https://th.bing.com/th/id/OIP.3g6HqqAnz-PK2SmNWsUfbwHaHa?w=178&h=180&c=7&r=0&o=5&pid=1.7')
+                        ),
                     ),
                   ),
                 ),
-                Text(
-                  "${homePageCubit.locationTTTT!=''? homePageCubit.locationTTTT: 'error'}"
-                  ,style: TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold
-                  ),
-                  ),
               ],
             ),
+          )
           ),
         );}
       ),
@@ -165,6 +168,8 @@ class HomePageScreen extends StatelessWidget {
     required String title2,
     required  image,
     required Function onTapFunc,
+    required double imageSize,
+    required double fontSize,
   }) => Expanded(
                       child: InkWell(
                         onTap: () {
@@ -197,7 +202,7 @@ class HomePageScreen extends StatelessWidget {
                                         "${title2}",
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
-                                          fontSize: 20,
+                                          fontSize: fontSize,
                                           color: Colors.white,
                                         ),
                                       ),
@@ -210,8 +215,8 @@ class HomePageScreen extends StatelessWidget {
                                   Text(''),
                                   Spacer(),
                                   Image( 
-                                    width: 140,
-                                    height: 140,
+                                    width: imageSize,
+                                    height: imageSize,
                                     alignment: Alignment.bottomRight,
                                     image: image
                                  ),

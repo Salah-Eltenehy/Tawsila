@@ -3,6 +3,8 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tawsila/shared/network/local/Cachhelper.dart';
 
 import '../../../shared/network/remote/DioHelper.dart';
 import '../../../shared/constants.dart';
@@ -59,7 +61,7 @@ class HomePageCubit extends Cubit<HomePageStates> {
   late PermissionStatus permissionGranted;
   late LocationData locationData;
 
-  Future<dynamic> getLocation() async {
+  void getLocation() async {
     serviceEnabled = await location.serviceEnabled();
     if (!serviceEnabled) {
       serviceEnabled = await location.requestService();
@@ -69,6 +71,9 @@ class HomePageCubit extends Cubit<HomePageStates> {
       permissionGranted = await location.requestPermission();
     }
     locationData = await location.getLocation();
+    CachHelper.saveData(key: 'latitude', value: locationData.latitude);
+    CachHelper.saveData(key: 'longitude', value: locationData.longitude);
+    print("DONNNNNNNNNNNNNNNNNNNNNNNNNE");
     emit(GetLocationState());
   }
   var locationTTTT = "";
@@ -76,4 +81,17 @@ class HomePageCubit extends Cubit<HomePageStates> {
     locationTTTT = value + "";
     emit(SetLocationState());
   }
+  double userLocationLatidue = 0.0;
+  double userLocationLongitude = 0.0;
+  void setMapLocation(
+    {
+      required double latitude,
+      required double longitude
+   }
+  ) {
+    userLocationLatidue = latitude;
+    userLocationLongitude = longitude;
+    emit(SetLocationState());
+  }
+  
 }
