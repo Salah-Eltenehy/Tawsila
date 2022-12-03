@@ -93,5 +93,17 @@ class HomePageCubit extends Cubit<HomePageStates> {
     userLocationLongitude = longitude;
     emit(SetLocationState());
   }
+  double? userCurrentLatitude = 30.0444;
+  double? userCurrentLongtidue = 31.2357;
+  void getPrevLocation () {
+    CachHelper.getData(key: 'latitude').
+    then((Value) {userCurrentLatitude = Value;
+    print(userCurrentLatitude);
+    print("######################################################################################################");} );
+    CachHelper.getData(key: 'longitude').then((Value) {userCurrentLongtidue = Value;
+    print(userCurrentLongtidue);
+    print("######################################################################################################");} );
+    emit(GetLocationState());
+  }
   
 }
