@@ -1,6 +1,31 @@
 
-import 'package:flutter/material.dart';
 
+import 'package:flutter/material.dart';
+import 'package:location/location.dart';
+
+import '../network/local/Cachhelper.dart';
+
+class UserLocation {
+  Location location = new Location();
+  late bool serviceEnabled;
+  late PermissionStatus permissionGranted;
+  late LocationData locationData;
+
+  void getLocation() async {
+    serviceEnabled = await location.serviceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await location.requestService();
+    }
+    permissionGranted = await location.hasPermission();
+    if (permissionGranted == PermissionStatus.denied) {
+      permissionGranted = await location.requestPermission();
+    }
+    await location.getLocation().then((value) => locationData = value);
+    CachHelper.saveData(key: 'latitude', value: locationData.latitude);
+    CachHelper.saveData(key: 'longitude', value: locationData.longitude);
+    print("DONNNNNNNNNNNNNNNNNNNNNNNNNE");
+  }
+}
 Widget defaultTextFormFieldRow({
           required TextEditingController controller,
           required String labelText ,
