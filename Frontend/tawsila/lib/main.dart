@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tawsila/layout/cubit/AppProvider.dart';
 import 'package:tawsila/layout/cubit/AppStates.dart';
 import 'package:tawsila/shared/bloc_observer.dart';
+import 'package:tawsila/shared/components/Components.dart';
 import 'package:tawsila/shared/network/local/Cachhelper.dart';
 import 'package:tawsila/shared/network/remote/DioHelper.dart';
 
@@ -15,7 +16,8 @@ void main() async {
   
   WidgetsFlutterBinding.ensureInitialized();
   
-  
+  //UserLocation()..getLocation();
+
   Bloc.observer = MyBlocObserver();
   DioHelper.init();
   await CachHelper.init();
