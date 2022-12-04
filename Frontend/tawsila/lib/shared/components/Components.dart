@@ -1,6 +1,39 @@
 
-import 'package:flutter/material.dart';
 
+import 'package:flutter/material.dart';
+import 'package:location/location.dart';
+
+import '../network/local/Cachhelper.dart';
+
+class UserLocation {
+  Location location = new Location();
+  late bool serviceEnabled;
+  late PermissionStatus permissionGranted;
+  late LocationData locationData;
+
+  void getLocation() async {
+    serviceEnabled = await location.serviceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await location.requestService();
+    }
+    permissionGranted = await location.hasPermission();
+    if (permissionGranted == PermissionStatus.denied) {
+      permissionGranted = await location.requestPermission();
+    }
+    locationData = await location.getLocation();
+    print("LOCATION");
+    print("LATITUDE: ${locationData.latitude}");
+    print("LONGTIUDE: ${locationData.longitude}");
+    // await location.getLocation().then((value) => locationData = value);
+    CachHelper.saveData(key: 'latitude', value: locationData.latitude);
+    CachHelper.saveData(key: 'longitude', value: locationData.longitude);
+    double d1 = await CachHelper.getData(key: "latitude") as double;
+    double d2 = await CachHelper.getData(key: "longitude") as double;
+    print("LATITUDE: ${d1}");
+    print("LONGTIUDE: ${d2}");
+    print("DONNNNNNNNNNNNNNNNNNNNNNNNNE");
+  }
+}
 Widget defaultTextFormFieldRow({
           required TextEditingController controller,
           required String labelText ,
@@ -21,7 +54,9 @@ Widget defaultTextFormFieldRow({
                   obscureText: isSecure,
                   controller: controller,
                   keyboardType: textInputType,
+                  
                   decoration: InputDecoration(
+                      
                     labelText: labelText,
                     border: OutlineInputBorder(),
                     prefix: Padding(

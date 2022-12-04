@@ -39,9 +39,9 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
         title2: "Cars",
         title3: "From",
         title4: "Their",
-        title5: "Owners1",
+        title5: "Owners",
         title6: "Directly",
-        image: "assets/images/onboarding1."
+        image: "assets/images/1.png"
         // image: "https://media.istockphoto.com/id/1150425295/photo/3d-illustration-of-generic-hatchback-car-perspective-view.jpg?s=612x612&w=0&k=20&c=vws8oDFjcfGpqNAybWPxsA9XROdcBh2MXW2PGEDgk-8="
     ),
     BoardingModel(
@@ -51,26 +51,10 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
         title4: "Your",
         title5: "Spare",
         title6: "Cars",
-        image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS6saz6OGyTvH5ZhHHYdi--qphBUDgqND-pGvjTxv84fA&s"
+        image: "assets/images/2.png"
+        // image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS6saz6OGyTvH5ZhHHYdi--qphBUDgqND-pGvjTxv84fA&s"
     ),
   ];
-
-  bool isLast = false;
-
-  // void submit() {
-  //   CacheHelper.saveData(
-  //     key: 'onBoarding',
-  //     value: true,
-  //   ).then((value)
-  //   {
-  //     if (value) {
-  //       navigateAndFinish(
-  //         context,
-  //         ShopLoginScreen(),
-  //       );
-  //     }
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -89,17 +73,6 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
         child: PageView.builder(
           physics: BouncingScrollPhysics(),
           controller: boardController,
-          onPageChanged: (int index) {
-            if (index == boarding.length - 1) {
-              setState(() {
-                isLast = true;
-              });
-            } else {
-              setState(() {
-                isLast = false;
-              });
-            }
-          },
           itemBuilder: (context, index) =>
               buildBoardingItem(boarding[index]),
           itemCount: boarding.length,
@@ -107,80 +80,17 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
       ),
     );
   }
-/*
-Column(
-          children: [
-            Expanded(
-              child: PageView.builder(
-                physics: BouncingScrollPhysics(),
-                controller: boardController,
-                onPageChanged: (int index) {
-                  if (index == boarding.length - 1) {
-                    setState(() {
-                      isLast = true;
-                    });
-                  } else {
-                    setState(() {
-                      isLast = false;
-                    });
-                  }
-                },
-                itemBuilder: (context, index) =>
-                    buildBoardingItem(boarding[index]),
-                itemCount: boarding.length,
-              ),
-            ),
-            SizedBox(
-              height: 40.0,
-            ),
-            Row(
-              children: [
-                SmoothPageIndicator(
-                  controller: boardController,
-                  effect: ExpandingDotsEffect(
-                    dotColor: Colors.grey,
-                    activeDotColor: Colors.blue,
-                    dotHeight: 10,
-                    expansionFactor: 4,
-                    dotWidth: 10,
-                    spacing: 5.0,
-                  ),
-                  count: boarding.length,
-                ),
-                Spacer(),
-                FloatingActionButton(
-                  onPressed: () {
-                    if (isLast)
-                    {
-                      print("HHHHHHHHHHHHHHHHHH");
-                    } else {
-                      boardController.nextPage(
-                        duration: Duration(
-                          milliseconds: 750,
-                        ),
-                        curve: Curves.fastLinearToSlowEaseIn,
-                      );
-                    }
-                  },
-                  child: Icon(
-                    Icons.arrow_forward_ios,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        )
- */
   Widget buildBoardingItem(BoardingModel model) => Stack(
-    // fit: StackFit.expand,
     children:
        [
          Image(
-           image: NetworkImage("${model.image}"),
+           width: double.infinity,
+           height: double.infinity,
+           image: AssetImage("${model.image}"),
            fit: BoxFit.cover,
          ),
          Container(
-           alignment: Alignment.topLeft,
+           // alignment: Alignment.topLeft,
            child: Padding(
              padding: const EdgeInsets.all(10.0),
              child: Column(
@@ -189,7 +99,7 @@ Column(
                  Text(
                    '${model.title1}',
                    style: TextStyle(
-                       fontSize: 24.0,
+                       fontSize: 35,
                        fontWeight: FontWeight.bold,
                        color: Colors.white
                    ),
@@ -197,7 +107,7 @@ Column(
                  Text(
                    '${model.title2}',
                    style: TextStyle(
-                       fontSize: 24.0,
+                       fontSize: 35.0,
                        fontWeight: FontWeight.bold,
                        color: Colors.white
                    ),
@@ -205,7 +115,7 @@ Column(
                  Text(
                    '${model.title3}',
                    style: TextStyle(
-                       fontSize: 24.0,
+                       fontSize: 35.0,
                        fontWeight: FontWeight.bold,
                        color: Colors.white
                    ),
@@ -213,7 +123,7 @@ Column(
                  Text(
                    '${model.title4}',
                    style: TextStyle(
-                       fontSize: 24.0,
+                       fontSize: 35.0,
                        fontWeight: FontWeight.bold,
                        color: Colors.white
                    ),
@@ -221,7 +131,7 @@ Column(
                  Text(
                    '${model.title5}',
                    style: TextStyle(
-                       fontSize: 24.0,
+                       fontSize: 35.0,
                        fontWeight: FontWeight.bold,
                        color: Colors.white
                    ),
@@ -229,7 +139,7 @@ Column(
                  Text(
                    '${model.title6}',
                    style: TextStyle(
-                       fontSize: 24.0,
+                       fontSize: 35.0,
                        fontWeight: FontWeight.bold,
                        color: Colors.white
                    ),
@@ -241,6 +151,7 @@ Column(
          Padding(
            padding: const EdgeInsets.all(10),
            child: Container(
+             padding: const EdgeInsets.only(bottom: 16),
              alignment: Alignment.bottomCenter,
              child: Column(
                children: [
@@ -311,105 +222,3 @@ Column(
     );
   }
 }
-
-// class OnBoardingScreen extends StatelessWidget {
-//   // const OnBoardingScreen({Key? key}) : super(key: key);
-
-//   var boardController = PageController();
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         actions: [
-//           TextButton(
-//               onPressed: () {
-//
-//               },
-//               child: Text("Skip")
-//           ),
-//         ],
-//       ),
-//       body: Expanded(
-//         child: PageView.builder(
-//             physics: BouncingScrollPhysics(),
-//             controller: boardController,
-//             itemBuilder: (context, index) => buildBoardingItem(items[index]),
-//           itemCount: items.length,
-//         ),
-//       ),
-//     );
-//   }
-//   Widget buildBoardingItem(BoardingModel model) {
-//     return Column(
-//       children: [
-//         Container(
-//           alignment: Alignment.topLeft,
-//           child: Text(
-//             "${model.title1}",
-//             style: TextStyle(
-//               fontSize: 20,
-//               color: Colors.white,
-//               fontWeight: FontWeight.bold
-//             ),
-//           ),
-//         ),
-//         // Container(
-//         //   alignment: Alignment.topLeft,
-//         //   child: Text(
-//         //     "${model.title2}",
-//         //     style: TextStyle(
-//         //         fontSize: 20,
-//         //         color: Colors.white,
-//         //         fontWeight: FontWeight.bold
-//         //     ),
-//         //   ),
-//         // ),
-//         // Container(
-//         //   alignment: Alignment.topLeft,
-//         //   child: Text(
-//         //     "${model.title3}",
-//         //     style: TextStyle(
-//         //         fontSize: 20,
-//         //         color: Colors.white,
-//         //         fontWeight: FontWeight.bold
-//         //     ),
-//         //   ),
-//         // ),
-//         // Container(
-//         //   alignment: Alignment.topLeft,
-//         //   child: Text(
-//         //     "${model.title4}",
-//         //     style: TextStyle(
-//         //         fontSize: 20,
-//         //         color: Colors.white,
-//         //         fontWeight: FontWeight.bold
-//         //     ),
-//         //   ),
-//         // ),
-//         // Container(
-//         //   alignment: Alignment.topLeft,
-//         //   child: Text(
-//         //     "${model.title5}",
-//         //     style: TextStyle(
-//         //         fontSize: 20,
-//         //         color: Colors.white,
-//         //         fontWeight: FontWeight.bold
-//         //     ),
-//         //   ),
-//         // ),
-//         // Container(
-//         //   alignment: Alignment.topLeft,
-//         //   child: Text(
-//         //     "${model.title6}",
-//         //     style: TextStyle(
-//         //         fontSize: 20,
-//         //         color: Colors.white,
-//         //         fontWeight: FontWeight.bold
-//         //     ),
-//         //   ),
-//         // ),
-//         // Image(image: NetworkImage("${model.image}"), fit: BoxFit.cover,)
-//       ],
-//     );
-//   }
-// }
