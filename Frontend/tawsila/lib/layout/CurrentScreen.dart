@@ -4,7 +4,6 @@ import 'package:tawsila/layout/cubit/AppStates.dart';
 import 'package:tawsila/modules/on-boarding/OnBoardingScreen.dart';
 import 'package:tawsila/modules/signup/SignUpScreen.dart';
 
-import '../modules/Test.dart';
 import '../shared/components/Components.dart';
 import 'cubit/AppProvider.dart';
 
