@@ -148,44 +148,49 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
              ),
            ),
          ),
-         Padding(
-           padding: const EdgeInsets.all(10),
-           child: Container(
-             padding: const EdgeInsets.only(bottom: 16),
-             alignment: Alignment.bottomCenter,
-             child: Column(
-               children: [
-                 SmoothPageIndicator(
-                   controller: boardController,
-                   effect: ExpandingDotsEffect(
-                     dotColor: Colors.grey,
-                     activeDotColor: Colors.blue,
-                     dotHeight: 10,
-                     expansionFactor: 4,
-                     dotWidth: 10,
-                     spacing: 5.0,
-                   ),
-                   count: boarding.length,
+         Column(
+           children: [
+             Expanded(child: Text("")),
+             Padding(
+               padding: const EdgeInsets.all(10),
+               child: Container(
+                 padding: const EdgeInsets.only(bottom: 16),
+                 alignment: Alignment.bottomCenter,
+                 child: Column(
+                   children: [
+                     SmoothPageIndicator(
+                       controller: boardController,
+                       effect: ExpandingDotsEffect(
+                         dotColor: Colors.grey,
+                         activeDotColor: Colors.blue,
+                         dotHeight: 10,
+                         expansionFactor: 4,
+                         dotWidth: 10,
+                         spacing: 5.0,
+                       ),
+                       count: boarding.length,
+                     ),
+                     SizedBox(height: 5,),
+                     buildButton(
+                         color: Colors.white,
+                         title: "Create free accout",
+                         titleColor: Colors.black,
+                         function: () {
+                           navigateTo(context: context, screen: SignUpScreen(language: "English"));
+                         }),
+                     SizedBox(height: 5,),
+                     buildButton(
+                         color: Colors.blue,
+                         title: "Login",
+                         titleColor: Colors.white,
+                         function: () {
+                           print("HERE");
+                         })
+                   ],
                  ),
-                 SizedBox(height: 5,),
-                 buildButton(
-                     color: Colors.white,
-                     title: "Create free accout",
-                     titleColor: Colors.black,
-                     function: () {
-                       navigateTo(context: context, screen: SignUpScreen(language: "English"));
-                     }),
-                 SizedBox(height: 5,),
-                 buildButton(
-                     color: Colors.blue,
-                     title: "Login",
-                     titleColor: Colors.white,
-                     function: () {
-                       print("HERE");
-                     })
-               ],
+               ),
              ),
-           ),
+           ],
          ),
       ],
 
