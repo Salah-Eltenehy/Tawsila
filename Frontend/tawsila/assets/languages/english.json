@@ -19,6 +19,26 @@
             "termsAndConditions": "I agree to Tawsila ",
             "termsAndConditionsPage": "Terms and Conditions",
             "signUp": "Create Account"
-        }
+        },
+    "HomePage": 
+        {
+            "title":"Home",
+            "offerCar1":"Offer Your",
+            "offerCar2":"Vehicle",
+            "offers1": "Manage",
+            "offers2": "Offers",
+            "RentCar":"Rent Car",
+            "RentalPeriod":"Rental Period",
+            "RentalPeriodHint":"Rental Period Hint",
+            "AddressOfPickup":"Address Of Pickup",
+            "AddressOfPickupHint":"Address Of Pickup Hint"
+        },
+    "verify": 
+    {
+          "verify" : "verify",
+          "info"   : "enter verification code",
+          "resend" : "resend",
+          "enter"  : "enter"
+    }
     
 }

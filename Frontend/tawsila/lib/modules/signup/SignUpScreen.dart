@@ -20,7 +20,7 @@ class SignUpScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     
     return BlocProvider(
-      create: (context) => SignUpCubit()..setLanguage(l: language)..readJson(),
+      create: (context) => SignUpCubit()..setLanguage(l: language)..readJson('SignUp'),
       child: BlocConsumer<SignUpCubit, SignUpStates>(
         listener: (context, state) {},
         builder: (context, state) {
