@@ -39,7 +39,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
         title2: "Cars",
         title3: "From",
         title4: "Their",
-        title5: "Owners",
+        title5: "Owners1",
         title6: "Directly",
         image: "assets/images/onboarding1."
         // image: "https://media.istockphoto.com/id/1150425295/photo/3d-illustration-of-generic-hatchback-car-perspective-view.jpg?s=612x612&w=0&k=20&c=vws8oDFjcfGpqNAybWPxsA9XROdcBh2MXW2PGEDgk-8="
