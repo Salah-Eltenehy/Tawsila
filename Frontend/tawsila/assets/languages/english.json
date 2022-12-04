@@ -21,8 +21,10 @@
     "signUp": "Create Account",
 
     "hey" : "Hey",
-    "hey2" : "login to your existing account",
-    "signIn" : "Sign In"
+    "welcome2" : "login to your existing account",
+    "signIn" : "Sign In",
+    "doNotHaveAnAccount" : "Do not have an account?",
+    "registerNow" : "Register now"
   }
 
 }
