@@ -1,30 +1,38 @@
 {
-  "SignUp":
-  {
-    "title1":"Hello",
-    "title2":"Create Your Free Account",
-    "Fname": "First Name",
-    "Lname": "Last Name",
-    "email": "Email Address",
-    "password": "Password",
-    "confirmPassword":"Confirm Password",
-    "city": "City of Residence",
-    "phone": "Phone Number",
-    "nameError": "Name is too short",
-    "emailError": "Invalid Email",
-    "confirmPasswordError": "Passwords are not identical",
-    "cityError": "Enter your city",
-    "phoneError": "Phone is invalid",
-    "whatsappCheckBox": "My phone number is associated with an active Whatsapp account.",
-    "termsAndConditions": "I agree to Tawsila ",
-    "termsAndConditionsPage": "Terms and Conditions",
-    "signUp": "Create Account",
-
-    "hey" : "Hey",
-    "welcome2" : "login to your existing account",
-    "signIn" : "Sign In",
-    "doNotHaveAnAccount" : "Do not have an account?",
-    "registerNow" : "Register now"
-  }
-
+    "SignUp": 
+        {
+            "title1":"Hello",
+            "title2":"Create Your Free Account",
+            "Fname": "First Name",
+            "Lname": "Last Name",
+            "email": "Email Address",
+            "password": "Password",
+            "confirmPassword":"Confirm Password",
+            "city": "City of Residence",
+            "phone": "Phone Number",
+            "nameError": "Name is too short",
+            "emailError": "Invalid Email",
+            "confirmPasswordError": "Passwords are not identical",
+            "cityError": "Enter your city",
+            "phoneError": "Phone is invalid",
+            "whatsappCheckBox": "My phone number is associated with an active Whatsapp account.",
+            "termsAndConditions": "I agree to Tawsila ",
+            "termsAndConditionsPage": "Terms and Conditions",
+            "signUp": "Create Account"
+        },
+    "HomePage": 
+        {
+            "title":"Home",
+            "offerCar1":"Offer Your",
+            "offerCar2":"Vehicle",
+            "offers1": "Manage",
+            "offers2": "Offers",
+            "RentCar":"Rent Car",
+            "RentalPeriod":"Rental Period",
+            "RentalPeriodHint":"Rent peroid in days",
+            "AddressOfPickup":"Address Of Pickup",
+            "AddressOfPickupHint":"Leave blank of current location",
+            "searchResults": "Search Results"
+        }
+    
 }
