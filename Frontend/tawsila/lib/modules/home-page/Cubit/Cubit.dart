@@ -95,14 +95,12 @@ class HomePageCubit extends Cubit<HomePageStates> {
   }
   double? userCurrentLatitude = 30.0444;
   double? userCurrentLongtidue = 31.2357;
-  void getPrevLocation () {
-    CachHelper.getData(key: 'latitude').
-    then((Value) {userCurrentLatitude = Value;
-    print(userCurrentLatitude);
-    print("######################################################################################################");} );
-    CachHelper.getData(key: 'longitude').then((Value) {userCurrentLongtidue = Value;
+  void getPrevLocation () async {
+    userCurrentLatitude = await CachHelper.getData(key: "latitude") as double;
+    userCurrentLongtidue = await CachHelper.getData(key: "longitude") as double;
+    print("TEST");
     print(userCurrentLongtidue);
-    print("######################################################################################################");} );
+    print(userCurrentLatitude);
     emit(GetLocationState());
   }
   

@@ -7,42 +7,44 @@ import 'package:open_street_map_search_and_pick/open_street_map_search_and_pick.
 import 'package:tawsila/modules/home-page/Cubit/Cubit.dart';
 import 'package:tawsila/modules/home-page/Cubit/CubitStates.dart';
 import 'package:tawsila/shared/network/local/Cachhelper.dart';
+/*
 
+ */
 import '../../shared/components/Components.dart';
 
 class MapScreen extends StatelessWidget {
 
+  double userCurrentLatitude = 10;
+
+  double userCurrentLongtidue = 20;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (BuildContext context) => HomePageCubit()..setLanguage(l: "")..getPrevLocation(),
-      child: BlocConsumer<HomePageCubit, HomePageStates>( 
-        listener: ((context, state) {}),
-        builder:(context, state) {
-          // HomePageCubit.get(context).getLocation();
-          var mapCubit = HomePageCubit.get(context);
+      create: (BuildContext context) => HomePageCubit()..getPrevLocation(),
+      child: BlocConsumer<HomePageCubit, HomePageStates>(
+        listener: (context, state) {},
+        builder: (context, state) {
+          var homePageCubit = HomePageCubit.get(context);
           return Scaffold(
             body: Container(
-                  width: double.infinity,
-                  height: double.infinity,
-                  child: OpenStreetMapSearchAndPick(
-                    center: LatLong(mapCubit.userCurrentLatitude!,mapCubit.userCurrentLongtidue!),
-                    buttonColor: Colors.blue,
-                    buttonText: 'Set Location',
-                    onPicked: (pickedData) {
-                      mapCubit.getPrevLocation();
-                      CachHelper.saveData(key: 'latitude' , value: pickedData.latLong.latitude);
-                      CachHelper.saveData(key: 'longitude' , value: pickedData.latLong.longitude);
-                      HomePageCubit.get(context).setMapLocation(latitude: pickedData.latLong.latitude, longitude: pickedData.latLong.longitude);
-                      print('returned location: lat: ${ HomePageCubit.get(context).userLocationLatidue} long: ${ HomePageCubit.get(context).userLocationLongitude}');
-                      Navigator.pop(context);
-                    }
-                  ),
-                ),
+              width: double.infinity,
+              height: double.infinity,
+              child: OpenStreetMapSearchAndPick(
+                  center: LatLong(homePageCubit.userCurrentLatitude??20,homePageCubit.userCurrentLongtidue??20),
+                  buttonColor: Colors.blue,
+                  buttonText: 'Set Location',
+                  onPicked: (pickedData) {
+                    CachHelper.saveData(key: 'latitude' , value: pickedData.latLong.latitude);
+                    CachHelper.saveData(key: 'longitude' , value: pickedData.latLong.longitude);
+                    Navigator.pop(context);
+                  }
+              ),
+            ),
           );
-        } ),
+        },
+      ),
     );
-  }
 
+  }
 }

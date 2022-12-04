@@ -16,7 +16,7 @@ void main() async {
   
   WidgetsFlutterBinding.ensureInitialized();
   
-  //UserLocation()..getLocation();
+  UserLocation()..getLocation();
 
   Bloc.observer = MyBlocObserver();
   DioHelper.init();

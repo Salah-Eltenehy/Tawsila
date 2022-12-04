@@ -22,7 +22,7 @@ class HomePageScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double imageSize = (MediaQuery.of(context).size.width * 100.0) / 500.0;
+    double imageSize = (MediaQuery.of(context).size.width * 120.0) / 500.0;
     double fontSize = (MediaQuery.of(context).size.width * 20.0) / 500.0;
 
     // TODO: implement build
@@ -31,7 +31,8 @@ class HomePageScreen extends StatelessWidget {
       child: BlocConsumer<HomePageCubit , HomePageStates>(
         listener: (BuildContext context, state) {},
         builder: (BuildContext context, state)
-        { var homePageCubit = HomePageCubit.get(context);
+        {
+          var homePageCubit = HomePageCubit.get(context);
           return Scaffold(
           appBar: AppBar(
               title: Text(
@@ -54,87 +55,124 @@ class HomePageScreen extends StatelessWidget {
                 ),
               ]
           ),
-          body: SingleChildScrollView(
-            child: Padding(
-            padding: const EdgeInsets.all(18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    buildPageItem(
-                      title1: homePageCubit.items['offerCar1']??'', 
-                      title2: homePageCubit.items['offerCar2']??'', 
-                      image: AssetImage('assets/images/car.png'),
-                      onTapFunc: () {
-                        print("Offer Car page");
-                        print("Width = ${imageSize}");
-                      },
-                      imageSize: imageSize,
-                      fontSize: fontSize,
-                      ),
-                    
-                    SizedBox(
-                      width: 10,
-                    ),//NetworkImage('https://th.bing.com/th/id/R.280fb39f068a60a24a394031803a8e57?rik=dN2s3DxSChBFvw&pid=ImgRaw&r=0')
-                    buildPageItem(
-                      title1: homePageCubit.items['offers1']??'', 
-                      title2: homePageCubit.items['offers2']??'', 
-                      image: AssetImage('assets/images/label.png'),
-                      onTapFunc: () {
-                        print("Manage Your offer page");
-                        print("Width = ${imageSize}");
-                      },
-                      imageSize: imageSize,
-                      fontSize: fontSize,
-                      )
-                  ],
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  '${homePageCubit.items['RentCar']??''}',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20
-                  ),
-                ),
-                SizedBox(
-                  height: 8,
-                ),
-                Text(
-                    '${homePageCubit.items['RentalPeriod']??''}'
-                ),
-                buildTextField(controller: rentCarPeriodController, placeHolder: homePageCubit.items['RentalPeriodHint']?? ''),
-                SizedBox(
-                  height: 8,
-                ),
-                Text('${homePageCubit.items['AddressOfPickup'] ?? ''}'),
-                buildTextField(controller: addressOfPicupController, placeHolder: homePageCubit.items['AddressOfPickupHint']?? ''),
-                SizedBox(
-                  height: 30,
-                ),
-                SizedBox(
-                  height: 30,
-                ),
-                InkWell(
-                  onTap: () {
-                    navigateTo(context: context, screen: MapScreen());
-                    //print('returned location: lat: ${homePageCubit.userLocationLatidue} long: ${homePageCubit.userLocationLongitude}');
-                  },
-                  child: Center(
-                    child: Container(
-                      // width: double.infinity,
-                      child: Image(
-                        image: NetworkImage('https://th.bing.com/th/id/OIP.3g6HqqAnz-PK2SmNWsUfbwHaHa?w=178&h=180&c=7&r=0&o=5&pid=1.7')
+          body: Directionality(
+            textDirection: homePageCubit.language == "English"? TextDirection.ltr: TextDirection.rtl,
+            child: SingleChildScrollView(
+              child: Padding(
+              padding: const EdgeInsets.all(18),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      buildPageItem(
+                        title1: homePageCubit.items['offerCar1']??'',
+                        title2: homePageCubit.items['offerCar2']??'',
+                        image: AssetImage('assets/images/car.png'),
+                        onTapFunc: () {
+                          print("Offer Car page");
+                          print("Width = ${imageSize}");
+                        },
+                        imageSize: imageSize,
+                        fontSize: fontSize,
                         ),
+
+                      SizedBox(
+                        width: 10,
+                      ),//NetworkImage('https://th.bing.com/th/id/R.280fb39f068a60a24a394031803a8e57?rik=dN2s3DxSChBFvw&pid=ImgRaw&r=0')
+                      buildPageItem(
+                        title1: homePageCubit.items['offers1']??'',
+                        title2: homePageCubit.items['offers2']??'',
+                        image: AssetImage('assets/images/label.png'),
+                        onTapFunc: () {
+                          print("Manage Your offer page");
+                          print("Width = ${imageSize}");
+                        },
+                        imageSize: imageSize,
+                        fontSize: fontSize,
+                        )
+                    ],
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    '${homePageCubit.items['RentCar']??''}',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20
                     ),
                   ),
-                ),
-              ],
+                  SizedBox(
+                    height: 8,
+                  ),
+                  Text(
+                      '${homePageCubit.items['RentalPeriod']??''}'
+                  ),
+                  buildTextField(controller: rentCarPeriodController, placeHolder: homePageCubit.items['RentalPeriodHint']?? ''),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  Text('${homePageCubit.items['AddressOfPickup'] ?? ''}'),
+                  buildTextField(controller: addressOfPicupController, placeHolder: homePageCubit.items['AddressOfPickupHint']?? ''),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Center(
+                    child: Container(
+                      // width: double.infinity,
+                      child: InkWell(
+                        onTap: () {
+                          navigateTo(context: context, screen: MapScreen());
+                        },
+                        child: Image(
+                          // image: NetworkImage('https://th.bing.com/th/id/OIP.3g6HqqAnz-PK2SmNWsUfbwHaHa?w=178&h=180&c=7&r=0&o=5&pid=1.7')
+                              image: AssetImage('assets/images/map.png'),
+                          ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  InkWell(
+                    onTap: () {
+                      print("GET SEARCH RESULTS");
+                    },
+                    child: Container(
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        borderRadius: BorderRadius.circular(10)
+                      ),
+                      child: Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+
+                          children: [
+                            Icon(
+                                Icons.search,
+                                color: Colors.white,
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Text(
+                              "${homePageCubit.items['searchResults'??'']}",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )
             ),
-          )
           ),
         );}
       ),

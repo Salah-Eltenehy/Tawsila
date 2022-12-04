@@ -31,7 +31,8 @@
             "RentalPeriod":"Rental Period",
             "RentalPeriodHint":"Rent peroid in days",
             "AddressOfPickup":"Address Of Pickup",
-            "AddressOfPickupHint":"Leave blank of current location"
+            "AddressOfPickupHint":"Leave blank of current location",
+            "searchResults": "Search Results"
         }
     
 }
