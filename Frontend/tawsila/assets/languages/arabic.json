@@ -1,42 +1,30 @@
 {
-    "SignUp":{
-        "title1":"أهلا",
-        "title2":"أنشي حساب مجاني",
-        "Fname": "الإسم الأول",
-        "Lname": "إسم العائلة",
-        "email": "البريد الإلكتروني",
-        "password": "الرقم السري",
-        "confirmPassword":"تأكيد الرقم السري",
-        "city": "محل الميلاد",
-        "phone": "رقم الهاتف",
-        "nameError": "الاسم صغير جدا",
-        "emailError": "حساب خاطئ",
-        "confirmPasswordError": "الرقم السري غير متطابق",
-        "cityError": "محل الاقامه",
-        "phoneError": "رقم العاتف غير صحيح",
-        "whatsappCheckBox": "هاتفي متصل بتطبيق الواتس اب",
-        "termsAndConditions": "اوافق علي الانضمام",
-        "termsAndConditionsPage": "الشروط والاحكام",
-        "signUp": "انشاء حساب جديد"
-    },
-    "HomePage": 
-        {
-            "title":"الرئيسيه",
-            "offerCar1":"ضع اعلانك"
-            "offerCar2":"مركبات",
-            "offers1": "اعداد",
-            "offers2": "اعلانات",
-            "RentCar":"استأجر",
-            "RentalPeriod":"مده الايجار",
-            "RentalPeriodHint":"مده الايجار (مساعده)",
-            "AddressOfPickup":"محل الاستلام",
-            "AddressOfPickupHint":"محل الاستلام (مساعده)"
-        },
-    "verify": {
-        "verify" : "تأكيد",
-        "info"   : "أدخل رقم التأكيد",
-        "resend" : "اعاده ارسال",
-        "enter"  : "أدخل"
-    }
-    
+  "SignUp":
+  {
+    "title1":"أهلا",
+    "title2":"أنشي حساب مجاني",
+    "Fname": "الإسم الأول",
+    "Lname": "إسم العائلة",
+    "email": "البريد الإلكتروني",
+    "password": "الرقم السري",
+    "confirmPassword":"تأكيد كلمة السر",
+    "city": "المدينة الحالية",
+    "phone": "رقم الهانف",
+    "nameError": "الاسم قصير جدا",
+    "emailError": "هذا البريد الالكتروني غير صالح",
+    "confirmPasswordError": "كلمة السر غير متطابقة",
+    "cityError": "ادخل اسم المدينة",
+    "phoneError": "رقم الهاتف غير صالح",
+    "whatsappCheckBox": "امتلك حساب واتس اب باستخدام رقم هاتفي",
+    "termsAndConditions": "اوافق على برنامج توصيلة ",
+    "termsAndConditionsPage": "الشروط و البنود",
+    "signUp":"انشئ حساباً",
+
+    "hey" : "أهلا",
+    "welcome2" : "سجل الدخول لحسابك",
+    "signIn" : "تسجيل الدخول",
+    "doNotHaveAnAccount": "لا يوجد لديك حساب؟",
+    "registerNow": "سجل الان"
+  }
+
 }
