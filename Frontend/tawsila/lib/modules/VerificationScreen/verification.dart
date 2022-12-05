@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../signup/cubit/SignUpProvider.dart';
+import '../signup/cubit/SignUpCubit.dart';
 import '../signup/cubit/SignUpStates.dart';
 
 
@@ -13,25 +13,25 @@ class Verification extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-        create: (context) => SignUpProvider()..setLanguage(l: language)..readJson('verify'),
-        child: BlocConsumer<SignUpProvider, SignUpStates>(
+        create: (context) => SignUpCubit()..setLanguage(l: language)..readJson('verify'),
+        child: BlocConsumer<SignUpCubit, SignUpStates>(
         listener: (context, state) {},
         builder: (context, state) {
-          var signUpCubit = SignUpProvider.get(context);
+          var signUpCubit = SignUpCubit.get(context);
           return Scaffold(
             body: Column(
             children: [
               const Image( height: 200,width: 300,
                 image: AssetImage('assets/images/verify.png')),
               Text(
-                "${signUpCubit.items['verify']??'error'}",
+                "${signUpCubit.items['verify']??''}",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 60,
                   color: Colors.black
                 ),),
               Text(
-              "${signUpCubit.items['info']??'error'}",
+              "${signUpCubit.items['info']??''}",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 30,

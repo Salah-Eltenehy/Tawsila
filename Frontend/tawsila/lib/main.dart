@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -5,16 +6,22 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tawsila/layout/cubit/AppProvider.dart';
 import 'package:tawsila/layout/cubit/AppStates.dart';
+import 'package:tawsila/modules/home-page/HomePage.dart';
+import 'package:tawsila/modules/on-boarding/OnBoardingScreen.dart';
 import 'package:tawsila/shared/bloc_observer.dart';
+import 'package:tawsila/shared/components/Components.dart';
+import 'package:tawsila/shared/network/local/Cachhelper.dart';
 import 'package:tawsila/shared/network/remote/DioHelper.dart';
 
 import 'layout/CurrentScreen.dart';
 
-void main() {
+void main() async {
   
   WidgetsFlutterBinding.ensureInitialized();
   
-  
+  UserLocation()..getLocation();
+  await CachHelper.init();
+
   Bloc.observer = MyBlocObserver();
   DioHelper.init();
   runApp(MyApp());
@@ -68,7 +75,7 @@ class SecondScreen extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: CurrentScreen(),
+      home: OnBoardingScreen(),
       debugShowCheckedModeBanner: false,
     );
   }

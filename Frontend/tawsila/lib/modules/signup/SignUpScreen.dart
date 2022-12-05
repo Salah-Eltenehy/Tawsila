@@ -1,8 +1,12 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tawsila/modules/signup/cubit/SignUpCubit.dart';
 import 'package:tawsila/modules/signup/cubit/SignUpStates.dart';
 import 'package:tawsila/shared/components/Components.dart';
+
+import '../VerificationScreen/verification.dart';
+import '../log-in/SignInScreen.dart';
 
 class SignUpScreen extends StatelessWidget {
   String language;
@@ -27,6 +31,7 @@ class SignUpScreen extends StatelessWidget {
           var signUpCubit = SignUpCubit.get(context);
           phoneController.text = "+2";
           return Scaffold(
+            backgroundColor: Colors.grey[300],
             body: Directionality(
               textDirection: signUpCubit.language == "English" ? TextDirection.ltr: TextDirection.rtl,
               child: Form(
@@ -41,14 +46,22 @@ class SignUpScreen extends StatelessWidget {
                         const SizedBox(
                           height: 50,
                         ),
-                        Text(
-                          "${signUpCubit.items['title1']??''}",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 40,
-                            color: Colors.black
-                          ),
-                          ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "${signUpCubit.items['title1']??''}",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 40,
+                                color: Colors.black
+                              ),
+                              ),
+                            SizedBox(width: 10,),
+                            Image(image: AssetImage('assets/images/hand.png'), width: 50, height: 50,)
+                          ],
+                        ),
                         Text(
                           "${signUpCubit.items['title2']??''}",
                           style: TextStyle(
@@ -93,9 +106,11 @@ class SignUpScreen extends StatelessWidget {
                           prefixIcon: Icon(Icons.email),
                             controller: emailController, 
                             labelText: signUpCubit.items['email']??"", 
-                            validatorFunction: (value) {
-                              if(value.length == 0) {
-                                return signUpCubit.items['emailError']??"";
+                            validatorFunction: (String? value) {
+                              if(value!.isEmpty)
+                                return "${signUpCubit.items['emailErrorEmpty']??''}";
+                              else if(!EmailValidator.validate(value, true)) {
+                                return "${signUpCubit.items['emailError']??''}";
                               }
                             }, 
                             textInputType: TextInputType.emailAddress
@@ -250,13 +265,7 @@ class SignUpScreen extends StatelessWidget {
                             }
 
                             if(formKey.currentState!.validate()) {
-                              print("ALL RIGHT");
-                              // signUpCubit.userSignUp(
-                              //     name: "${fNameController.text} ${lNameController.text}",
-                              //     email: emailController.text,
-                              //     password: passwordController.text,
-                              //     phone: phoneController.text
-                              // );
+                              navigateAndFinish(context: context, screen: Verification(language: language,));
                             }
                           },
                           child: Container(
