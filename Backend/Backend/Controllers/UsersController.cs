@@ -43,6 +43,7 @@ public class UsersController : ControllerBase
         return Ok(res);
     }
 
+    [AllowAnonymous]
     [HttpPost("login")]
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -53,6 +54,7 @@ public class UsersController : ControllerBase
         return Ok(new TokenResponse(token));
     }
 
+    [AllowAnonymous]
     [HttpPost("register")]
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]

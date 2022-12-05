@@ -1,3 +1,4 @@
+using System.Net;
 using System.Reflection;
 using System.Security.Claims;
 using System.Text;
@@ -13,6 +14,8 @@ using System.Text.Json.Serialization;
 using Backend.Models.API;
 using Backend.Models.Settings;
 using Backend.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Features;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -50,53 +53,6 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = configuration["JwtSettings:Audience"],
         ValidIssuer = configuration["JwtSettings:Issuer"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:Secret"]))
-    };
-    options.Events = new JwtBearerEvents
-    {
-        OnChallenge = context =>
-        {
-            context.Response.OnStarting(async () =>
-            {
-                context.Response.ContentType = "application/json";
-                var res = new ErrorResponse(context.AuthenticateFailure?.Message ?? "Login to access this resource");
-                await context.Response.WriteAsync(JsonSerializer.Serialize(res));
-            });
-
-            return Task.CompletedTask;
-        },
-        OnForbidden = context =>
-        {
-            context.Response.OnStarting(async () =>
-            {
-                var claims = context.HttpContext.User.Claims;
-                var role = claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
-                context.Response.ContentType = "application/json";
-                var res = new GenericResponse(
-                    role switch
-                    {
-                        "UnverifiedUser" => "Please verify your email to access this resource",
-                        "VerifiedUser" => "Your email is already verified",
-                        _ => "You are not authorized to access this resource"
-                    }
-                );
-                await context.Response.WriteAsync(JsonSerializer.Serialize(res));
-            });
-
-            return Task.CompletedTask;
-        },
-        OnTokenValidated = context =>
-        {
-            var claims = context.Principal!.Claims;
-            var userId = int.Parse(claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)!.Value);
-            var dbContext = context.HttpContext.RequestServices.GetRequiredService<TawsilaContext>();
-            var user = dbContext.Users.Find(userId);
-            if (user == null)
-            {
-                context.Fail("Your account might have been deleted");
-            }
-
-            return Task.CompletedTask;
-        }
     };
 });
 
@@ -169,9 +125,79 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.Use(async (context, next) =>
+{
+    await next();
+    if (!context.Response.HasStarted)
+    {
+        context.Response.ContentType = "application/json";
+        switch (context.Response.StatusCode)
+        {
+            case (int)HttpStatusCode.Unauthorized:
+            {
+                var res = new ErrorResponse("Login to access this resource");
+                await context.Response.WriteAsync(JsonSerializer.Serialize(res));
+                break;
+            }
+            case (int)HttpStatusCode.Forbidden:
+            {
+                var claims = context.User.Claims;
+                var role = claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+                context.Response.ContentType = "application/json";
+                var res = new GenericResponse(
+                    role switch
+                    {
+                        "UnverifiedUser" => "Please verify your email to access this resource",
+                        "VerifiedUser" => "Your email is already verified",
+                        _ => "You are not authorized to access this resource"
+                    }
+                );
+                await context.Response.WriteAsync(JsonSerializer.Serialize(res));
+                break;
+            }
+        }
+    }
+});
+
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.Use(async (context, next) =>
+{
+    var claims = context.User.Claims;
+    var endpointFeatures = context.Features.Get<IEndpointFeature>()?.Endpoint?.Metadata;
+    if (endpointFeatures != null && context.Request.Path != "/error")
+    {
+        var authorize = endpointFeatures.GetMetadata<AuthorizeAttribute>();
+        if (authorize != null)
+        {
+            var userId = int.Parse(claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)!.Value);
+            var dbContext = context.RequestServices.GetRequiredService<TawsilaContext>();
+            var user = dbContext.Users.Find(userId);
+            if (user == null)
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                context.Response.ContentType = "application/json";
+                var res = new ErrorResponse("Your account might have been deleted");
+                await context.Response.WriteAsync(JsonSerializer.Serialize(res));
+                await context.Response.CompleteAsync();
+            }
+            else
+            {
+                await next();
+            }
+        }
+        else
+        {
+            await next();
+        }
+    }
+    else
+    {
+        await next();
+    }
+});
 
 app.MapControllers();
 

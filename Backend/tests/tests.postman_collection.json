@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "301c4ae3-cac7-470c-9cfa-c70cf0c13b01",
+		"_postman_id": "efddc852-0bfa-444e-9b18-60fad6d652e1",
 		"name": "Tests",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "18969165"
@@ -125,6 +125,7 @@
 									"});\r",
 									"\r",
 									"pm.test('Verfication code is sent', function() {\r",
+									"    var interval = setInterval(() => {}, Number.MAX_SAFE_INTEGER);\r",
 									"    new Promise((resolve, reject) => {\r",
 									"        pm.sendRequest('http://localhost:8025/api/v2/messages?limit=1', (error, response) => {\r",
 									"            if (error) {\r",
@@ -137,7 +138,7 @@
 									"                resolve();\r",
 									"            }\r",
 									"        });\r",
-									"    }).then(() => {});\r",
+									"    }).then(() => clearInterval(interval));\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -757,6 +758,7 @@
 									"});\r",
 									"\r",
 									"pm.test('Verfication code is sent', function() {\r",
+									"    var interval = setInterval(() => {}, Number.MAX_SAFE_INTEGER);\r",
 									"    new Promise((resolve, reject) => {\r",
 									"        pm.sendRequest('http://localhost:8025/api/v2/messages?limit=1', (error, response) => {\r",
 									"            if (error) {\r",
@@ -769,7 +771,7 @@
 									"                resolve();\r",
 									"            }\r",
 									"        });\r",
-									"    }).then(() => {});\r",
+									"    }).then(() => clearInterval(interval));\r",
 									"});"
 								],
 								"type": "text/javascript"
