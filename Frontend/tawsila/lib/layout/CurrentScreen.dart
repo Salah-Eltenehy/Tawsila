@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tawsila/layout/cubit/AppStates.dart';
+import 'package:tawsila/modules/on-boarding/OnBoardingScreen.dart';
 import 'package:tawsila/modules/signup/SignUpScreen.dart';
 
 import '../shared/components/Components.dart';
@@ -57,7 +58,7 @@ class CurrentScreen extends StatelessWidget {
                       onPressed: () {
                         navigateTo(
                         context: context, 
-                        screen: SignUpScreen(language: currentCubit.dropDownValue));
+                        screen: OnBoardingScreen());
                       }),
               ),
                   ),
