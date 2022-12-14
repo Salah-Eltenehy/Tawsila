@@ -48,5 +48,6 @@ public class Car
     [Required] public DateTime UpdatedAt { get; set; }
 
     [Required] public int OwnerId { get; set; }
+
     public User Owner { get; set; } = null!;
 }

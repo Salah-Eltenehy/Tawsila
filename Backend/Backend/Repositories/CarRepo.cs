@@ -19,9 +19,10 @@ namespace Backend.Repositories
             return await _context.Cars.ToListAsync();
         }
 
-        public async Task<ActionResult<Car>> GetCar(int id)
+        public async Task<Car> GetCar(int id)
         {
-            return await _context.Cars.FindAsync(id);
+            var car =  await _context.Cars.FindAsync(id);
+            return car;
         }
 
         public async Task PostCar(Car car)
@@ -32,10 +33,6 @@ namespace Backend.Repositories
 
         public async Task<Car> PutCar(int id, Car car)
         {
-            if (id != car.Id)
-            {
-                return car;
-            }
 
             _context.Entry(car).State = EntityState.Modified;
 
@@ -59,29 +56,15 @@ namespace Backend.Repositories
         }
 
 
-        public async Task<Car> DeleteCar(int id)
+        public async Task DeleteCar(Car car)
         {
-            var car = await _context.Cars.FindAsync(id);
-            if (car == null)
-            {
-                return car;
-            }
-
             _context.Cars.Remove(car);
             await _context.SaveChangesAsync();
-
-            return car;
         }
 
-        private bool CarExists(int id)
+        public bool CarExists(int id)
         {
             return _context.Cars.Any(e => e.Id == id);
         }
-
-
-
-
-
-
     }
 }
