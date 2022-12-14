@@ -9,6 +9,10 @@ using Backend.Contexts;
 using Backend.Models;
 using Backend.Models.Entities;
 using Backend.Repositories;
+using Backend.Models.API.Car;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using Backend.Models.API;
 
 namespace Backend.Controllers
 {
@@ -17,23 +21,28 @@ namespace Backend.Controllers
     public class CarsController : ControllerBase
     {
 
-        private readonly CarRepo _carRepo;
-        public CarsController(CarRepo carRepo)
+        private readonly ICarService _carService;
+
+        public CarsController(ICarService carService)
         {
-            _carRepo = carRepo;
+            _carService = carService;
 
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Car>>> GetCars()
         {
-            return await _carRepo.GetCars();
+            return await _carService.GetCars();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Car>> GetCar(int id)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<Car>> GetCar([FromRoute] int id)
         {
-            var car = await _carRepo.GetCar(id);
+            var car = await _carService.GetCar(id);
 
             if (car == null)
             {
@@ -43,33 +52,52 @@ namespace Backend.Controllers
             return car;
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutCar(int id, Car car)
+        [HttpPost]
+        [Authorize(Policy = "VerifiedUser")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> CreateNewCar([FromBody] CarRequest carReq)
         {
-            if (id != car.Id)
-            {
-                return BadRequest();
-            }
-
-            await _carRepo.PutCar(id, car);
-
-            return NoContent();
+            var claims = HttpContext.User.Claims;
+            var UserId = int.Parse(claims.First(c => c.Type == ClaimTypes.Name).Value);
+            await _carService.CreateCar(UserId, carReq);
+            return Ok("Car Created Successfully");
         }
 
-        [HttpPost]
-        public async Task<ActionResult<Car>> PostCar(Car car)
+
+        [HttpPut("{id}")]
+        [Authorize(Policy = "VerifiedUser")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> UpdateCar([FromRoute] int carId, [FromBody] CarRequest carReq)
         {
-            await _carRepo.PostCar(car);
-            return CreatedAtAction("GetCar", new { id = car.Id }, car);
+            var claims = HttpContext.User.Claims.ToArray();
+            var claimedId = int.Parse(claims.First(c => c.Type == ClaimTypes.Name).Value);
+            var car = await _carService.UpdateCar(claimedId, carId ,carReq);
+            if(car == null)
+            {
+                return Unauthorized("You can only update your cars");
+            }
+            return Ok("User Updated Successfully");
         }
 
 
         [HttpDelete("{id}")]
-        public async Task<Car> DeleteCar(int id)
+        [Authorize(Policy = "VerifiedUser")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> DeleteCar([FromRoute] int id)
         {
-            return await _carRepo.DeleteCar(id);
+            var claims = HttpContext.User.Claims.ToArray();
+            var claimedId = int.Parse(claims.First(c => c.Type == ClaimTypes.Name).Value);
+            await _carService.DeleteCar(claimedId, id);
+            return Ok("Car Deleted Successfully");
         }
-
-        
     }
 }

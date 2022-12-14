@@ -71,6 +71,7 @@ builder.Services.AddScoped<UserRepo>();
 builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddScoped<CarsController>();
+builder.Services.AddScoped<ICarService, CarService>();
 builder.Services.AddScoped<CarRepo>();
 
 builder.Services.AddScoped<ReviewsController>();
