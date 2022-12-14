@@ -30,12 +30,17 @@ namespace Backend.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "VerifiedUser")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<IEnumerable<Car>>> GetCars()
         {
             return await _carService.GetCars();
         }
 
         [HttpGet("{id}")]
+        [Authorize(Policy = "VerifiedUser")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -54,7 +59,7 @@ namespace Backend.Controllers
 
         [HttpPost]
         [Authorize(Policy = "VerifiedUser")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -72,25 +77,26 @@ namespace Backend.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UpdateCar([FromRoute] int carId, [FromBody] CarRequest carReq)
+        public async Task<IActionResult> UpdateCar([FromRoute] int id, [FromBody] CarRequest carReq)
         {
             var claims = HttpContext.User.Claims.ToArray();
             var claimedId = int.Parse(claims.First(c => c.Type == ClaimTypes.Name).Value);
-            var car = await _carService.UpdateCar(claimedId, carId ,carReq);
+            var car = await _carService.UpdateCar(claimedId, id ,carReq);
             if(car == null)
             {
                 return Unauthorized("You can only update your cars");
             }
-            return Ok("User Updated Successfully");
+            return Ok("Car Updated Successfully");
         }
 
 
         [HttpDelete("{id}")]
         [Authorize(Policy = "VerifiedUser")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteCar([FromRoute] int id)
         {
