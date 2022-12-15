@@ -19,6 +19,9 @@
     "termsAndConditions": "اوافق على برنامج توصيلة ",
     "termsAndConditionsPage": "الشروط و البنود",
     "signUp":"انشئ حساباً",
+    "profile": "تعديل الملف الشخصي",
+    "cancel": "الغاء",
+    "save" : "حفظ",
 
     "emailErrorEmpty": "Email can't be empty",
     "passwordError": "Password is too short",
@@ -50,6 +53,14 @@
     "info"   : "أدخل رقم التأكيد",
     "resend" : "اعاده ارسال",
     "enter"  : "تأكيد"
+  },
+  "settings": {
+    "settings": "الاعدادت",
+    "password": "تغيير الرقم السري",
+    "language": "اللغة",
+    "account" : "الحساب",
+    "signout" : "تسجيل الخروج",
+    "close"   : "اغلق"
   }
 
 }
