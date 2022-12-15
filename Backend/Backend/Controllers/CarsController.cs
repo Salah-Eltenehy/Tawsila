@@ -9,7 +9,7 @@ using Backend.Contexts;
 using Backend.Models;
 using Backend.Models.Entities;
 using Backend.Repositories;
-using Backend.Models.API.Car;
+using Backend.Models.API.CarAPI;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Backend.Models.API;
@@ -26,7 +26,6 @@ namespace Backend.Controllers
         public CarsController(ICarService carService)
         {
             _carService = carService;
-
         }
 
         [HttpGet]
@@ -65,7 +64,8 @@ namespace Backend.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateNewCar([FromBody] CarRequest carReq)
         {
-            var claims = HttpContext.User.Claims;
+
+            var claims =  HttpContext.User.Claims;
             var UserId = int.Parse(claims.First(c => c.Type == ClaimTypes.Name).Value);
             await _carService.CreateCar(UserId, carReq);
             return Ok("Car Created Successfully");
