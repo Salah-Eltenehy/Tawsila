@@ -1,11 +1,22 @@
 ﻿using Backend.Contexts;
 using Backend.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Server.IIS.Core;
 using Microsoft.EntityFrameworkCore;
+
+public interface ICarRepo
+{
+    public   Task<ActionResult<IEnumerable<Car>>> GetCars();
+    public   Task<ActionResult<Car>> GetCar(int id);
+    public  Task<ActionResult> PostCar(Car car);
+    public Task<ActionResult> PutCar(int id, Car car);
+    public  Task<ActionResult> DeleteCar(Car car);
+}
+
 
 namespace Backend.Repositories
 {
-    public class CarRepo
+    public class CarRepo: ICarRepo
     {
         private readonly TawsilaContext _context;
 
@@ -19,19 +30,34 @@ namespace Backend.Repositories
             return await _context.Cars.ToListAsync();
         }
 
-        public async Task<Car> GetCar(int id)
+        public async Task<ActionResult<Car>> GetCar(int id)
         {
-            var car =  await _context.Cars.FindAsync(id);
-            return car;
+            try
+            {
+                var car = await _context.Cars.FindAsync(id);
+                return car;
+            }catch (Exception e)
+            {
+                return new StatusCodeResult(500);
+            }
         }
 
-        public async Task PostCar(Car car)
+        public async Task<ActionResult> PostCar(Car car)
         {
-            _context.Cars.Add(car);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Cars.Add(car);
+                await _context.SaveChangesAsync();
+               
+            }catch (Exception e)
+            {
+                return new StatusCodeResult(500);
+            }
+            return new StatusCodeResult(200);
+            
         }
 
-        public async Task<Car> PutCar(int id, Car car)
+        public async Task<ActionResult> PutCar(int id, Car car)
         {
 
             _context.Entry(car).State = EntityState.Modified;
@@ -44,22 +70,28 @@ namespace Backend.Repositories
             {
                 if (!CarExists(id))
                 {
-                    return car;
+                    return new StatusCodeResult(404);
                 }
                 else
                 {
                     throw;
                 }
             }
-
-            return car;
+            return new StatusCodeResult(200);
         }
 
 
-        public async Task DeleteCar(Car car)
+        public async Task<ActionResult> DeleteCar(Car car)
         {
-            _context.Cars.Remove(car);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Cars.Remove(car);
+                await _context.SaveChangesAsync();
+            }catch(Exception e)
+            {
+                return new StatusCodeResult(500);
+            }
+            return new StatusCodeResult(200);
         }
 
         public bool CarExists(int id)

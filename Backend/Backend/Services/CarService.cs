@@ -5,15 +5,16 @@ using Backend.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic.FileIO;
 using Org.BouncyCastle.Ocsp;
+using System.Reflection.Metadata.Ecma335;
 
 public interface ICarService
 {
 
     public Task<ActionResult<IEnumerable<Car>>> GetCars();
     public Task<ActionResult<Car>> GetCar(int id);
-    public Task CreateCar(int UserId, CarRequest car);
-    public Task<ActionResult<Car>> UpdateCar(int UserId, int carId, CarRequest car);
-    public Task DeleteCar(int UserId, int CarId);
+    public Task<ActionResult> CreateCar(int UserId, CarRequest car);
+    public Task<ActionResult> UpdateCar(int UserId, int carId, CarRequest car);
+    public Task<ActionResult> DeleteCar(int UserId, int CarId);
 
 }
 
@@ -21,9 +22,9 @@ namespace Backend.Services
 {
     public class CarService : ICarService
     {
-        public readonly CarRepo _carRepo;
+        public readonly ICarRepo _carRepo;
 
-        public CarService(CarRepo carRepo)
+        public CarService(ICarRepo carRepo)
         {
             _carRepo = carRepo;
         }
@@ -34,7 +35,7 @@ namespace Backend.Services
         }
 
 
-        public async Task CreateCar(int UserId, CarRequest carReq)
+        public async Task<ActionResult> CreateCar(int UserId, CarRequest carReq)
         {
             var car = new Car
             {
@@ -53,12 +54,14 @@ namespace Backend.Services
                 Period = carReq.period, 
                 Description = carReq.description,   
                 Longitude = carReq.longitude,   
-                Latitude = carReq.latitude, 
+                Latitude = carReq.latitude,
+                /*CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,*/
+                OwnerId = UserId
             };
-            car.CreatedAt = DateTime.UtcNow;
-            car.UpdatedAt = DateTime.UtcNow;
-            car.OwnerId = UserId;
-            await _carRepo.PostCar(car);
+            
+            var result = await _carRepo.PostCar(car);
+            return result;
         }
 
         public async Task<ActionResult<Car>> GetCar(int id)
@@ -66,13 +69,16 @@ namespace Backend.Services
             return await _carRepo.GetCar(id);
         }
 
-        public async Task<ActionResult<Car>> UpdateCar(int UserId, int carId, CarRequest carReq)
+        public async Task<ActionResult> UpdateCar(int UserId, int carId, CarRequest carReq)
         {
-            var car = await _carRepo.GetCar(carId);
-            if(car == null)
+            var action = await _carRepo.GetCar(carId);
+            if(action == null || action.Value == null)
             {
                 throw new NotFoundException("Car not found");
             }
+            var car = action.Value;
+            
+
             if(car.OwnerId != UserId)
             {
                 throw new UnauthorizedAccessException("You can only update your cars");
@@ -100,18 +106,19 @@ namespace Backend.Services
             return await _carRepo.PutCar(carId, car);
         }
 
-        public async Task DeleteCar(int UserId, int CarId)
+        public async Task<ActionResult> DeleteCar(int UserId, int CarId)
         {
-            var car = await _carRepo.GetCar(CarId);
-            if (car == null)
+            var action = await _carRepo.GetCar(CarId);
+            if (action == null || action.Value == null)
             {
                 throw new NotFoundException("Car not found");
             }
+            var car = action.Value;
             if (car.OwnerId != UserId)
             {
                 throw new UnauthorizedAccessException("You can only Delete your cars");
             }
-             await _carRepo.DeleteCar(car);
+            return await _carRepo.DeleteCar(car);
         }
     }
 }
