@@ -1,4 +1,4 @@
-﻿namespace Backend.Models.API.Car;
+﻿namespace Backend.Models.API.CarAPI;
 using System.ComponentModel.DataAnnotations;
 
 public record CarRequest
