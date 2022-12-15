@@ -14,6 +14,7 @@ import 'package:tawsila/shared/network/local/Cachhelper.dart';
 import 'package:tawsila/shared/network/remote/DioHelper.dart';
 
 import 'layout/CurrentScreen.dart';
+import 'modules/Language/ChooseLanguage.dart';
 
 void main() async {
   
@@ -60,10 +61,21 @@ class _MyHomePageState extends State<MyHomePage> {
   }
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.black,
-      child: Image( height: 90,width: 90,
-          image: AssetImage('assets/images/splash.png')),
+    return Center(
+      child: Container(
+        color: Colors.black,
+        child: const Center(
+          child: Text(
+            "TAWSILA",
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 50,
+              decoration: TextDecoration.none
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -75,7 +87,7 @@ class SecondScreen extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: OnBoardingScreen(),
+      home: ChooseLanguage(),
       debugShowCheckedModeBanner: false,
     );
   }
