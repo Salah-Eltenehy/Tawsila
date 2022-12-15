@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tawsila/shared/network/local/Cachhelper.dart';
 
 import '../../../shared/network/remote/DioHelper.dart';
-import '../../../shared/constants.dart';
+import '../../../shared/end-points.dart';
 
 
 import 'dart:convert';

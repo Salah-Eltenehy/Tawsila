@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../shared/network/remote/DioHelper.dart';
-import '../../../shared/constants.dart';
+import '../../../shared/end-points.dart';
 import 'SignUpStates.dart';
 
 
