@@ -1,5 +1,6 @@
 ﻿using Backend.Contexts;
 using Backend.Models.Entities;
+using Backend.Models.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Server.IIS.Core;
 using Microsoft.EntityFrameworkCore;
@@ -35,6 +36,10 @@ namespace Backend.Repositories
             try
             {
                 var car = await _context.Cars.FindAsync(id);
+                if(car == null)
+                {
+                    throw new NotFoundException("Car not found");
+                }
                 return car;
             }catch (Exception e)
             {
@@ -76,6 +81,9 @@ namespace Backend.Repositories
                 {
                     throw;
                 }
+            }catch(Exception e)
+            {
+                return new StatusCodeResult(500);
             }
             return new StatusCodeResult(200);
         }

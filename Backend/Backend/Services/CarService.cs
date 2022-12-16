@@ -22,11 +22,13 @@ namespace Backend.Services
 {
     public class CarService : ICarService
     {
-        public readonly ICarRepo _carRepo;
+        private readonly ICarRepo _carRepo;
+        private readonly IUserService _userService;
 
-        public CarService(ICarRepo carRepo)
+        public CarService(ICarRepo carRepo, IUserService userService)
         {
             _carRepo = carRepo;
+            _userService = userService;
         }
 
         public async Task<ActionResult<IEnumerable<Car>>> GetCars()
@@ -37,6 +39,11 @@ namespace Backend.Services
 
         public async Task<ActionResult> CreateCar(int UserId, CarRequest carReq)
         {
+            if (!UserExists(UserId))
+            {
+                throw new NotFoundException("User not found");
+            }
+
             var car = new Car
             {
                 Brand = carReq.brand,
@@ -119,6 +126,12 @@ namespace Backend.Services
                 throw new UnauthorizedAccessException("You can only Delete your cars");
             }
             return await _carRepo.DeleteCar(car);
+        }
+
+        private bool UserExists(int id)
+        {
+            var res =  _userService.GetUsers(new[] { id });
+            return res.Result.Length == 1;
         }
     }
 }

@@ -88,6 +88,20 @@ namespace xUnit_Tests.Car_Tests.Repo_Tests
             Assert.Equal(200, okResult.StatusCode);
         }
 
+        [Fact]
+        public void PutCarTest_Returns_404()
+        {
+            var car = GetTestCar(5);
+            using var context = new TawsilaContext(options);
+            CarRepo carRepo = new(context);
+            var res = carRepo.PutCar(car.Id, car).Result;
+            var okResult = res as StatusCodeResult;
+
+            // Assert
+            Assert.NotNull(okResult);
+            Assert.Equal(404, okResult.StatusCode);
+        }
+
         [Fact, Order(5)]
 
         public void DeleteCarTest_ReturnsSuccess()
