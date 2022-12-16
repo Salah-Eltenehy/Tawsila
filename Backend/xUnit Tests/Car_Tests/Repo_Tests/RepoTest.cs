@@ -4,7 +4,6 @@ using Backend.Models.API.CarAPI;
 using Microsoft.AspNetCore.Mvc;
 using Backend.Repositories;
 using Backend.Contexts;
-using Palmmedia.ReportGenerator.Core.Reporting.Builders.Rendering;
 using System.Collections.Generic;
 using DeepEqual.Syntax;
 using Xunit;
