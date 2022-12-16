@@ -84,7 +84,7 @@ namespace xUnit_Tests.car_tests.controller
             var mockService = new Mock<ICarService>();
             var carRequest = GetTestCarRequest();
             var updatedCar = GetTestCar();
-            mockService.Setup(x => x.UpdateCar(userId, carId, carRequest)).ReturnsAsync(new StatusCodeResult(200));
+            mockService.Setup(x => x.UpdateCar(userId, carId, It.IsAny<CarRequest>())).ReturnsAsync(new StatusCodeResult(200));
             var carController = new CarsController(mockService.Object)
             {
                 ControllerContext = controllerContext,
@@ -96,7 +96,7 @@ namespace xUnit_Tests.car_tests.controller
             var k = result as StatusCodeResult;
 
             // Assert
-            Assert.NotNull(result);
+            Assert.NotNull(k);
             Assert.Equal(200, k.StatusCode);
         }
 
