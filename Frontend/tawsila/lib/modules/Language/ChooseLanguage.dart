@@ -1,6 +1,8 @@
 
 import 'package:flutter/material.dart';
+import 'package:tawsila/modules/home-page/HomePage.dart';
 import 'package:tawsila/modules/on-boarding/OnBoardingScreen.dart';
+import 'package:tawsila/modules/search-result/SearchResultScreen.dart';
 import 'package:tawsila/shared/components/Components.dart';
 
 class ChooseLanguage extends StatefulWidget {
@@ -48,7 +50,7 @@ class _ChooseLanguageState extends State<ChooseLanguage> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      navigateAndFinish(context: context, screen: const OnBoardingScreen(language: "English"));
+                      navigateTo(context: context, screen: SearchResultScreen()); //const OnBoardingScreen(language: "English")
                     },
                     child:Container(
                       width: double.infinity,
@@ -65,8 +67,7 @@ class _ChooseLanguageState extends State<ChooseLanguage> {
                               ),
                             ),
                           ),
-                          Spacer(),
-                          Text(""),
+                          Expanded(child: Text("")),
                         ],
                       ),
                     ),
@@ -78,12 +79,11 @@ class _ChooseLanguageState extends State<ChooseLanguage> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      navigateAndFinish(context: context, screen: const OnBoardingScreen(language: "العربية"));
+                      navigateTo(context: context, screen: SearchResultScreen()); //OnBoardingScreen(language: "العربية")
                     },
                     child: Row(
                       children: const [
-                        Text(""),
-                        Spacer(),
+                        Expanded(child: Text("")),
                         Padding(
                           padding: EdgeInsets.all(10),
                           child: Text(
@@ -104,7 +104,6 @@ class _ChooseLanguageState extends State<ChooseLanguage> {
           ),
         ],
       ),
-      
     );
   }
 }

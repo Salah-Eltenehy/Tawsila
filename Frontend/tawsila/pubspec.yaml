@@ -50,6 +50,7 @@ dependencies:
   location: ^4.4.0
   open_street_map_search_and_pick: ^0.0.15
   smooth_page_indicator: ^1.0.0+2
+  drop_shadow_image: ^0.9.1
 
 dev_dependencies:
   flutter_test:

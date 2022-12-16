@@ -9,8 +9,8 @@ class SearchCubit extends Cubit<SearchStates> {
 
   static SearchCubit get(context) => BlocProvider.of(context);
 
-  late List<Map<String, dynamic>> cars;
-  late int totalCount;
+  List<Map<String, dynamic>>? cars;
+  int totalCount = 0;
   void getData() {
     DioHelper.getData(url: SEARCHRESULTS)
         .then((value) {

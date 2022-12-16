@@ -8,6 +8,7 @@ import 'package:tawsila/layout/cubit/AppProvider.dart';
 import 'package:tawsila/layout/cubit/AppStates.dart';
 import 'package:tawsila/modules/home-page/HomePage.dart';
 import 'package:tawsila/modules/on-boarding/OnBoardingScreen.dart';
+import 'package:tawsila/modules/search-result/SearchResultScreen.dart';
 import 'package:tawsila/shared/bloc_observer.dart';
 import 'package:tawsila/shared/components/Components.dart';
 import 'package:tawsila/shared/network/local/Cachhelper.dart';
@@ -25,6 +26,8 @@ void main() async {
 
   Bloc.observer = MyBlocObserver();
   DioHelper.init();
+
+
   runApp(MyApp());
 }
 
@@ -87,7 +90,7 @@ class SecondScreen extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: ChooseLanguage(),
+      home: ChooseLanguage(), //ChooseLanguage()
       debugShowCheckedModeBanner: false,
     );
   }
