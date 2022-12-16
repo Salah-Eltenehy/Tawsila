@@ -1,30 +1,32 @@
-﻿using Backend.Controllers;
+using Backend.Controllers;
 using Backend.Models.API.CarAPI;
 using Backend.Models.Entities;
-using Backend.Repositories;
-using Backend.Services;
 using DeepEqual.Syntax;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Moq;
 using System.Security.Claims;
 using System.Security.Principal;
 
-namespace xUnit_Tests.car_tests.service
+namespace xUnit_Tests.Car_Tests.Controller_Tests
 {
-    public class ServiceTest
+    public class CarControllerTest
     {
+
         [Fact]
         public async void GetAllCarsTest_ReturnsListOfCars()
         {
             // Arrange
-            var mockRepo = new Mock<ICarRepo>();
+            var controllerContext = GetTestIdentity();
+            var mockService = new Mock<ICarService>();
             var carList = GetCarsList();
-            mockRepo.Setup(x => x.GetCars()).ReturnsAsync(carList);
-            var carService = new CarService(mockRepo.Object);
+            mockService.Setup(x => x.GetCars()).ReturnsAsync(carList);
+            var carController = new CarsController(mockService.Object)
+            {
+                ControllerContext = controllerContext,
+            };
 
             // Act
-            var result = await carService.GetCars();
+            var result = await carController.GetCars();
 
             // Assert
             Assert.NotNull(result);
@@ -36,15 +38,18 @@ namespace xUnit_Tests.car_tests.service
         public async void CreateNewCarTest_ReturnsSuccess()
         {
             // Arrange
-            int userId = 1;
-            var mockRepo = new Mock<ICarRepo>();
+            var controllerContext = GetTestIdentity();
+            var mockService = new Mock<ICarService>();
             var carReq = GetTestCarRequest();
-            mockRepo.Setup(x => x.PostCar(It.IsAny<Car>())).ReturnsAsync(new StatusCodeResult(200));
-            var carService = new CarService(mockRepo.Object);
+            mockService.Setup(x => x.CreateCar(1, carReq));
+            var carController = new CarsController(mockService.Object)
+            {
+                ControllerContext = controllerContext,
+            };
 
             // Act
-            var result = await carService.CreateCar(userId, carReq);
-            var okResult = result as StatusCodeResult;
+            var result = await carController.CreateNewCar(carReq);
+            var okResult = result as OkObjectResult;
 
             // Assert
             Assert.NotNull(okResult);
@@ -57,13 +62,13 @@ namespace xUnit_Tests.car_tests.service
         {
             // Arrange 
             int id = 1;
-            var mockRepo = new Mock<ICarRepo>();
+            var mockService = new Mock<ICarService>();
             var car = GetTestCar();
-            mockRepo.Setup(x => x.GetCar(id)).ReturnsAsync(car);
-            var carService = new CarService(mockRepo.Object);
+            mockService.Setup(x => x.GetCar(id)).ReturnsAsync(car);
+            var carController = new CarsController(mockService.Object);
 
             // Act 
-            var result = await carService.GetCar(id);
+            var result = await carController.GetCar(id);
 
             // Assert
             Assert.NotNull(result);
@@ -74,18 +79,20 @@ namespace xUnit_Tests.car_tests.service
         public async void UpdateCarTest_ReturnsSuccess()
         {
             // Arrange 
-            int userId = 1;
-            var mockRepo = new Mock<ICarRepo>();
-            var car = GetTestCar();
-            var carReq = GetTestCarRequest();
-            mockRepo.Setup(x => x.GetCar(car.Id)).ReturnsAsync(car);
-            mockRepo.Setup(x => x.PutCar(car.Id, car)).ReturnsAsync(new StatusCodeResult(200));
-            var carService = new CarService(mockRepo.Object);
-
+            int userId = 1, carId = 1;
+            var controllerContext = GetTestIdentity();
+            var mockService = new Mock<ICarService>();
+            var carRequest = GetTestCarRequest();
+            mockService.Setup(x => x.UpdateCar(1, 1, carRequest)).ReturnsAsync(new StatusCodeResult(200));
+            var carController = new CarsController(mockService.Object)
+            {
+                ControllerContext = controllerContext,
+            };
 
             // Act
-            var result = await carService.UpdateCar(userId, car.Id, carReq);
-            var ok = result as StatusCodeResult;
+            var result = await carController.UpdateCar(1, carRequest);
+
+            var ok = result as OkObjectResult;
 
             // Assert
             Assert.NotNull(ok);
@@ -96,17 +103,19 @@ namespace xUnit_Tests.car_tests.service
         public async void DeleteCarTest_ReturnsSuccess()
         {
             // Arrange 
-            int userId = 1;
-            var mockRepo = new Mock<ICarRepo>();
-            var car = GetTestCar();
-            mockRepo.Setup(x => x.GetCar(car.Id)).ReturnsAsync(car);
-            mockRepo.Setup(x => x.DeleteCar(car)).ReturnsAsync(new StatusCodeResult(200));
-            var carService = new CarService(mockRepo.Object);
-
+            int userId = 1, carId = 1;
+            var controllerContext = GetTestIdentity();
+            var mockService = new Mock<ICarService>();
+            var carRequest = GetTestCarRequest();
+            mockService.Setup(x => x.DeleteCar(userId, carId));
+            var carController = new CarsController(mockService.Object)
+            {
+                ControllerContext = controllerContext,
+            };
 
             // Act
-            var result = await carService.DeleteCar(userId, car.Id);
-            var okResult = result as StatusCodeResult;
+            var result = await carController.DeleteCar(1);
+            var okResult = result as OkObjectResult;
 
 
             // Assert
@@ -150,6 +159,22 @@ namespace xUnit_Tests.car_tests.service
                 );
         }
 
+        private ControllerContext GetTestIdentity()
+        {
+            var identity = new GenericIdentity("1", "1");
+            var contextUser = new ClaimsPrincipal(identity);
+            var httpContext = new DefaultHttpContext()
+            {
+                User = contextUser,
+            };
+
+            var controllerContext = new ControllerContext()
+            {
+                HttpContext = httpContext,
+            };
+            return controllerContext;
+        }
+
         private ActionResult<IEnumerable<Car>> GetCarsList()
         {
             List<Car> CarsList = new List<Car>()
@@ -160,5 +185,5 @@ namespace xUnit_Tests.car_tests.service
             };
             return CarsList;
         }
-}
+    }
 }

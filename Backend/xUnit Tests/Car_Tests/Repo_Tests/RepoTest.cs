@@ -7,12 +7,14 @@ using Backend.Contexts;
 using Palmmedia.ReportGenerator.Core.Reporting.Builders.Rendering;
 using System.Collections.Generic;
 using DeepEqual.Syntax;
+using Xunit;
+using Xunit.Extensions.Ordering;
 
-namespace xUnit_Tests.car_tests.repo
+namespace xUnit_Tests.Car_Tests.Repo_Tests
 {
     public class RepoTest
     {
-        private readonly  static DbContextOptions<TawsilaContext> options;
+        private readonly static DbContextOptions<TawsilaContext> options;
         static RepoTest()
         {
             options = new DbContextOptionsBuilder<TawsilaContext>()
@@ -27,8 +29,8 @@ namespace xUnit_Tests.car_tests.repo
             context.SaveChanges();
         }
 
-        [Fact]
-        
+        [Fact, Order(1)]
+
         public void GetAllCarsTest_ReturnsListOfCars()
         {
 
@@ -41,7 +43,7 @@ namespace xUnit_Tests.car_tests.repo
             Assert.Equal(2, cars.Value.Count());
         }
 
-        [Fact]
+        [Fact, Order(2)]
         public void GetCarById_ReturnsCarNotNull()
         {
             int carId = 1;
@@ -57,7 +59,7 @@ namespace xUnit_Tests.car_tests.repo
 
         }
 
-        [Fact]
+        [Fact, Order(3)]
         public void PostCarTest_ReturnsSuccess()
         {
             Car car = GetTestCar(3);
@@ -71,7 +73,7 @@ namespace xUnit_Tests.car_tests.repo
             Assert.Equal(200, okResult.StatusCode);
         }
 
-        [Fact]
+        [Fact, Order(4)]
         public void PutCarTest_ReturnsSuccess()
         {
             var car = GetTestCar(3);
@@ -86,7 +88,8 @@ namespace xUnit_Tests.car_tests.repo
             Assert.Equal(200, okResult.StatusCode);
         }
 
-        [Fact]
+        [Fact, Order(5)]
+
         public void DeleteCarTest_ReturnsSuccess()
         {
             Car car = GetTestCar(2);
