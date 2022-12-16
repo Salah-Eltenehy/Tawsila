@@ -150,22 +150,6 @@ namespace xUnit_Tests.car_tests.service
                 );
         }
 
-        private ControllerContext GetTestIdentity()
-        {
-            var identity = new GenericIdentity("1", "1");
-            var contextUser = new ClaimsPrincipal(identity);
-            var httpContext = new DefaultHttpContext()
-            {
-                User = contextUser,
-            };
-
-            var controllerContext = new ControllerContext()
-            {
-                HttpContext = httpContext,
-            };
-            return controllerContext;
-        }
-
         private ActionResult<IEnumerable<Car>> GetCarsList()
         {
             List<Car> CarsList = new List<Car>()
