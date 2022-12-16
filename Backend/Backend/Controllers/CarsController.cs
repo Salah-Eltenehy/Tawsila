@@ -46,14 +46,7 @@ namespace Backend.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<Car>> GetCar([FromRoute] int id)
         {
-            var car = await _carService.GetCar(id);
-
-            if (car == null)
-            {
-                return NotFound();
-            }
-
-            return car;
+            return await _carService.GetCar(id);
         }
 
         [HttpPost]
@@ -84,10 +77,6 @@ namespace Backend.Controllers
             var claims = HttpContext.User.Claims.ToArray();
             var claimedId = int.Parse(claims.First(c => c.Type == ClaimTypes.Name).Value);
             var car = await _carService.UpdateCar(claimedId, id ,carReq);
-            if(car == null)
-            {
-                return Unauthorized("You can only update your cars");
-            }
             return Ok("Car Updated Successfully");
         }
 
