@@ -55,7 +55,6 @@
     "enter"  : "تأكيد"
   },
 
-
   "offerPage": {
     "offer": "اعرض مركبتك",
     "upload": "قم برفع صور للمركبة",
@@ -72,7 +71,7 @@
     "transmission": "الانتقال",
     "automatic": "اتوماتيك",
     "manual": "يدوي",
-    "fue_type": "نوع الوقود",
+    "fuel_type": "نوع الوقود",
     "gas": "بنزين",
     "natural_gas": "غاز طبيعي",
     "options": "خيارات",
