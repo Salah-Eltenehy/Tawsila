@@ -21,10 +21,11 @@
     "termsAndConditions": "I agree to Tawsila ",
     "termsAndConditionsPage": "Terms and Conditions",
     "signUp": "Create Account",
-    "profile": "edit profile",
+    "profile": "profile",
+    "edit profile": "Edit Profile",
     "cancel": "cancel",
     "save" : "save",
-
+    "profileEdited": "Profile Edited",
 
     "hey" : "Hey",
     "welcome2" : "login to your existing account",
@@ -54,6 +55,8 @@
     "enter"  : "verify"
   },
   "settings": {
+    "profile": "profile",
+    "edit profile": "Edit Profile",
     "settings": "settings",
     "password": "change password",
     "language": "language",
