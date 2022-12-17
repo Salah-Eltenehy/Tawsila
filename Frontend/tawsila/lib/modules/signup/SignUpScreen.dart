@@ -268,32 +268,35 @@ class SignUpScreen extends StatelessWidget {
                             }
 
                             if(formKey.currentState!.validate()) {
-                              print('###################');
-                              print(phoneController.text.replaceAll("+", "00"));
-                              print("#########################");
-                              DioHelper.postData(url: 'users/register',
-                                  data: {
-                                      'email' : emailController.text,
-                                      'firstName' :  fNameController.text,
-                                      'lastName' : lNameController.text,
-                                      'password' : passwordController.text,
-                                      'phoneNumber' : phoneController.text.replaceAll("+", "00"),
-                                      'hasWhatsapp' : true
-                                  }).then((value){
-                                      sss.init(context);
-                                      Toast.show("email created Successfully",
-                                          duration: Toast.lengthShort,
-                                          gravity:  Toast.bottom,backgroundColor: Colors.green);
-                                navigateAndFinish(context: context, screen: Verification(language: language,));
-                                print(value);
-                              }).catchError((error) {
-                                sss.init(context);
-                                Toast.show("email is not valid",
-                                    duration: Toast.lengthLong,
-                                    gravity:  Toast.bottom,backgroundColor: Colors.red);
-
-                                print("#############");
-                              });
+                              navigateAndFinish(context: context, screen: Verification(language: language,));
+                              // print('###################');
+                              // print(phoneController.text.replaceAll("+", "00"));
+                              // print("#########################");
+                              // DioHelper.postData(url: 'users/register',
+                              //     data: {
+                              //         'email' : emailController.text,
+                              //         'firstName' :  fNameController.text,
+                              //         'lastName' : lNameController.text,
+                              //         'password' : passwordController.text,
+                              //         'phoneNumber' : phoneController.text.replaceAll("+", "00"),
+                              //         'hasWhatsapp' : true
+                              //     }).then((value){
+                              //         sss.init(context);
+                              //         Toast.show("email created Successfully",
+                              //             duration: Toast.lengthShort,
+                              //             gravity:  Toast.bottom,backgroundColor: Colors.green);
+                              //   navigateAndFinish(context: context, screen: Verification(language: language,));
+                              //   print(value);
+                              // }).catchError((error) {
+                              //   print("ERRORRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");
+                              //   print(error.toString());
+                              //   sss.init(context);
+                              //   Toast.show("email is not valid",
+                              //       duration: Toast.lengthLong,
+                              //       gravity:  Toast.bottom,backgroundColor: Colors.red);
+                              //
+                              //   print("#############");
+                              // });
 
                             }
                           },

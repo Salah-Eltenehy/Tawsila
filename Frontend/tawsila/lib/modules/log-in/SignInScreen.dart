@@ -125,24 +125,25 @@ class SignInScreen extends StatelessWidget{
                             ),
                             onPressed: () {
                               if(formKey.currentState!.validate()) {
-                                DioHelper.postData(url: 'Users/LogIn',
-                                    data: {'email' : emailController.text,
-                                      'password' : passwordController.text}).
-                                    then((value){
-                                    sss.init(context);
-                                    Toast.show("Log In Successfully",
-                                        duration: Toast.lengthShort,
-                                        gravity:  Toast.bottom,backgroundColor: Colors.green);
-                                        navigateAndFinish(context: context, screen: HomePageScreen(language: language));
-                                        print(value);
-                                    }).catchError((error) {
-                                    sss.init(context);
-                                    Toast.show("Invalid email or password",
-                                    duration: Toast.lengthLong,
-                                    gravity:  Toast.bottom,backgroundColor: Colors.red);
-
-                                print("#############");
-                                });
+                                navigateAndFinish(context: context, screen: HomePageScreen(language: language));
+                                // DioHelper.postData(url: 'Users/LogIn',
+                                //     data: {'email' : emailController.text,
+                                //       'password' : passwordController.text}).
+                                //     then((value){
+                                //     sss.init(context);
+                                //     Toast.show("Log In Successfully",
+                                //         duration: Toast.lengthShort,
+                                //         gravity:  Toast.bottom,backgroundColor: Colors.green);
+                                //         navigateAndFinish(context: context, screen: HomePageScreen(language: language));
+                                //         print(value);
+                                //     }).catchError((error) {
+                                //     sss.init(context);
+                                //     Toast.show("Invalid email or password",
+                                //     duration: Toast.lengthLong,
+                                //     gravity:  Toast.bottom,backgroundColor: Colors.red);
+                                //
+                                // print("#############");
+                                // });
                               }
                             },
                           ),

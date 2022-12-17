@@ -6,12 +6,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tawsila/shared/network/local/Cachhelper.dart';
 
 import '../../../shared/network/remote/DioHelper.dart';
-import '../../../shared/constants.dart';
+import '../../../shared/end-points.dart';
 
 
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:location/location.dart';
 

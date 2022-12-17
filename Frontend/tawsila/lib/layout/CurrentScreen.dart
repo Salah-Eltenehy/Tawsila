@@ -57,8 +57,8 @@ class CurrentScreen extends StatelessWidget {
                         ),
                       onPressed: () {
                         navigateTo(
-                        context: context, 
-                        screen: OnBoardingScreen());
+                        context: context,
+                        screen: OnBoardingScreen(language: "English"));
                       }),
               ),
                   ),
