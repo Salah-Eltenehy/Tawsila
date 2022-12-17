@@ -74,7 +74,7 @@
     "transmission": "Transmission",
     "automatic": "Automatic",
     "manual": "Manual",
-    "fue_type": "Fuel Type",
+    "fuel_type": "Fuel Type",
     "gas": "Gasoline",
     "natural_gas": "Natural Gas",
     "options": "Options",
@@ -85,7 +85,6 @@
     "rental_period": "Maximum Rental Period",
     "rental_period_error": "rental period is unknown"
   },
-
   "settings": {
     "profile": "profile",
     "edit profile": "Edit Profile",
@@ -95,7 +94,6 @@
     "account" : "Account",
     "signout" : "Log Out",
     "close"   : "close"
-
   }
 }
 
