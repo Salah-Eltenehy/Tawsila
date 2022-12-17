@@ -15,7 +15,7 @@ public interface ICarService
     public Task<ActionResult> CreateCar(int UserId, CarRequest car);
     public Task<ActionResult> UpdateCar(int UserId, int carId, CarRequest car);
     public Task<ActionResult> DeleteCar(int UserId, int CarId);
-
+    Task<IEnumerable<Car>> GetFilteredCars(GetCarRequest carReq);
 }
 
 namespace Backend.Services
@@ -34,6 +34,11 @@ namespace Backend.Services
         public async Task<ActionResult<IEnumerable<Car>>> GetCars()
         {
             return await _carRepo.GetCars();  
+        }
+
+        public async Task<IEnumerable<Car>> GetFilteredCars([FromBody] GetCarRequest carReq)
+        {
+            return await _carRepo.GetCarsFiltered(carReq);
         }
 
 
