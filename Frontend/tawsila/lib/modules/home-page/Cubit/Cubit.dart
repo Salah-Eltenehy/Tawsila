@@ -11,6 +11,7 @@ import '../../../shared/end-points.dart';
 
 import 'dart:convert';
 import 'package:flutter/material.dart';
+
 import 'package:get/get.dart';
 import 'package:location/location.dart';
 
