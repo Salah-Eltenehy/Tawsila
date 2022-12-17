@@ -19,6 +19,11 @@
     "termsAndConditions": "اوافق على برنامج توصيلة ",
     "termsAndConditionsPage": "الشروط و البنود",
     "signUp":"انشئ حساباً",
+    "profile": "الملف الشخصي",
+    "edit profile": "تعديل الملف الشخصي",
+    "cancel": "الغاء",
+    "save" : "حفظ",
+    "profileEdited": "تم تعديل الملف الشخصي",
 
     "emailErrorEmpty": "Email can't be empty",
     "passwordError": "Password is too short",
@@ -28,9 +33,7 @@
     "doNotHaveAnAccount": "لا يوجد لديك حساب؟",
     "registerNow": "سجل الان",
     "forgetPassword": "Forget password?"
-
-  }
-,
+  },
   "HomePage":
   {
     "title":"الرئيسية",
@@ -78,6 +81,15 @@
     "radio": "راديو",
     "rental_period": "اقصى مدة للتأجير",
     "rental_period_error": "مدة التأجير غير معلومة"
+  },
+  "settings": {
+    "settings": "الاعدادت",
+    "password": "تغيير الرقم السري",
+    "language": "اللغة",
+    "account" : "الحساب",
+    "signout" : "تسجيل الخروج",
+    "close"   : "اغلق",
+    "profile": "الملف الشخصي",
+    "edit profile": "تعديل الملف الشخصي"
   }
-
 }

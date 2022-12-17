@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:multi_image_picker_view/multi_image_picker_view.dart';
 import 'package:tawsila/modules/car-offer/Cubit/OfferCubit.dart';
+import 'package:tawsila/shared/bloc_observer.dart';
+
 import 'Cubit/OfferStates.dart';
 
 class CarOfferScreen extends StatelessWidget{
@@ -27,7 +29,9 @@ class CarOfferScreen extends StatelessWidget{
 bool val = true;
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+        home: BlocProvider(
           create: (BuildContext context) => OfferCubit(), 
 
           child: BlocConsumer<OfferCubit, OfferStates>(
@@ -37,7 +41,7 @@ bool val = true;
               return Scaffold(
                   appBar: AppBar(
                     title:  Text(
-                        "${offerCubit.items["offer"]??''}",
+                        "${offerCubit.items["offer"]??'offer'}",
                         style: const TextStyle(
                           color: Colors.black,
                           fontSize: 32,
@@ -431,7 +435,15 @@ bool val = true;
               );
             }),
 
-          );
+          ),
+        );
   }
 
+}
+
+
+void main() async {
+
+ Bloc.observer = MyBlocObserver();
+  runApp(CarOfferScreen(language: "English"));
 }

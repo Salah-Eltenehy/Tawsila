@@ -21,6 +21,11 @@
     "termsAndConditions": "I agree to Tawsila ",
     "termsAndConditionsPage": "Terms and Conditions",
     "signUp": "Create Account",
+    "profile": "profile",
+    "edit profile": "Edit Profile",
+    "cancel": "cancel",
+    "save" : "save",
+    "profileEdited": "Profile Edited",
 
     "hey" : "Hey",
     "welcome2" : "login to your existing account",
@@ -52,6 +57,7 @@
     "enter"  : "verify"
   },
 
+
   "offerPage": {
     "offer": "Offer Your Vehicle",
     "upload": "upload Photos for the vehicle",
@@ -78,5 +84,16 @@
     "radio": "Radio",
     "rental_period": "Maximum Rental Period",
     "rental_period_error": "rental period is unknown"
+  },
+  "settings": {
+    "profile": "profile",
+    "edit profile": "Edit Profile",
+    "settings": "settings",
+    "password": "change password",
+    "language": "language",
+    "account" : "Account",
+    "signout" : "Log Out",
+    "close"   : "close"
   }
 }
+
