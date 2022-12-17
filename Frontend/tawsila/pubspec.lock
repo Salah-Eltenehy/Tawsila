@@ -673,10 +673,10 @@ packages:
     dependency: "direct main"
     description:
       name: toast
-      sha256: "9f877c2bf17931941b55b22e7e3d432779b769683ca292e0f5f8c3e6cfe62c89"
+      sha256: "12433091e3e5a25b3a25f670126e42547c9ade135de30ad9ace45d1ddccd57c9"
       url: "https://pub.dev"
     source: hosted
-    version: "0.2.9"
+    version: "0.3.0"
   tuple:
     dependency: transitive
     description:
