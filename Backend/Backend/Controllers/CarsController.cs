@@ -38,6 +38,16 @@ namespace Backend.Controllers
             return await _carService.GetCars();
         }
 
+        [HttpGet]
+        [Authorize(Policy = "VerifiedUser")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IEnumerable<Car>> GetFilteredCars([FromBody] GetCarRequest carReq)
+        {
+            return await _carService.GetFilteredCars(carReq);
+        }
+
         [HttpGet("{id}")]
         [Authorize(Policy = "VerifiedUser")]
         [ProducesResponseType(StatusCodes.Status200OK)]
