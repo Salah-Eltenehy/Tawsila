@@ -19,9 +19,11 @@
     "termsAndConditions": "اوافق على برنامج توصيلة ",
     "termsAndConditionsPage": "الشروط و البنود",
     "signUp":"انشئ حساباً",
-    "profile": "تعديل الملف الشخصي",
+    "profile": "الملف الشخصي",
+    "edit profile": "تعديل الملف الشخصي",
     "cancel": "الغاء",
     "save" : "حفظ",
+    "profileEdited": "تم تعديل الملف الشخصي",
 
     "emailErrorEmpty": "Email can't be empty",
     "passwordError": "Password is too short",
@@ -31,9 +33,7 @@
     "doNotHaveAnAccount": "لا يوجد لديك حساب؟",
     "registerNow": "سجل الان",
     "forgetPassword": "Forget password?"
-
-  }
-,
+  },
   "HomePage":
   {
     "title":"الرئيسية",
@@ -60,7 +60,8 @@
     "language": "اللغة",
     "account" : "الحساب",
     "signout" : "تسجيل الخروج",
-    "close"   : "اغلق"
+    "close"   : "اغلق",
+    "profile": "الملف الشخصي",
+    "edit profile": "تعديل الملف الشخصي"
   }
-
 }
