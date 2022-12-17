@@ -51,7 +51,7 @@ class _ChooseLanguageState extends State<ChooseLanguage> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      navigateTo(context: context, screen: SearchResultScreen()); //const OnBoardingScreen(language: "English")
+                      navigateTo(context: context, screen: const OnBoardingScreen(language: "English")); //const OnBoardingScreen(language: "English")
                     },
                     child:Container(
                       width: double.infinity,
@@ -79,15 +79,8 @@ class _ChooseLanguageState extends State<ChooseLanguage> {
                     color: Colors.grey,
                   ),
                   GestureDetector(
-                    onTap: () async {
-                      // navigateTo(context: context, screen: SearchResultScreen()); //OnBoardingScreen(language: "العربية")
-                        await showDatePicker(
-                          context: context,
-                          initialDate: DateTime.now(),
-                          firstDate: DateTime.now(),
-                          lastDate: DateTime(2100),
-                        );
-
+                    onTap: ()  {
+                      navigateTo(context: context, screen: const OnBoardingScreen(language: "العربية")); //OnBoardingScreen(language: "العربية")
                     },
                     child: Row(
                       children: const [

@@ -105,29 +105,38 @@ class _FilterSearchResultsScreenState extends State<FilterSearchResultsScreen> {
               Row(
                 children: [
                   Expanded(
-                    child: buildTextField(
+                    child: buildTextFieldIn(
                         controller: fromModelController,
                         placeHolder: "from",
-                    ),
+                        onTapFunc: () async {
+                          await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime(1980),
+                            lastDate: DateTime.now(),
+                          ).then((value) {
+                            fromModelController.text =
+                                DateFormat.y().format(value!);
+                          });
+                        }
+                    )
 
                   ),
-                  SizedBox(width: 6,),
+                  const SizedBox(width: 6,),
                   Expanded(
-                    child: buildTextField(
+                    child: buildTextFieldIn(
                         controller: toModelController,
                         placeHolder: "to",
-                      // onTapFunc: () {
-                      //   showDatePicker(
-                      //     context: context,
-                      //     initialDate: DateTime.now(),
-                      //     firstDate: DateTime.now(),
-                      //     lastDate: DateTime.parse('2021-05-03'),
-                      //   ).then((value) {
-                      //     setState(() {
-                      //       toModelController.text = DateFormat.yMMMd().format(value!);
-                      //     });
-                      //   });
-                      // }
+                      onTapFunc: () async {
+                        await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(1980),
+                          lastDate: DateTime.now(),
+                        ).then((value) {
+                          toModelController.text = DateFormat.y().format(value!);
+                        });
+                      }
                     ),
                   )
                 ],

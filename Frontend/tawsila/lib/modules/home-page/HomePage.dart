@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tawsila/modules/home-page/Cubit/Cubit.dart';
 import 'package:tawsila/modules/home-page/Cubit/CubitStates.dart';
 import 'package:tawsila/modules/home-page/Map.dart';
+import 'package:tawsila/modules/search-result/SearchResultScreen.dart';
 import 'package:tawsila/shared/components/Components.dart';
 
 class HomePageScreen extends StatelessWidget {
@@ -137,7 +138,7 @@ class HomePageScreen extends StatelessWidget {
                           ),
                           InkWell(
                             onTap: () {
-                              print("GET SEARCH RESULTS");
+                              navigateTo(context: context, screen: SearchResultScreen());
                             },
                             child: Container(
                               height: 40,
