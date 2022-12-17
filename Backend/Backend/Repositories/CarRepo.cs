@@ -5,6 +5,7 @@ using Backend.Models.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Server.IIS.Core;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 public interface ICarRepo
 {
@@ -160,9 +161,11 @@ namespace Backend.Repositories
             int total_count = carRequest.total_count;
             int offset = carRequest.offset;
             int updatedOffset = carRequest.updatedOffset;
+            double latitude = CFC.latitude;
+            double longitude = CFC.longitude;
 
             if (brands.Length == 0 && model.Length == 0 && yearS.Length == 0 && priceS.Length == 0 && transmision.Length == 0 && feulType.Length == 0 && bodyType.Length == 0 && CFC.options.Length == 0)
-            {
+            { 
                 cars = _context.Cars.Where(c => c.Brand.Contains(brands))
                     .Where(c => c.Model.Contains(model))
                     .Where(c => c.Transmission.Contains(transmision))
@@ -191,8 +194,15 @@ namespace Backend.Repositories
             }
 
 
+            foreach (Car car in cars)
+            {
+                Debug.WriteLine("iam here : " + cars.ToList().Count());
+                car.distanceFromUser = Math.Sqrt((car.Longitude - longitude) * (car.Longitude - longitude)) + ((car.Latitude - latitude) * (car.Latitude - latitude));
+            }
+            cars = cars.OrderBy(c => c.distanceFromUser);
 
-            Console.WriteLine("iam here : " + cars.ToList().Count());
+
+            Debug.WriteLine("iam here : " + cars.ToList().Count());
 
             return cars;
 

@@ -11,7 +11,9 @@ public record CarFilterCriteria
     [Required] string transmission,
     [Required] string fuelType,
     [Required] string bodyType,
-    [Required] string options
+    [Required] string options,
+    [Required] double latitude,
+    [Required] double longitude
 );
 /*
  *     [Required] bool hasAirConditioning,
