@@ -55,6 +55,7 @@
     "enter"  : "تأكيد"
   },
 
+
   "offerPage": {
     "offer": "اعرض مركبتك",
     "upload": "قم برفع صور للمركبة",
@@ -82,6 +83,7 @@
     "rental_period": "اقصى مدة للتأجير",
     "rental_period_error": "مدة التأجير غير معلومة"
   },
+
   "settings": {
     "settings": "الاعدادت",
     "password": "تغيير الرقم السري",

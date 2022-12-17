@@ -28,24 +28,22 @@ class BoardingModel {
 }
 
 class OnBoardingScreen extends StatefulWidget {
+  final language;
+
+  const OnBoardingScreen({super.key, required this.language});
   @override
-  _OnBoardingScreenState createState() => _OnBoardingScreenState();
+  _OnBoardingScreenState createState() => _OnBoardingScreenState(language);
 }
 
 class _OnBoardingScreenState extends State<OnBoardingScreen> {
+  _OnBoardingScreenState(this.language);
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
   }
   var boardController = PageController();
-
-
-
-  List<DropdownMenuItem> items = [
-    DropdownMenuItem(child: Text("English"), value: 'English',),
-    DropdownMenuItem(child: Text("العربية"), value: 'العربية',),
-  ];
   List<BoardingModel> boarding = [
     BoardingModel(
         title1: "Rent",
@@ -55,7 +53,6 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
         title5: "Owners",
         title6: "Directly",
         image: "assets/images/1.png"
-      // image: "https://media.istockphoto.com/id/1150425295/photo/3d-illustration-of-generic-hatchback-car-perspective-view.jpg?s=612x612&w=0&k=20&c=vws8oDFjcfGpqNAybWPxsA9XROdcBh2MXW2PGEDgk-8="
     ),
     BoardingModel(
         title1: "Make",
@@ -65,32 +62,12 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
         title5: "Spare",
         title6: "Cars",
         image: "assets/images/2.png"
-      // image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS6saz6OGyTvH5ZhHHYdi--qphBUDgqND-pGvjTxv84fA&s"
     ),
   ];
-  String dropDownValue = "English";
+  final String language;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-
-        actions: [
-          TextButton(
-              onPressed: () {
-                print("SKIP");
-                navigateTo(context: context, screen: SignInScreen(language: dropDownValue));
-              },
-              child: Text("SKIP", style: TextStyle(color: Colors.white),)),
-          DropdownButton(
-              items: items,
-              value: dropDownValue,
-              onChanged: (value) {
-                setState(() {
-                  value =="العربية"? dropDownValue = 'العربية': dropDownValue = 'English';
-                });
-              }),
-        ],
-      ),
       body: Container(
         color: Colors.black,
         child: PageView.builder(
@@ -199,7 +176,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                       title: "Create free accout",
                       titleColor: Colors.black,
                       function: () {
-                        navigateTo(context: context, screen: SignUpScreen(language: dropDownValue));
+                        navigateTo(context: context, screen: SignUpScreen(language: language));
                       }),
                   SizedBox(height: 5,),
                   buildButton(
@@ -207,7 +184,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                       title: "Login",
                       titleColor: Colors.white,
                       function: () {
-                        navigateAndFinish(context: context, screen: SignInScreen(language: dropDownValue));
+                        navigateAndFinish(context: context, screen: SignInScreen(language: language));
                       })
                 ],
               ),

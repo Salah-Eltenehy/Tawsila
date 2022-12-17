@@ -2,7 +2,7 @@
 
 namespace Backend.Models.Entities;
 
-public class Car
+public class Car 
 {
     [Key] public int Id { get; set; }
 
@@ -47,6 +47,19 @@ public class Car
 
     [Required] public DateTime UpdatedAt { get; set; }
 
+    public double distanceFromUser { get; set; }
+
     [Required] public int OwnerId { get; set; }
+
     public User Owner { get; set; } = null!;
+
+    /*public int CompareTo(Car? car2, int cLatitude, int cLongtide)
+    {
+        int distanceC1 = (int)Math.Sqrt(Math.Pow(this.Longitude - cLongtide, 2) - Math.Pow(this.Latitude - cLatitude, 2));
+        int distanceC2 = (int)Math.Sqrt(Math.Pow(car2.Longitude - cLongtide, 2) - Math.Pow(car2.Latitude - cLatitude, 2));
+        if (distanceC1 == distanceC2) return 0;
+        else if (distanceC1 > distanceC2) return 1;
+        else return -1;
+    }*/
+
 }

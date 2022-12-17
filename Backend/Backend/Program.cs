@@ -16,6 +16,7 @@ using Backend.Models.Settings;
 using Backend.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -71,7 +72,8 @@ builder.Services.AddScoped<UserRepo>();
 builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddScoped<CarsController>();
-builder.Services.AddScoped<CarRepo>();
+builder.Services.AddScoped<ICarService, CarService>();
+builder.Services.AddScoped<ICarRepo, CarRepo>();
 
 builder.Services.AddScoped<ReviewsController>();
 builder.Services.AddScoped<ReviewRepo>();

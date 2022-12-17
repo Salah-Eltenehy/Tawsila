@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tawsila/modules/home-page/Cubit/Cubit.dart';
 import 'package:tawsila/modules/home-page/Cubit/CubitStates.dart';
 import 'package:tawsila/modules/home-page/Map.dart';
+import 'package:tawsila/modules/search-result/SearchResultScreen.dart';
 import 'package:tawsila/shared/components/Components.dart';
 
 class HomePageScreen extends StatelessWidget {
@@ -37,7 +38,7 @@ class HomePageScreen extends StatelessWidget {
               appBar: AppBar(
                   title: Text(
                     "${homePageCubit.items['title'] ?? ''}",
-                    style: TextStyle(
+                    style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 20
                     ),
@@ -46,8 +47,9 @@ class HomePageScreen extends StatelessWidget {
                     InkWell(
                       onTap: () {
                         print("User page");
+                        navigateTo(context: context, screen: EditProfilePageState(language: language,));
                       },
-                      child: CircleAvatar(
+                      child: const CircleAvatar(
                         child: Image(
                           image: AssetImage('assets/images/owner.png')
                         ),
@@ -137,7 +139,7 @@ class HomePageScreen extends StatelessWidget {
                           ),
                           InkWell(
                             onTap: () {
-                              print("GET SEARCH RESULTS");
+                              navigateTo(context: context, screen: SearchResultScreen());
                             },
                             child: Container(
                               height: 40,
@@ -150,7 +152,7 @@ class HomePageScreen extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.center,
 
                                   children: [
-                                    Icon(
+                                    const Icon(
                                       Icons.search,
                                       color: Colors.white,
                                     ),
@@ -179,26 +181,7 @@ class HomePageScreen extends StatelessWidget {
     );
   }
 
-  Widget buildTextField({
-    required TextEditingController controller,
-    required String placeHolder
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5),
-          border: Border.all(
-              color: Colors.black
-          )
-      ),
-      child: TextField(
-        controller: controller,
-        decoration: InputDecoration(
-            border: InputBorder.none,
-            hintText: '${placeHolder}'
-        ),
-      ),
-    );
-  }
+
 //${homePageCubit.items['offerCar1']??''}
 //${homePageCubit.items['offerCar2']??''}
   Widget buildPageItem({

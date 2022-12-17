@@ -85,6 +85,7 @@
     "rental_period": "Maximum Rental Period",
     "rental_period_error": "rental period is unknown"
   },
+
   "settings": {
     "profile": "profile",
     "edit profile": "Edit Profile",
@@ -94,6 +95,7 @@
     "account" : "Account",
     "signout" : "Log Out",
     "close"   : "close"
+
   }
 }
 
