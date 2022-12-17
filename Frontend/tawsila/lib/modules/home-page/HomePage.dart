@@ -37,7 +37,7 @@ class HomePageScreen extends StatelessWidget {
               appBar: AppBar(
                   title: Text(
                     "${homePageCubit.items['title'] ?? ''}",
-                    style: TextStyle(
+                    style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 20
                     ),
@@ -47,7 +47,7 @@ class HomePageScreen extends StatelessWidget {
                       onTap: () {
                         print("User page");
                       },
-                      child: CircleAvatar(
+                      child: const CircleAvatar(
                         child: Image(
                           image: AssetImage('assets/images/owner.png')
                         ),
@@ -150,7 +150,7 @@ class HomePageScreen extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.center,
 
                                   children: [
-                                    Icon(
+                                    const Icon(
                                       Icons.search,
                                       color: Colors.white,
                                     ),
@@ -179,26 +179,7 @@ class HomePageScreen extends StatelessWidget {
     );
   }
 
-  Widget buildTextField({
-    required TextEditingController controller,
-    required String placeHolder
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5),
-          border: Border.all(
-              color: Colors.black
-          )
-      ),
-      child: TextField(
-        controller: controller,
-        decoration: InputDecoration(
-            border: InputBorder.none,
-            hintText: '${placeHolder}'
-        ),
-      ),
-    );
-  }
+
 //${homePageCubit.items['offerCar1']??''}
 //${homePageCubit.items['offerCar2']??''}
   Widget buildPageItem({

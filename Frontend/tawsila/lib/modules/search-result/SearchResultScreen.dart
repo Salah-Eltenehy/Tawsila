@@ -6,11 +6,14 @@ import 'package:tawsila/modules/search-result/cubit/SeachCubit.dart';
 import 'package:tawsila/modules/search-result/cubit/SearchStates.dart';
 
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
+import 'package:tawsila/shared/components/Components.dart';
+
+import '../filter/FilterScreen.dart';
 
 class SearchResultScreen extends StatelessWidget {
 
   Map<String, dynamic> car = {
-    "image": "assets/images/bmw.jpg",
+    "image": "assets/images/nissan.jpg",
     "brand": "Nissan",
     "model": "Sanny",
     "seatsCount": 4,
@@ -48,7 +51,7 @@ class SearchResultScreen extends StatelessWidget {
               actions: [
                 IconButton(
                     onPressed: () {
-
+                      navigateTo(context: context, screen: FilterSearchResultsScreen());
                     },
                     icon: const Icon(
                       Icons.menu_sharp,
@@ -105,7 +108,12 @@ class SearchResultScreen extends StatelessWidget {
             Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(width: 3)
+                border: Border.all(width: 3),
+                gradient: const LinearGradient(
+                  colors: [Colors.black, Colors.black54],
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.center
+                ),
               ),
               child: Image(
                 image: AssetImage("${car['image']}"),

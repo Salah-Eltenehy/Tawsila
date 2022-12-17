@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:tawsila/modules/home-page/HomePage.dart';
 import 'package:tawsila/modules/on-boarding/OnBoardingScreen.dart';
 import 'package:tawsila/modules/search-result/SearchResultScreen.dart';
@@ -78,8 +79,15 @@ class _ChooseLanguageState extends State<ChooseLanguage> {
                     color: Colors.grey,
                   ),
                   GestureDetector(
-                    onTap: () {
-                      navigateTo(context: context, screen: SearchResultScreen()); //OnBoardingScreen(language: "العربية")
+                    onTap: () async {
+                      // navigateTo(context: context, screen: SearchResultScreen()); //OnBoardingScreen(language: "العربية")
+                        await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime.now(),
+                          lastDate: DateTime(2100),
+                        );
+
                     },
                     child: Row(
                       children: const [

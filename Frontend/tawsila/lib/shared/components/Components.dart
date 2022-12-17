@@ -136,3 +136,27 @@ void navigateAndFinish ({
         return false;
       },
     );
+Widget buildTextField({
+  required TextEditingController controller,
+  required String placeHolder,
+}) {
+  return Container(
+    decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(5),
+        border: Border.all(
+            color: Colors.black
+        )
+    ),
+    child: Padding(
+      padding: const EdgeInsets.only(left: 16),
+      child: TextField(
+        cursorColor: Colors.black,
+        controller: controller,
+        decoration: InputDecoration(
+            border: InputBorder.none,
+            hintText: '${placeHolder}'
+        ),
+      ),
+    ),
+  );
+}

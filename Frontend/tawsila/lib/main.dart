@@ -16,6 +16,7 @@ import 'package:tawsila/shared/network/remote/DioHelper.dart';
 
 import 'layout/CurrentScreen.dart';
 import 'modules/Language/ChooseLanguage.dart';
+import 'modules/filter/FilterScreen.dart';
 
 void main() async {
   
