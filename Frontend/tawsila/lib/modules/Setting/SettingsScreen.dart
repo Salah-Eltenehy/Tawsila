@@ -1,5 +1,8 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tawsila/modules/log-in/SignInScreen.dart';
+import 'package:toast/toast.dart';
 import '../../shared/components/Components.dart';
 import '../home-page/HomePage.dart';
 import '../signup/cubit/SignUpCubit.dart';
@@ -26,9 +29,9 @@ class SettingsScreen extends StatelessWidget {
                 elevation: 1,
                 leading: IconButton(
                   onPressed: () {
-                    navigateAndFinish(context: context, screen: EditProfilePageState(language: language));
+                    navigateAndFinish(context: context, screen: EditProfilePageState(language: language,edit: false,));
                   },
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.arrow_back,
                     color: Colors.white,
                   ),
@@ -40,34 +43,57 @@ class SettingsScreen extends StatelessWidget {
                       children: [
                         Text(
                           "${signUpCubit.items['settings']??''}",
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontSize: 25, fontWeight: FontWeight.w500),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 40,
                         ),
                         Row(
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.person,
                               color: Colors.blue,
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 8,
                             ),
                             Text(
                               "${signUpCubit.items['account']??''}",
-                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),
-                        Divider(
+                        const Divider(
                           height: 15,
                           thickness: 2,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
+                        GestureDetector(
+                          onTap: (){
+                            navigateTo(context: context, screen: EditProfilePageState(language: language, edit: true));
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "${signUpCubit.items['edit profile']??''}",
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.grey[600]
+                                ),
+                              ),
+                              Icon(
+                                Icons.arrow_forward_ios,
+                                color: Colors.grey,
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 15,),
                         GestureDetector(
                           onTap: (){
                             showDialog(
@@ -111,7 +137,7 @@ class SettingsScreen extends StatelessWidget {
                               Text(
                                 "${signUpCubit.items['language']??''}",
                                 style: TextStyle(
-                                  fontSize: 18,
+                                  fontSize: 20,
                                   fontWeight: FontWeight.w500,
                                   color: Colors.grey[600]
                                 ),
@@ -133,7 +159,9 @@ class SettingsScreen extends StatelessWidget {
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20)),
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          navigateAndFinish(context: context, screen: SignInScreen(language: language));
+                        },
                         child: Text(
                             "${signUpCubit.items['signout']??''}",
                             style: TextStyle(
@@ -157,12 +185,20 @@ class SettingsScreen extends StatelessWidget {
 //   _EditProfilePageState createState() => _EditProfilePageState(language: language,);
 // }
 
+class AlwaysDisabledFocusNode extends FocusNode {
+  @override
+  bool get hasFocus => false;
+}
 
 class EditProfilePageState extends StatelessWidget{
-  bool hidePassword = true;
-
+  bool edit = true;
+  var fName = "";
+  var lName = "";
+  var email = "";
+  var phone = "";
+  var city = "";
   var language = "";
-  EditProfilePageState({required this.language});
+  EditProfilePageState({required this.language, required this.edit });
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -172,30 +208,7 @@ class EditProfilePageState extends StatelessWidget{
       builder: (context, state) {
       var signUpCubit = SignUpCubit.get(context);
       return Scaffold(
-        appBar: AppBar(
-          elevation: 1,
-          leading: IconButton(
-            icon: const Icon(
-              Icons.arrow_back,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              navigateAndFinish(context: context, screen: HomePageScreen(language: language));
-            },
-          ),
-          actions: [
-            IconButton(
-              icon: const Icon(
-                Icons.settings,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                 Navigator.of(context).push(MaterialPageRoute(
-                     builder: (BuildContext context) => SettingsScreen(language: language)));
-              },
-            ),
-          ],
-        ),
+        appBar: bar(context,),
         body: Container(
           padding: const EdgeInsets.only(left: 16, top: 25, right: 16),
           child: GestureDetector(
@@ -204,10 +217,7 @@ class EditProfilePageState extends StatelessWidget{
             },
             child: ListView(
               children: [
-                Text(
-                  "${signUpCubit.items['profile']??''}",
-                  style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w500),
-                ),
+                header(context, signUpCubit),
                 const SizedBox(
                   height: 15,
                 ),
@@ -274,11 +284,17 @@ class EditProfilePageState extends StatelessWidget{
                   children:<Widget> [
                     Flexible(
                       child:TextField(
+                        enableInteractiveSelection: edit, // will disable paste operation
+                        focusNode: (edit)? null : AlwaysDisabledFocusNode(),
+                        onChanged: (value){
+                          fName = value;
+                        },
                           decoration: InputDecoration(
                             labelText: signUpCubit.items['Fname']??"",
                             floatingLabelBehavior: FloatingLabelBehavior.always,
                             // hintText: "first name returned from server"
                             hintText: "user",
+
                             hintStyle: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -290,6 +306,11 @@ class EditProfilePageState extends StatelessWidget{
                     const SizedBox(width: 15,),
                     Flexible(
                       child:TextField(
+                        enableInteractiveSelection: edit, // will disable paste operation
+                        focusNode: (edit)? null : AlwaysDisabledFocusNode(),
+                        onChanged: (value){
+                          lName = value;
+                        },
                         decoration: InputDecoration(
                           labelText: signUpCubit.items['Lname']??"",
                           floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -306,8 +327,14 @@ class EditProfilePageState extends StatelessWidget{
                   ],
                 ),
                 TextField(
+                  enableInteractiveSelection: edit, // will disable paste operation
+                  focusNode: (edit)? null : AlwaysDisabledFocusNode(),
+                  onChanged: (value){
+                    email = value;
+                  },
                   decoration: InputDecoration(
                       labelText: signUpCubit.items['email']??"",
+                      prefixIcon: Icon(Icons.email),
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       // hintText: "email returned from server"
                       hintText: "joe@example.com",
@@ -319,8 +346,15 @@ class EditProfilePageState extends StatelessWidget{
                   ),
                 ),
                 TextField(
+                  enableInteractiveSelection: edit, // will disable paste operation
+                  focusNode: (edit)? null : AlwaysDisabledFocusNode(),
+                  keyboardType: TextInputType.phone,
+                  onChanged: (value){
+                    phone = value;
+                  },
                   decoration: InputDecoration(
                       labelText: signUpCubit.items['phone']??"",
+                      prefixIcon: Icon(Icons.phone),
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       // hintText: "phone returned from server"
                       hintText: "+201234567891",
@@ -332,7 +366,13 @@ class EditProfilePageState extends StatelessWidget{
                   ),
                 ),
                 TextField(
+                  enableInteractiveSelection: edit, // will disable paste operation
+                  focusNode: (edit)? null : AlwaysDisabledFocusNode(),
+                  onChanged: (value){
+                    city = value;
+                  },
                   decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.location_city),
                       labelText: signUpCubit.items['city']??"",
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       // hintText: "email returned from server"
@@ -347,45 +387,7 @@ class EditProfilePageState extends StatelessWidget{
                 const SizedBox(
                   height: 35,
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    OutlinedButton(
-                        onPressed: (){
-                          navigateAndFinish(context: context, screen: HomePageScreen(language: language));
-                        },
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 50),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20)),
-                        ),
-                        child: Text(
-                          "${signUpCubit.items['cancel']??""}",
-                          style: const TextStyle(
-                            fontSize: 14,
-                            letterSpacing: 2.2,
-                            color: Colors.black)),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {  },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        padding: const EdgeInsets.symmetric(horizontal: 50),
-                        elevation: 2,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20)),
-                      ),
-                      child: Text(
-                        "${signUpCubit.items['save']??""}",
-                        style: const TextStyle(
-                            fontSize: 14,
-                            letterSpacing: 2.2,
-                            color: Colors.white),
-                      ),
-
-                    )
-                  ],
-                )
+                buttons(context, signUpCubit),
               ],
             ),
           ),
@@ -394,5 +396,133 @@ class EditProfilePageState extends StatelessWidget{
       }
       ),
     );
+  }
+  Text header(BuildContext context,var signUpCubit){
+    if(edit) {
+      return Text(
+        "${signUpCubit.items['edit profile']??''}",
+        style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w500),
+      );
+    }
+    return Text(
+      "${signUpCubit.items['profile']??''}",
+      style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w500),
+    );
+  }
+  AppBar bar(BuildContext context){
+    if(edit){
+      return AppBar(
+        elevation: 1,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            navigateTo(
+                context: context, screen: SettingsScreen(language: language));
+          }
+        ),
+      );
+    }
+    return AppBar(
+      elevation: 1,
+      leading: IconButton(
+        icon: const Icon(
+          Icons.arrow_back,
+          color: Colors.white,
+        ),
+        onPressed: () {
+          navigateAndFinish(
+              context: context, screen: HomePageScreen(language: language));
+        }
+        ),
+      actions: [
+        IconButton(
+          icon: const Icon(
+            Icons.settings,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (BuildContext context) => SettingsScreen(language: language)));
+          },
+        ),
+      ],
+    );
+  }
+  Row buttons(BuildContext context,var signUpCubit){
+    ToastContext toast = ToastContext();
+    if(edit) {
+      return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        OutlinedButton(
+          onPressed: (){
+            navigateAndFinish(context: context, screen: SettingsScreen(language: language));
+          },
+          style: OutlinedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 50),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20)),
+          ),
+          child: Text(
+              "${signUpCubit.items['cancel']??""}",
+              style: const TextStyle(
+                  fontSize: 14,
+                  letterSpacing: 2.2,
+                  color: Colors.black)),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            bool error = false;
+            if(email != "" ){
+              if((!EmailValidator.validate(email, true))) {
+                error = true;
+                toast.init(context);
+                Toast.show("${signUpCubit.items['emailError']??""}",
+                    duration: Toast.lengthShort, backgroundColor: Colors.red
+                );
+              }
+            }
+            if(!error && (phone != "")){
+              if(phone.length != 13) {
+                error = true;
+                toast.init(context);
+                Toast.show("${signUpCubit.items['phoneError']??""}",
+                    duration: Toast.lengthShort, backgroundColor: Colors.red
+                );
+              }
+            }
+            if(!error&& (email!="" || phone!="" || fName != "" || lName != "" || city != "")){
+              toast.init(context);
+              Toast.show("${signUpCubit.items['profileEdited']??""}",
+                  duration: Toast.lengthShort, backgroundColor: Colors.green
+              );
+            }
+            if(!error){
+              navigateAndFinish(context: context, screen: SettingsScreen(language: language));
+            }
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blue,
+            padding: const EdgeInsets.symmetric(horizontal: 50),
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20)),
+          ),
+          child: Text(
+            "${signUpCubit.items['save']??""}",
+            style: const TextStyle(
+                fontSize: 14,
+                letterSpacing: 2.2,
+                color: Colors.white),
+          ),
+
+        )
+      ],
+    );
+    } else
+      return Row();
   }
 }
