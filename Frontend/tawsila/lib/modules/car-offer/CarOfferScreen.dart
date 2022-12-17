@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:multi_image_picker_view/multi_image_picker_view.dart';
 import 'package:tawsila/modules/car-offer/Cubit/OfferCubit.dart';
-import 'package:tawsila/shared/bloc_observer.dart';
 
 import 'Cubit/OfferStates.dart';
 
@@ -29,10 +28,8 @@ class CarOfferScreen extends StatelessWidget{
 bool val = true;
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-        home: BlocProvider(
-          create: (BuildContext context) => OfferCubit(), 
+    return  BlocProvider(
+          create: (BuildContext context) => OfferCubit()..setLanguage(l: language)..readJson("offerPage"),
 
           child: BlocConsumer<OfferCubit, OfferStates>(
             listener: (context, state){},
@@ -274,7 +271,7 @@ bool val = true;
                                 Container(
                                   alignment: Alignment.topLeft,
                                   child:  Text(
-                                    "${offerCubit.items["fuel_type"]??''}",
+                                    "${offerCubit.items["fuel_type"]??'fuel'}",
                                     style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
@@ -416,12 +413,12 @@ bool val = true;
                                   controller: rentalPeriod,
                                   decoration:  InputDecoration(
                                     border:const OutlineInputBorder(),
-                                    labelText: "${offerCubit.items["rent"]??''}",
+                                    labelText: "${offerCubit.items["rental_period"]??''}",
                                     hintText: "e.g. 5 days",
                                   ),
                                   validator: (String? value){
                                     if(value == null || value == ""){
-                                      return "${offerCubit.items["rent_error"]??''}";
+                                      return "${offerCubit.items["rental_period_error"]??''}";
                                     }
                                   },
                                 ),
@@ -435,15 +432,8 @@ bool val = true;
               );
             }),
 
-          ),
-        );
+          );
+        
   }
 
-}
-
-
-void main() async {
-
- Bloc.observer = MyBlocObserver();
-  runApp(CarOfferScreen(language: "English"));
 }
