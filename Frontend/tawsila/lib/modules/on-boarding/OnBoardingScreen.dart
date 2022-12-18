@@ -76,7 +76,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
     title1: "استأجر",
     title2: "سيارات",
     title3: "من",
-    title4: "مالكهم",
+    title4: "المالك",
     title5: "مباشرة",
     title6: "",
     image: "assets/images/1.png"
