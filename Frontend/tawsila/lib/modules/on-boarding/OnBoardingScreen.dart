@@ -1,10 +1,14 @@
 // import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:tawsila/modules/on-boarding/cubit/OnBoardingStates.dart';
 import 'package:tawsila/modules/signup/SignUpScreen.dart';
 import 'package:tawsila/shared/components/Components.dart';
 
 import '../log-in/SignInScreen.dart';
+import '../signup/cubit/SignUpCubit.dart';
+import 'cubit/OnBoardingCubit.dart';
 
 
 class BoardingModel {
@@ -32,11 +36,12 @@ class OnBoardingScreen extends StatefulWidget {
 
   const OnBoardingScreen({super.key, required this.language});
   @override
-  _OnBoardingScreenState createState() => _OnBoardingScreenState(language);
+  _OnBoardingScreenState createState() => _OnBoardingScreenState( language: language);
 }
 
 class _OnBoardingScreenState extends State<OnBoardingScreen> {
-  _OnBoardingScreenState(this.language);
+  String language;
+  _OnBoardingScreenState({required this.language});
 
   @override
   void initState() {
@@ -44,43 +49,80 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
     super.initState();
   }
   var boardController = PageController();
-  List<BoardingModel> boarding = [
+  List<BoardingModel> lang(){
+    List<BoardingModel> boarding;
+    language=="English"? boarding = [
+      BoardingModel(
+          title1: "Rent",
+          title2: "Cars",
+          title3: "From",
+          title4: "Their",
+          title5: "Owners",
+          title6: "Directly",
+          image: "assets/images/1.png"
+      ),
+      BoardingModel(
+          title1: "Make",
+          title2: "Money",
+          title3: "Out Of",
+          title4: "Your",
+          title5: "Spare",
+          title6: "Cars",
+          image: "assets/images/2.png"
+      ),
+    ]:
+    boarding = [
     BoardingModel(
-        title1: "Rent",
-        title2: "Cars",
-        title3: "From",
-        title4: "Their",
-        title5: "Owners",
-        title6: "Directly",
-        image: "assets/images/1.png"
+    title1: "استأجر",
+    title2: "سيارات",
+    title3: "من",
+    title4: "مالكهم",
+    title5: "مباشرة",
+    title6: "",
+    image: "assets/images/1.png"
     ),
     BoardingModel(
-        title1: "Make",
-        title2: "Money",
-        title3: "Out Of",
-        title4: "Your",
-        title5: "Spare",
-        title6: "Cars",
-        image: "assets/images/2.png"
+    title1: "اجني",
+    title2: "ربحا",
+    title3: "من",
+    title4: "سيارتك",
+    title5: "الغير",
+    title6: "مستهلكه",
+    image: "assets/images/2.png"
     ),
-  ];
-  final String language;
+    ];
+    return boarding;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        color: Colors.black,
-        child: PageView.builder(
-          physics: BouncingScrollPhysics(),
-          controller: boardController,
-          itemBuilder: (context, index) =>
-              buildBoardingItem(boarding[index]),
-          itemCount: boarding.length,
+    return Directionality(
+      textDirection: language == "English"? TextDirection.ltr: TextDirection.rtl,
+      child: BlocProvider(
+        create: (context) => OnBoardingCubit()..setLanguage(l: language)..readJson(),
+        child: BlocConsumer<OnBoardingCubit, OnBoardingStates>(
+            listener: (context, state) {},
+            builder: (context, state) {
+              var boarding = lang();
+              var onBoardingCubit = OnBoardingCubit.get(context);
+            return Scaffold(
+              body: Container(
+                color: Colors.black,
+                child: PageView.builder(
+                  physics: BouncingScrollPhysics(),
+                  controller: boardController,
+                  itemBuilder: (context, index) =>
+                      buildBoardingItem(boarding[index],boarding,onBoardingCubit),
+                  itemCount: boarding.length,
+                ),
+              ),
+            );
+          }
         ),
       ),
     );
   }
-  Widget buildBoardingItem(BoardingModel model) => Stack(
+  Widget buildBoardingItem(BoardingModel model,var boarding,var onBoardingCubit) => Stack(
     children:
     [
       Image(
@@ -96,6 +138,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              SizedBox(height: 25,),
               Text(
                 '${model.title1}',
                 style: TextStyle(
@@ -160,7 +203,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                 children: [
                   SmoothPageIndicator(
                     controller: boardController,
-                    effect: ExpandingDotsEffect(
+                    effect: const ExpandingDotsEffect(
                       dotColor: Colors.grey,
                       activeDotColor: Colors.blue,
                       dotHeight: 10,
@@ -170,10 +213,10 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                     ),
                     count: boarding.length,
                   ),
-                  SizedBox(height: 5,),
+                  const SizedBox(height: 5,),
                   buildButton(
                       color: Colors.white,
-                      title: "Create free accout",
+                      title: "${onBoardingCubit.items['create']??''}",
                       titleColor: Colors.black,
                       function: () {
                         navigateTo(context: context, screen: SignUpScreen(language: language));
@@ -181,7 +224,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                   SizedBox(height: 5,),
                   buildButton(
                       color: Colors.blue,
-                      title: "Login",
+                      title: "${onBoardingCubit.items['login']??''}",
                       titleColor: Colors.white,
                       function: () {
                         navigateAndFinish(context: context, screen: SignInScreen(language: language));
