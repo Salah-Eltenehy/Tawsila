@@ -24,6 +24,9 @@
     "cancel": "الغاء",
     "save" : "حفظ",
     "profileEdited": "تم تعديل الملف الشخصي",
+    "choosePicture": "اختيار صوره الملف الشخصي",
+    "camera" : "الكاميرا",
+    "gallery": "المعرض",
 
     "emailErrorEmpty": "Email can't be empty",
     "passwordError": "Password is too short",
@@ -92,5 +95,9 @@
     "close"   : "اغلق",
     "profile": "الملف الشخصي",
     "edit profile": "تعديل الملف الشخصي"
+  },
+  "OnBoarding": {
+    "login": "تسجيل الدخول",
+    "create": "سجل الان مجانا"
   }
 }
