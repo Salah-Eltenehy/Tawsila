@@ -26,6 +26,9 @@
     "cancel": "cancel",
     "save" : "save",
     "profileEdited": "Profile Edited",
+    "choosePicture": "Choose profile picture",
+    "camera" : "Camera",
+    "gallery": "Gallery",
 
     "hey" : "Hey",
     "welcome2" : "login to your existing account",
@@ -94,6 +97,10 @@
     "account" : "Account",
     "signout" : "Log Out",
     "close"   : "close"
+  },
+  "OnBoarding": {
+    "login": "LogIn",
+    "create": "Create Free Account"
   }
 }
 
