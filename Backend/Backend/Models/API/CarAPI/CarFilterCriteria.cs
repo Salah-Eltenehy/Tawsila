@@ -4,16 +4,16 @@ namespace Backend.Models.API.CarAPI;
 
 public record CarFilterCriteria
 (
-    [Required] string brand,
-    [Required] string model,
-    [Required] string year,
-    [Required] string price,
-    [Required] string transmission,
-    [Required] string fuelType,
-    [Required] string bodyType,
-    [Required] string options,
-    [Required] double latitude,
-    [Required] double longitude
+    string brand,
+    string model,
+    string year,
+    string price,
+    string transmission,
+    string fuelType,
+    string bodyType,
+    string options,
+    double latitude,
+    double longitude
 );
 /*
  *     [Required] bool hasAirConditioning,

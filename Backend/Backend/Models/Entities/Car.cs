@@ -1,6 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Backend.Models.Entities;
+
+
 
 public class Car 
 {
@@ -51,6 +54,7 @@ public class Car
 
     [Required] public int OwnerId { get; set; }
 
+    [JsonIgnore]
     public User Owner { get; set; } = null!;
 
     /*public int CompareTo(Car? car2, int cLatitude, int cLongtide)

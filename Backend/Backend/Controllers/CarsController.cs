@@ -28,7 +28,7 @@ namespace Backend.Controllers
             _carService = carService;
         }
 
-        [HttpGet]
+        /*[HttpGet]
         [Authorize(Policy = "VerifiedUser")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -36,7 +36,7 @@ namespace Backend.Controllers
         public async Task<ActionResult<IEnumerable<Car>>> GetCars()
         {
             return await _carService.GetCars();
-        }
+        }*/
 
         [HttpGet]
         [Authorize(Policy = "VerifiedUser")]
