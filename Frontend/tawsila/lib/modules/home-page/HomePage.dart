@@ -47,7 +47,7 @@ class HomePageScreen extends StatelessWidget {
                     InkWell(
                       onTap: () {
                         print("User page");
-                        navigateTo(context: context, screen: EditProfilePageState(language: language,));
+                        navigateTo(context: context, screen: EditProfilePage(language: language,edit: false)));
                       },
                       child: const CircleAvatar(
                         child: Image(

@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tawsila/modules/car-offer/Cubit/OfferCubit.dart';
-import 'package:tawsila/shared/bloc_observer.dart';
 
 import 'Cubit/OfferStates.dart';
 
@@ -27,7 +26,8 @@ bool val = true;
   @override
   Widget build(BuildContext context) {
     return  BlocProvider(
-          create: (context) => OfferCubit()..setLanguage(l: language)..readJson('offerPage'),
+          create: (BuildContext context) => OfferCubit()..setLanguage(l: language)..readJson("offerPage"),
+
           child: BlocConsumer<OfferCubit, OfferStates>(
             listener: (context, state){},
             builder: (context, state){
@@ -524,7 +524,7 @@ bool val = true;
                                 Container(
                                   alignment: Alignment.topLeft,
                                   child:  Text(
-                                    "${offerCubit.items["fuel_type"]??''}",
+                                    "${offerCubit.items["fuel_type"]??'fuel'}",
                                     style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
@@ -691,31 +691,7 @@ bool val = true;
             }),
 
           );
+
   }
 
-}
-
-
-void main() async {
-
-  WidgetsFlutterBinding.ensureInitialized();
-  
-  Bloc.observer = MyBlocObserver();
-
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  // This widget is the root of application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Tawsila',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: CarOfferScreen(language: "English"),
-      debugShowCheckedModeBanner: false,
-    );
-  }
 }

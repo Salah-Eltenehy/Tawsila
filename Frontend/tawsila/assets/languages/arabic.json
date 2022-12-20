@@ -24,6 +24,9 @@
     "cancel": "الغاء",
     "save" : "حفظ",
     "profileEdited": "تم تعديل الملف الشخصي",
+    "choosePicture": "اختيار صوره الملف الشخصي",
+    "camera" : "الكاميرا",
+    "gallery": "المعرض",
 
     "emailErrorEmpty": "Email can't be empty",
     "passwordError": "Password is too short",
@@ -55,7 +58,6 @@
     "enter"  : "تأكيد"
   },
 
-
   "offerPage": {
     "offer": "اعرض مركبتك",
     "upload": "قم برفع صور للمركبة",
@@ -72,7 +74,7 @@
     "transmission": "الانتقال",
     "automatic": "اتوماتيك",
     "manual": "يدوي",
-    "fue_type": "نوع الوقود",
+    "fuel_type": "نوع الوقود",
     "gas": "بنزين",
     "natural_gas": "غاز طبيعي",
     "options": "خيارات",
@@ -93,5 +95,9 @@
     "close"   : "اغلق",
     "profile": "الملف الشخصي",
     "edit profile": "تعديل الملف الشخصي"
+  },
+  "OnBoarding": {
+    "login": "تسجيل الدخول",
+    "create": "سجل الان مجانا"
   }
 }
