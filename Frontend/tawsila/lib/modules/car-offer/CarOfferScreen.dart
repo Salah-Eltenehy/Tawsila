@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:multi_image_picker_view/multi_image_picker_view.dart';
 import 'package:tawsila/modules/car-offer/Cubit/OfferCubit.dart';
 import 'package:tawsila/shared/bloc_observer.dart';
 
@@ -20,26 +19,28 @@ class CarOfferScreen extends StatelessWidget{
   var seatsCountController = TextEditingController();
   var bodyTypeController = TextEditingController();
   var rentalPeriod = TextEditingController();
-  var ImageController = MultiImagePickerController(
-    maxImages: 5,
-  );
+
   var formKey = GlobalKey<FormState>(); //key of the form used in the page
 
 
 bool val = true;
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-        home: BlocProvider(
-          create: (BuildContext context) => OfferCubit(), 
-
+    return  BlocProvider(
+          create: (context) => OfferCubit()..setLanguage(l: language)..readJson('offerPage'),
           child: BlocConsumer<OfferCubit, OfferStates>(
             listener: (context, state){},
             builder: (context, state){
               var offerCubit = OfferCubit.get(context);
               return Scaffold(
                   appBar: AppBar(
+                    backgroundColor: Colors.white,
+                    leading: IconButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      icon: const Icon(Icons.arrow_back, color: Colors.black,),
+                    ),
                     title:  Text(
                         "${offerCubit.items["offer"]??'offer'}",
                         style: const TextStyle(
@@ -61,7 +62,7 @@ bool val = true;
                             icon: const ImageIcon(
                               AssetImage("images/right.png"),
                               size: 24,
-                              color: Colors.white,
+                              color: Colors.black,
 
                             ),
                         ),
@@ -84,43 +85,46 @@ bool val = true;
                                     OfferCubit.get(context).pickImage();
                                     print(OfferCubit.get(context).images);
                                   },
+                                  
                                   child: SingleChildScrollView(
                                     scrollDirection: Axis.horizontal,
 
-                                    child: Container(
-                                      height: 150,
-                                      width: 500,
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color: Colors.black,
-                                          width: 3,
-                                        ),
-                                        borderRadius: BorderRadius.circular(8),
-                                      ) ,
-
-                                      child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          IconButton(
-                                            onPressed:() async {
-                                              OfferCubit.get(context).pickImage();
-                                            },
-                                            icon: const Icon(Icons.add_a_photo),
-                                            iconSize: 50,
-                                            color: Colors.grey,
-                                            tooltip: "add photo",
+                                    child: SingleChildScrollView(
+                                      child: Container(
+                                        height: 150,
+                                        width: 500,
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color: Colors.black,
+                                            width: 3,
                                           ),
+                                          borderRadius: BorderRadius.circular(8),
+                                        ) ,
 
-                                          Text(
-                                            "upload Photos For the Vehicle",
-                                            style: TextStyle(
-                                                color: Colors.grey[700]
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            IconButton(
+                                              onPressed:() async {
+                                                OfferCubit.get(context).pickImage();
+                                              },
+                                              icon: const Icon(Icons.add_a_photo),
+                                              iconSize: 50,
+                                              color: Colors.grey,
+                                              tooltip: "add photo",
                                             ),
-                                          )
 
-                                        ],
+                                            Text(
+                                              "upload Photos For the Vehicle",
+                                              style: TextStyle(
+                                                  color: Colors.grey[700]
+                                              ),
+                                            )
+
+                                          ],
+                                        ),
+
                                       ),
-
                                     ),
                                   ),
                                 ),
@@ -129,18 +133,260 @@ bool val = true;
                                   height: 10,
                                 ),
 
-                                TextFormField(
-                                  controller: brandController,
-                                  decoration: InputDecoration(
-                                    border:const OutlineInputBorder(),
-                                    labelText: "${offerCubit.items["brand"]??''}",
-                                    hintText: "Enter a brand",
+                                Container(
+                                  alignment: Alignment.topLeft,
+                                  child: const Text(
+                                    "Brands",
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 20
+                                    ),
                                   ),
-                                  validator: (String? value){
-                                    if(value == "" || value == null){
-                                      return("${offerCubit.items["brand_error"]??''}");
-                                    }
-                                  }
+                                ),
+                                const SizedBox(height: 4,),
+                                Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: CheckboxListTile(
+                                            controlAffinity: ListTileControlAffinity.leading,
+                                            title: const Text(
+                                                "LADA"
+                                            ),
+                                            value: offerCubit.brands['lada'],
+                                            onChanged: (value) {
+                                                offerCubit.changeBrand(brand: 'lada');
+                                            },
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: CheckboxListTile(
+                                            controlAffinity: ListTileControlAffinity.leading,
+                                            title: const Text(
+                                                "Verna"
+                                            ),
+                                            value: offerCubit.brands['verna'],
+                                            onChanged: (value) {
+                                                offerCubit.changeBrand(brand: 'verna');
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: CheckboxListTile(
+                                            controlAffinity: ListTileControlAffinity.leading,
+                                            title: const Text(
+                                                "Daewoo"
+                                            ),
+                                            value: offerCubit.brands['daewoo'],
+                                            onChanged: (value) {
+                                                offerCubit.changeBrand(brand: 'daewoo');
+                                            },
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: CheckboxListTile(
+                                            controlAffinity: ListTileControlAffinity.leading,
+                                            title: const Text(
+                                                "Nissan"
+                                            ),
+                                            value: offerCubit.brands['nissan'],
+                                            onChanged: (value) {
+                                                offerCubit.changeBrand(brand: 'nissan');
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: CheckboxListTile(
+                                            controlAffinity: ListTileControlAffinity.leading,
+                                            title: const Text(
+                                                "Elantra"
+                                            ),
+                                            value: offerCubit.brands['elantra'],
+                                            onChanged: (value) {
+                                               offerCubit.changeBrand(brand: 'elantra');
+                                            },
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: CheckboxListTile(
+                                            controlAffinity: ListTileControlAffinity.leading,
+                                            title: const Text(
+                                                "KIA"
+                                            ),
+                                            value: offerCubit.brands['kia'],
+                                            onChanged: (value) {
+                                              offerCubit.changeBrand(brand: 'kia');
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: CheckboxListTile(
+                                            controlAffinity: ListTileControlAffinity.leading,
+                                            title: const Text(
+                                                "Fiat"
+                                            ),
+                                            value: offerCubit.brands['fiat'],
+                                            onChanged: (value) {
+                                              offerCubit.changeBrand(brand: 'fiat');
+                                            },
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: CheckboxListTile(
+                                            controlAffinity: ListTileControlAffinity.leading,
+                                            title: const Text(
+                                                "BMW"
+                                            ),
+                                            value: offerCubit.brands['bmw'],
+                                            onChanged: (value) {
+                                                offerCubit.changeBrand(brand: 'bmw');
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: CheckboxListTile(
+                                            controlAffinity: ListTileControlAffinity.leading,
+                                            title: const Text(
+                                                "Mercedes"
+                                            ),
+                                            value: offerCubit.brands['mercedes'],
+                                            onChanged: (value) {
+                                               offerCubit.changeBrand(brand: 'mercedes');
+                                            },
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: CheckboxListTile(
+                                            controlAffinity: ListTileControlAffinity.leading,
+                                            title: const Text(
+                                                "Other"
+                                            ),
+                                            value: offerCubit.brands['other'],
+                                            onChanged: (value) {
+                                                offerCubit.changeBrand(brand: 'other');
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                // more brands
+                                Container(
+                                  alignment: Alignment.topLeft,
+                                  child: const Text(
+                                    "More Brands",
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 20
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 4,),
+                                Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: CheckboxListTile(
+                                            controlAffinity: ListTileControlAffinity.leading,
+                                            title: const Text(
+                                                "Convertible"
+                                            ),
+                                            value: offerCubit.moreBrands['Convertible'],
+                                            onChanged: (value) {
+                                               offerCubit.changeMoreBrand(brand: 'Convertible');
+                                            },
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: CheckboxListTile(
+                                            controlAffinity: ListTileControlAffinity.leading,
+                                            title: const Text(
+                                                "Coupe"
+                                            ),
+                                            value: offerCubit.moreBrands['Coupe'],
+                                            onChanged: (value) {
+                                              offerCubit.changeMoreBrand(brand: 'Coupe');
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: CheckboxListTile(
+                                            controlAffinity: ListTileControlAffinity.leading,
+                                            title: const Text(
+                                                "Hatchback"
+                                            ),
+                                            value: offerCubit.moreBrands['Hatchback'],
+                                            onChanged: (value) {
+                                                offerCubit.changeMoreBrand(brand: 'Hatchback');
+                                            },
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: CheckboxListTile(
+                                            controlAffinity: ListTileControlAffinity.leading,
+                                            title: const Text(
+                                                "MPV"
+                                            ),
+                                            value: offerCubit.moreBrands['MPV'],
+                                            onChanged: (value) {
+                                               offerCubit.changeMoreBrand(brand: 'MPV');
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: CheckboxListTile(
+                                            controlAffinity: ListTileControlAffinity.leading,
+                                            title: const Text(
+                                                "SUV"
+                                            ),
+                                            value: offerCubit.moreBrands['SUV'],
+                                            onChanged: (value) {
+                                                offerCubit.changeMoreBrand(brand: 'SUV');
+                                            },
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: CheckboxListTile(
+                                            controlAffinity: ListTileControlAffinity.leading,
+                                            title: const Text(
+                                                "Sedan"
+                                            ),
+                                            value: offerCubit.moreBrands['Sedan'],
+                                            onChanged: (value) {
+                                                offerCubit.changeMoreBrand(brand: 'Sedan');
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
 
                                 const SizedBox(
@@ -150,9 +396,10 @@ bool val = true;
                                 TextFormField(
                                   controller: modelController,
                                   decoration:  InputDecoration(
-                                    border: const OutlineInputBorder(),
-                                    labelText: "${offerCubit.items["model"]??''}",
-                                    hintText: "Enter a model",
+                                      border: const OutlineInputBorder(),
+                                      labelText: "${offerCubit.items["model"]??''}",
+                                      hintText: "Enter a model",
+                                      floatingLabelBehavior: FloatingLabelBehavior.always
                                   ),
 
                                   validator: (String? value){
@@ -174,6 +421,7 @@ bool val = true;
                                     border: const OutlineInputBorder(),
                                     labelText: "${offerCubit.items["model_year"]??''}",
                                     hintText: "year of fabrication (e.g. 1998)",
+                                    floatingLabelBehavior: FloatingLabelBehavior.always,
                                   ),
 
                                   validator: (String? value){
@@ -193,6 +441,7 @@ bool val = true;
                                     border:const OutlineInputBorder(),
                                     labelText: "${offerCubit.items["seat_count"]??''}",
                                     hintText: "number of seats",
+                                    floatingLabelBehavior: FloatingLabelBehavior.always,
                                   ),
                                   validator: (String? value){
                                     if(value == "" || value == null){
@@ -208,9 +457,10 @@ bool val = true;
                                 TextFormField(
                                   controller: bodyTypeController,
                                   decoration:  InputDecoration(
-                                    border: const OutlineInputBorder(),
-                                    labelText: "${offerCubit.items["body_type"]??''}",
-                                    hintText: "Enter a type",
+                                      border: const OutlineInputBorder(),
+                                      labelText: "${offerCubit.items["body_type"]??''}",
+                                      hintText: "Enter a type",
+                                      floatingLabelBehavior: FloatingLabelBehavior.always,
                                   ),
                                   validator: (String? value){
                                     if(value == null || value == ""){
@@ -329,13 +579,14 @@ bool val = true;
                                 ),
 
                                 Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
 
                                         Expanded(
                                           child: Container(
                                             child: CheckboxListTile(
                                               contentPadding: EdgeInsets.all(0.0),
+                                                controlAffinity: ListTileControlAffinity.leading,
                                                 title:  Text("${offerCubit.items["abs"]??''}",),
                                                 autofocus: false,
                                                 activeColor: Colors.blue,
@@ -353,6 +604,7 @@ bool val = true;
                                         Expanded(
                                         child: Container(
                                           child: CheckboxListTile(
+                                              controlAffinity: ListTileControlAffinity.leading,
                                               title: Text("${offerCubit.items["air_conditioning"]??''}",),
                                               autofocus: false,
                                               activeColor: Colors.blue,
@@ -369,13 +621,14 @@ bool val = true;
                                     ),
 
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
 
                                     Expanded(
                                       child: Container(
                                         child: CheckboxListTile(
                                             contentPadding: EdgeInsets.all(0.0),
+                                            controlAffinity: ListTileControlAffinity.leading,
                                             title:  Text("${offerCubit.items["sunroof"]??''}",),
                                             autofocus: false,
                                             activeColor: Colors.blue,
@@ -393,6 +646,7 @@ bool val = true;
                                     Expanded(
                                         child: Container(
                                           child: CheckboxListTile(
+                                              controlAffinity: ListTileControlAffinity.leading,
                                               title:  Text("${offerCubit.items["radio"]??''}",),
                                               autofocus: false,
                                               activeColor: Colors.blue,
@@ -416,12 +670,13 @@ bool val = true;
                                   controller: rentalPeriod,
                                   decoration:  InputDecoration(
                                     border:const OutlineInputBorder(),
-                                    labelText: "${offerCubit.items["rent"]??''}",
+                                    labelText: "${offerCubit.items["rental_period"]??''}",
                                     hintText: "e.g. 5 days",
+                                    floatingLabelBehavior: FloatingLabelBehavior.always
                                   ),
                                   validator: (String? value){
                                     if(value == null || value == ""){
-                                      return "${offerCubit.items["rent_error"]??''}";
+                                      return "${offerCubit.items["rental_period_error"]??''}";
                                     }
                                   },
                                 ),
@@ -435,8 +690,7 @@ bool val = true;
               );
             }),
 
-          ),
-        );
+          );
   }
 
 }
@@ -444,6 +698,24 @@ bool val = true;
 
 void main() async {
 
- Bloc.observer = MyBlocObserver();
-  runApp(CarOfferScreen(language: "English"));
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  Bloc.observer = MyBlocObserver();
+
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  // This widget is the root of application.
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Tawsila',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: CarOfferScreen(language: "English"),
+      debugShowCheckedModeBanner: false,
+    );
+  }
 }

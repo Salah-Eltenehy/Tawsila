@@ -2,6 +2,10 @@ abstract class OfferStates{}
 
 class OfferInitialState extends OfferStates{}
 
+class SelectCarBrand extends OfferStates {}
+
+class SelectMoreCarBrand extends OfferStates {}
+
 class TransmissionSelection extends OfferStates{}
 
 class GasSelection extends OfferStates{}
