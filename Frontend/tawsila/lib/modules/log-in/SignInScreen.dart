@@ -8,6 +8,7 @@ import 'package:tawsila/modules/signup/SignUpScreen.dart';
 import 'package:tawsila/modules/signup/cubit/SignUpCubit.dart';
 import 'package:tawsila/modules/signup/cubit/SignUpStates.dart';
 import 'package:tawsila/shared/components/Components.dart';
+import 'package:tawsila/shared/network/local/Cachhelper.dart';
 import 'package:tawsila/shared/network/remote/DioHelper.dart';
 import 'package:toast/toast.dart';
 
@@ -125,25 +126,26 @@ class SignInScreen extends StatelessWidget{
                             ),
                             onPressed: () {
                               if(formKey.currentState!.validate()) {
-                                navigateAndFinish(context: context, screen: HomePageScreen(language: language));
-                                // DioHelper.postData(url: 'Users/LogIn',
-                                //     data: {'email' : emailController.text,
-                                //       'password' : passwordController.text}).
-                                //     then((value){
-                                //     sss.init(context);
-                                //     Toast.show("Log In Successfully",
-                                //         duration: Toast.lengthShort,
-                                //         gravity:  Toast.bottom,backgroundColor: Colors.green);
-                                //         navigateAndFinish(context: context, screen: HomePageScreen(language: language));
-                                //         print(value);
-                                //     }).catchError((error) {
-                                //     sss.init(context);
-                                //     Toast.show("Invalid email or password",
-                                //     duration: Toast.lengthLong,
-                                //     gravity:  Toast.bottom,backgroundColor: Colors.red);
-                                //
-                                // print("#############");
-                                // });
+                                DioHelper.postData(url: 'Users/LogIn',
+                                    data: {'email' : emailController.text,
+                                      'password' : passwordController.text}).
+                                    then((value){
+                                    CachHelper.saveData(key: 'token', value: value.data['token']);
+                                    sss.init(context);
+                                    Toast.show("Log In Successfully",
+                                        duration: Toast.lengthShort,
+                                        gravity:  Toast.bottom,backgroundColor: Colors.green);
+                                        navigateAndFinish(context: context, screen: HomePageScreen(language: language));
+                                        print(value);
+                                    }).catchError((error) {
+                                    sss.init(context);
+                                    print(error.toString());
+                                    Toast.show("Invalid email or password",
+                                    duration: Toast.lengthLong,
+                                    gravity:  Toast.bottom,backgroundColor: Colors.red);
+
+                                print("#############");
+                                });
                               }
                             },
                           ),

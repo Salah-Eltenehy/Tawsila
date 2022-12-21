@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
-
+import 'dart:convert';
 import '../network/local/Cachhelper.dart';
 
 class UserLocation {
@@ -20,17 +20,9 @@ class UserLocation {
       permissionGranted = await location.requestPermission();
     }
     locationData = await location.getLocation();
-    print("LOCATION");
-    print("LATITUDE: ${locationData.latitude}");
-    print("LONGTIUDE: ${locationData.longitude}");
     // await location.getLocation().then((value) => locationData = value);
     CachHelper.saveData(key: 'latitude', value: locationData.latitude);
     CachHelper.saveData(key: 'longitude', value: locationData.longitude);
-    double d1 = await CachHelper.getData(key: "latitude") as double;
-    double d2 = await CachHelper.getData(key: "longitude") as double;
-    print("LATITUDE: ${d1}");
-    print("LONGTIUDE: ${d2}");
-    print("DONNNNNNNNNNNNNNNNNNNNNNNNNE");
   }
 }
 Widget defaultTextFormFieldRow({
@@ -159,4 +151,38 @@ Widget buildTextField({
       ),
     ),
   );
+}
+
+Map<String, dynamic> parseJwt(String token) {
+  final parts = token.split('.');
+  if (parts.length != 3) {
+    throw Exception('invalid token');
+  }
+
+  final payload = _decodeBase64(parts[1]);
+  final payloadMap = json.decode(payload);
+  if (payloadMap is! Map<String, dynamic>) {
+    throw Exception('invalid payload');
+  }
+
+  return payloadMap;
+}
+
+String _decodeBase64(String str) {
+  String output = str.replaceAll('-', '+').replaceAll('_', '/');
+
+  switch (output.length % 4) {
+    case 0:
+      break;
+    case 2:
+      output += '==';
+      break;
+    case 3:
+      output += '=';
+      break;
+    default:
+      throw Exception('Illegal base64url string!"');
+  }
+
+  return utf8.decode(base64Url.decode(output));
 }

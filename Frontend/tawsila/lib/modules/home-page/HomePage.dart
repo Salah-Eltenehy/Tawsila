@@ -10,6 +10,10 @@ import 'package:tawsila/modules/home-page/Map.dart';
 import 'package:tawsila/modules/search-result/SearchResultScreen.dart';
 import 'package:tawsila/shared/components/Components.dart';
 
+import '../../shared/network/local/Cachhelper.dart';
+import '../Setting/SettingsScreen.dart';
+import '../car-offer/CarOfferScreen.dart';
+
 class HomePageScreen extends StatelessWidget {
   final language;
 
@@ -47,7 +51,7 @@ class HomePageScreen extends StatelessWidget {
                     InkWell(
                       onTap: () {
                         print("User page");
-                        navigateTo(context: context, screen: EditProfilePageState(language: language,));
+                        navigateTo(context: context, screen: EditProfilePageState(language: language, edit: false,));
                       },
                       child: const CircleAvatar(
                         child: Image(
@@ -72,6 +76,7 @@ class HomePageScreen extends StatelessWidget {
                                 title2: homePageCubit.items['offerCar2']??'',
                                 image: AssetImage('assets/images/car.png'),
                                 onTapFunc: () {
+                                  navigateTo(context: context, screen: CarOfferScreen(language: language));
                                   print("Offer Car page");
                                   print("Width = ${imageSize}");
                                 },
@@ -138,8 +143,29 @@ class HomePageScreen extends StatelessWidget {
                             height: 10,
                           ),
                           InkWell(
-                            onTap: () {
-                              navigateTo(context: context, screen: SearchResultScreen());
+                            onTap: () async{
+                              double latitude = await CachHelper.getData(key: "latitude") as double;
+                              double longitude = await CachHelper.getData(key: "longitude") as double;
+                              Map<String, dynamic> query = {
+                                "brands": "",
+                                "fuelTypes": "",
+                                "hasAbs": "",
+                                "hasAirConditioning": "",
+                                "hasRadio": "",
+                                "hasSunroof": "",
+                                "latitude": 27.5667,
+                                "longitude": 53.9,
+                                "maxPrice":"",
+                                "maxYear":"",
+                                "minPrice":"",
+                                "minYear":"",
+                                "models":"",
+                                "offset": "",
+                                "seatsCount": "",
+                                "sortBy":"",
+                                "transmission":"",
+                              };
+                              navigateTo(context: context, screen: SearchResultScreen(query: query,));
                             },
                             child: Container(
                               height: 40,

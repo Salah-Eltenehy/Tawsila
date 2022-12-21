@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:tawsila/modules/search-result/SearchResultScreen.dart';
 import 'package:tawsila/shared/components/Components.dart';
+
+import '../../shared/network/local/Cachhelper.dart';
 
 class FilterSearchResultsScreen extends StatefulWidget {
   @override
@@ -15,6 +18,8 @@ class _FilterSearchResultsScreenState extends State<FilterSearchResultsScreen> {
   var dateController = TextEditingController();
   var automatic = false;
   var gasoline = false;
+  String finalBrand = "other";
+  String finalMoreBrands = "Convertible";
   Map<String, bool> brands = {
     "lada": false,
     "verna": false,
@@ -587,6 +592,8 @@ class _FilterSearchResultsScreenState extends State<FilterSearchResultsScreen> {
               InkWell(
                 onTap: () {
                   print("GET SEARCH RESULTS");
+                  Navigator.of(context).pop();
+                  //navigateTo(context: context, screen: );
                 },
                 child: Container(
                   height: 40,
@@ -670,6 +677,31 @@ class _FilterSearchResultsScreenState extends State<FilterSearchResultsScreen> {
         ),
       ),
     );
+  }
+
+  void getResults() async{
+    double latitude = await CachHelper.getData(key: "latitude") as double;
+    double longitude = await CachHelper.getData(key: "longitude") as double;
+    Map<String, dynamic> query = {
+      "brands": finalBrand,
+      "fuelTypes": gasoline? "gasoline" : "natural_gas",
+      "hasAbs": options['ABS'],
+      "hasAirConditioning": options['Air'],
+      "hasRadio": options['false'],
+      "hasSunroof": options['Sunroof'],
+      "latitude": latitude,
+      "longitude": longitude,
+      "maxPrice": toPriceController.text as int,
+      "maxYear": toModelController.text as int,
+      "minPrice": fromPriceController.text as int ,
+      "minYear": toModelController.text as int,
+      "models": finalMoreBrands,
+      "offset": 0,
+      "seatsCount": 0,
+      "sortBy": "",
+      "transmission": automatic? "automatic": "manual",
+    };
+    navigateAndFinish(context: context, screen: SearchResultScreen(query: query));
   }
 }
 

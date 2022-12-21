@@ -19,15 +19,20 @@ import 'modules/Language/ChooseLanguage.dart';
 import 'modules/filter/FilterScreen.dart';
 
 void main() async {
-  
+
+
+
   WidgetsFlutterBinding.ensureInitialized();
   
   UserLocation()..getLocation();
   await CachHelper.init();
-
+  // String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiMyIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2dpdmVubmFtZSI6IkpvZSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL3N1cm5hbWUiOiJEb2UiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJqb2VAZXhhbXBsZS5jb20iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9tb2JpbGVwaG9uZSI6IjAwMjAxMTIzNDU2Nzg5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiVmVyaWZpZWRVc2VyIiwibmJmIjoxNjcwMjY2NzMzLCJleHAiOjE2NzAyNzAzMzMsImlzcyI6Imh0dHBzOi8vYXBpLnRhd3NpbGEuY29tIiwiYXVkIjoibW9iaWxlLWFwcCJ9.mJ2Qknav22EU6DtcPRR5GMQZN6gnUjqQ1U6Ab3WBrtM";
+  // CachHelper.saveData(key: 'token', value: token);
+  //String t = await CachHelper.getData(key: 'token')?? "";
+  //Map<String, dynamic> m = parseJwt(t);
+  //print(m);
   Bloc.observer = MyBlocObserver();
   DioHelper.init();
-
 
   runApp(MyApp());
 }
