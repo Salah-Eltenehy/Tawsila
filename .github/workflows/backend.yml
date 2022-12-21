@@ -18,7 +18,7 @@ jobs:
         with:
           node-version: 16
           cache: 'yarn'
-          cache-dependency-path: ${{ github.workspace }}/Backend/tests/yarn.lock
+          cache-dependency-path: ${{ github.workspace }}/Backend/PostmanTests/yarn.lock
 
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v3
@@ -26,7 +26,7 @@ jobs:
           dotnet-version: '6.0.x'
       
       - name: Install newman for API testing
-        working-directory: ./Backend/tests
+        working-directory: ./Backend/PostmanTests
         run: yarn install --immutable --immutable-cache --check-cache
 
       - name: Make Directory for downloaded executables
@@ -52,7 +52,7 @@ jobs:
           sleep 15
 
       - name: Test API
-        working-directory: ./Backend/tests
+        working-directory: ./Backend/PostmanTests
         run: yarn newman run Tests.postman_collection.json -e tawsilaDevelopment.postman_environment.json --insecure -r "cli,htmlextra" --reporter-htmlextra-export ${{ github.workspace }}/.workflow-data/results/api/htmlreport.html --reporter-htmlextra-darkTheme
 
       - name: Upload Test Results

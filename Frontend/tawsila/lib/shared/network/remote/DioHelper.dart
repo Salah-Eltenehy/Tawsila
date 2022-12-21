@@ -7,7 +7,7 @@ class DioHelper {
   {
     dio = Dio(
       BaseOptions(
-        baseUrl: 'https://app-tawsila-api-prod-eastus-001.azurewebsites.net/',
+        baseUrl: 'https://app-tawsila-api-staging-eastus-001.azurewebsites.net/',
         receiveDataWhenStatusError: true,
       ),
     );
@@ -15,39 +15,24 @@ class DioHelper {
 
   static Future<Response> getData({
     required String url,
-    // Map<String, dynamic>? query,
-    // String lang = 'en',
-    // String token = '',
+    required String token,
+    required Map<String, dynamic> query
   }) async
   {
-    // dio.options.headers =
-    // {
-    //   'lang':lang,
-    //   'Authorization': token,
-    //   'Content-Type': 'application/json',
-    // };
-
     return await dio.get(
       url,
-      // queryParameters: query??{},
+      options: Options(
+        headers: {"Authorization" : "Bearer ${token}"}
+      ),
+      queryParameters: query
     );
   }
 
   static Future<Response> postData({
     required String url,
     required Map<String, dynamic> data,
-    // Map<String, dynamic>? query,
-    // String lang = 'en',
-    // String token = '',
   }) async
   {
-    // dio.options.headers =
-    // {
-    //   'lang':'en',
-    //   'Authorization': token,
-    //   'Content-Type': 'application/json',
-    // };
-
     return dio.post(
       url,
       data: data,
@@ -57,21 +42,10 @@ class DioHelper {
   static Future<Response> putData({
     required String url,
     required Map<String, dynamic> data,
-    // Map<String, dynamic>? query,
-    // String lang = 'en',
-    // String token = '',
   }) async
   {
-    // dio.options.headers =
-    // {
-    //   'lang':lang,
-    //   'Authorization': token,
-    //   'Content-Type': 'application/json',
-    // };
-
     return dio.put(
       url,
-      // queryParameters: query??{},
       data: data,
     );
   }

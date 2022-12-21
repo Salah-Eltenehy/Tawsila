@@ -3,15 +3,16 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tawsila/shared/components/Components.dart';
+import 'package:tawsila/shared/network/local/Cachhelper.dart';
 
 import '../../../shared/network/remote/DioHelper.dart';
-import '../../../shared/constants.dart';
+import '../../../shared/end-points.dart';
 import 'SignUpStates.dart';
 
 
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
@@ -80,4 +81,36 @@ class SignUpCubit extends Cubit<SignUpStates> {
       emit(AgreeTermsAndConditionsColorState());
   }
 
+  late Map<String, dynamic> usersInfo;
+  Map<String, dynamic> tokenInfo={};
+
+  void getUserInfo() async{
+    usersInfo = {};
+    print("here###################################");
+    String token = await CachHelper.getData(key: 'token') as String;
+    tokenInfo = parseJwt(token);
+    print(tokenInfo[USERID]);
+    emit(TokenState());
+    print(tokenInfo);
+    print(GETUSER);
+    DioHelper.getData(
+        url: "users/${tokenInfo[USERID]}",
+        query: {
+          //'userId': "${tokenInfo[USERID]}"
+        }, token: token,
+    ).then((value) {
+        print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+        print(value);
+        print("value --------------------");
+        usersInfo = value.data['users'][0];
+        print(usersInfo);
+        print("kkkkkkkkkkkkkkkkk");
+        emit(GetUserInfoState());
+    }).catchError((error) {
+      print("************************************************************************");
+      print(error.toString());
+    });
+  }
+
 }
+

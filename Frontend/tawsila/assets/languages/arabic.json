@@ -19,6 +19,11 @@
     "termsAndConditions": "اوافق على برنامج توصيلة ",
     "termsAndConditionsPage": "الشروط و البنود",
     "signUp":"انشئ حساباً",
+    "profile": "الملف الشخصي",
+    "edit profile": "تعديل الملف الشخصي",
+    "cancel": "الغاء",
+    "save" : "حفظ",
+    "profileEdited": "تم تعديل الملف الشخصي",
 
     "emailErrorEmpty": "Email can't be empty",
     "passwordError": "Password is too short",
@@ -28,9 +33,7 @@
     "doNotHaveAnAccount": "لا يوجد لديك حساب؟",
     "registerNow": "سجل الان",
     "forgetPassword": "Forget password?"
-
-  }
-,
+  },
   "HomePage":
   {
     "title":"الرئيسية",
@@ -50,6 +53,44 @@
     "info"   : "أدخل رقم التأكيد",
     "resend" : "اعاده ارسال",
     "enter"  : "تأكيد"
-  }
+  },
 
+  "offerPage": {
+    "offer": "اعرض مركبتك",
+    "upload": "قم برفع صور للمركبة",
+    "brand": "الماركة",
+    "brand_error": "لم بتم ادخال ماركة",
+    "model": "الطراز",
+    "model_error": "لم يتم ادخال الطراز",
+    "model_year": "تاريخ الطراز",
+    "model_year_error": "لم يتم ادخال تاريخ الطراز",
+    "seat_count": "عدد الكراسي",
+    "seat_count_error": "عدد الكراسي غي معلوم",
+    "body_type": "نوع الهيكل",
+    "body_type_error": "لم يتم ادخال نوع الهيكل",
+    "transmission": "الانتقال",
+    "automatic": "اتوماتيك",
+    "manual": "يدوي",
+    "fuel_type": "نوع الوقود",
+    "gas": "بنزين",
+    "natural_gas": "غاز طبيعي",
+    "options": "خيارات",
+    "abs": "فرامل ضد الانغلاق",
+    "air_conditioning": "نظام تكييف",
+    "sunroof": "فتحة سقف",
+    "radio": "راديو",
+    "rental_period": "اقصى مدة للتأجير",
+    "rental_period_error": "مدة التأجير غير معلومة"
+  },
+
+  "settings": {
+    "settings": "الاعدادت",
+    "password": "تغيير الرقم السري",
+    "language": "اللغة",
+    "account" : "الحساب",
+    "signout" : "تسجيل الخروج",
+    "close"   : "اغلق",
+    "profile": "الملف الشخصي",
+    "edit profile": "تعديل الملف الشخصي"
+  }
 }

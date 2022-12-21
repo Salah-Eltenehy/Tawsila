@@ -268,6 +268,7 @@ class SignUpScreen extends StatelessWidget {
                             }
 
                             if(formKey.currentState!.validate()) {
+                              //navigateAndFinish(context: context, screen: Verification(language: language,));
                               print('###################');
                               print(phoneController.text.replaceAll("+", "00"));
                               print("#########################");
@@ -287,6 +288,8 @@ class SignUpScreen extends StatelessWidget {
                                 navigateAndFinish(context: context, screen: Verification(language: language,));
                                 print(value);
                               }).catchError((error) {
+                                print("ERRORRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");
+                                print(error.toString());
                                 sss.init(context);
                                 Toast.show("email is not valid",
                                     duration: Toast.lengthLong,

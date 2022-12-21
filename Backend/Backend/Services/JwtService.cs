@@ -25,16 +25,16 @@ public class JwtService : IJwtService
 
     public JwtService(IOptions<JwtSettings> jwtSettings, IMailService mailService)
     {
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Value.Secret));
+        SymmetricSecurityKey key = new(Encoding.UTF8.GetBytes(jwtSettings.Value.Secret));
         _signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
         _verificationCodeHasher = new HMACSHA256(Encoding.UTF8.GetBytes(jwtSettings.Value.Secret));
         _jwtSettings = jwtSettings.Value;
         _mailService = mailService;
     }
-    
+
     public string IssueToken(User user, DateTime notBefore, string? verificationCode = null)
     {
-        var claims = new List<Claim>
+        List<Claim> claims = new()
         {
             new(ClaimTypes.Name, user.Id.ToString()),
             new(ClaimTypes.GivenName, user.FirstName),
@@ -43,7 +43,7 @@ public class JwtService : IJwtService
             new(ClaimTypes.MobilePhone, user.PhoneNumber),
             new(ClaimTypes.Role, user.IsEmailVerified ? "VerifiedUser" : "UnverifiedUser"),
         };
-        var token = new JwtSecurityToken(
+        JwtSecurityToken token = new(
             issuer: _jwtSettings.Issuer,
             audience: _jwtSettings.Audience,
             claims: claims,
@@ -53,23 +53,26 @@ public class JwtService : IJwtService
         );
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
-    
+
     public string GetVerificationCode(string email, DateTime time)
     {
-        var origin = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-        var diff = time.ToUniversalTime() - origin;
-        var str = email + Math.Floor(diff.TotalSeconds);
-        var hash = _verificationCodeHasher.ComputeHash(Encoding.UTF8.GetBytes(str));
-        var code = BitConverter.ToUInt32(hash, 0) % 1000000;
+        DateTime origin = new(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+        TimeSpan diff = time.ToUniversalTime() - origin;
+        string str = email + Math.Floor(diff.TotalSeconds);
+        byte[] hash = _verificationCodeHasher.ComputeHash(Encoding.UTF8.GetBytes(str));
+        uint code = BitConverter.ToUInt32(hash, 0) % 1000000;
         return code.ToString("D6");
     }
 
     public async Task<string> SendVerificationCode(User user)
     {
-        var timeNow = DateTime.UtcNow;
-        var code = GetVerificationCode(user.Email, timeNow);
-        await _mailService.SendEmailAsync(user.Email, "Verification Code",
-            $"Your verification code is {code}");
+        DateTime timeNow = DateTime.UtcNow;
+        string code = GetVerificationCode(user.Email, timeNow);
+        await _mailService.SendEmailAsync(
+            user.Email,
+            "Verification Code",
+            $"Your verification code is {code}"
+        );
         return IssueToken(user, timeNow, code);
     }
 }

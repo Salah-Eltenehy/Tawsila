@@ -7,7 +7,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tawsila/modules/home-page/Cubit/Cubit.dart';
 import 'package:tawsila/modules/home-page/Cubit/CubitStates.dart';
 import 'package:tawsila/modules/home-page/Map.dart';
+import 'package:tawsila/modules/search-result/SearchResultScreen.dart';
 import 'package:tawsila/shared/components/Components.dart';
+
+import '../../shared/network/local/Cachhelper.dart';
+import '../Setting/SettingsScreen.dart';
+import '../car-offer/CarOfferScreen.dart';
 
 class HomePageScreen extends StatelessWidget {
   final language;
@@ -37,7 +42,7 @@ class HomePageScreen extends StatelessWidget {
               appBar: AppBar(
                   title: Text(
                     "${homePageCubit.items['title'] ?? ''}",
-                    style: TextStyle(
+                    style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 20
                     ),
@@ -46,8 +51,9 @@ class HomePageScreen extends StatelessWidget {
                     InkWell(
                       onTap: () {
                         print("User page");
+                        navigateTo(context: context, screen: EditProfilePageState(language: language, edit: false,));
                       },
-                      child: CircleAvatar(
+                      child: const CircleAvatar(
                         child: Image(
                           image: AssetImage('assets/images/owner.png')
                         ),
@@ -70,6 +76,7 @@ class HomePageScreen extends StatelessWidget {
                                 title2: homePageCubit.items['offerCar2']??'',
                                 image: AssetImage('assets/images/car.png'),
                                 onTapFunc: () {
+                                  navigateTo(context: context, screen: CarOfferScreen(language: language));
                                   print("Offer Car page");
                                   print("Width = ${imageSize}");
                                 },
@@ -136,8 +143,29 @@ class HomePageScreen extends StatelessWidget {
                             height: 10,
                           ),
                           InkWell(
-                            onTap: () {
-                              print("GET SEARCH RESULTS");
+                            onTap: () async{
+                              double latitude = await CachHelper.getData(key: "latitude") as double;
+                              double longitude = await CachHelper.getData(key: "longitude") as double;
+                              Map<String, dynamic> query = {
+                                "brands": "",
+                                "fuelTypes": "",
+                                "hasAbs": "",
+                                "hasAirConditioning": "",
+                                "hasRadio": "",
+                                "hasSunroof": "",
+                                "latitude": 27.5667,
+                                "longitude": 53.9,
+                                "maxPrice":"",
+                                "maxYear":"",
+                                "minPrice":"",
+                                "minYear":"",
+                                "models":"",
+                                "offset": "",
+                                "seatsCount": "",
+                                "sortBy":"",
+                                "transmission":"",
+                              };
+                              navigateTo(context: context, screen: SearchResultScreen(query: query,));
                             },
                             child: Container(
                               height: 40,
@@ -150,7 +178,7 @@ class HomePageScreen extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.center,
 
                                   children: [
-                                    Icon(
+                                    const Icon(
                                       Icons.search,
                                       color: Colors.white,
                                     ),
@@ -179,26 +207,7 @@ class HomePageScreen extends StatelessWidget {
     );
   }
 
-  Widget buildTextField({
-    required TextEditingController controller,
-    required String placeHolder
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5),
-          border: Border.all(
-              color: Colors.black
-          )
-      ),
-      child: TextField(
-        controller: controller,
-        decoration: InputDecoration(
-            border: InputBorder.none,
-            hintText: '${placeHolder}'
-        ),
-      ),
-    );
-  }
+
 //${homePageCubit.items['offerCar1']??''}
 //${homePageCubit.items['offerCar2']??''}
   Widget buildPageItem({

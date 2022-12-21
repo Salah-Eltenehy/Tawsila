@@ -33,7 +33,7 @@ namespace Backend.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Review>> GetReview(int id)
         {
-            var review = await _reviewRepo.GetReview(id);   
+            var review = await _reviewRepo.GetReview(id);
 
             if (review == null)
             {
@@ -42,7 +42,6 @@ namespace Backend.Controllers
 
             return review;
         }
-
 
         [HttpPost]
         public async Task<ActionResult<Review>> PostReview(ReviewRequest reviewRc)

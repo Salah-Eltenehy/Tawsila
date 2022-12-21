@@ -21,6 +21,11 @@
     "termsAndConditions": "I agree to Tawsila ",
     "termsAndConditionsPage": "Terms and Conditions",
     "signUp": "Create Account",
+    "profile": "profile",
+    "edit profile": "Edit Profile",
+    "cancel": "cancel",
+    "save" : "save",
+    "profileEdited": "Profile Edited",
 
     "hey" : "Hey",
     "welcome2" : "login to your existing account",
@@ -29,6 +34,7 @@
     "registerNow" : "Register now",
     "forgetPassword": "Forget password?"
   },
+
   "HomePage":
   {
     "title":"Home",
@@ -43,10 +49,51 @@
     "AddressOfPickupHint":"Leave blank of current location",
     "searchResults": "Search Results"
   },
+
   "verify": {
     "verify" : "verify",
     "info"   : "enter verification code",
     "resend" : "Resend",
     "enter"  : "verify"
+  },
+
+
+  "offerPage": {
+    "offer": "Offer Your Vehicle",
+    "upload": "upload Photos for the vehicle",
+    "brand": "Brand",
+    "brand_error": "no brand is entered",
+    "model": "Model",
+    "model_error": "no model is entered",
+    "model_year": "Model Year",
+    "model_year_error": "model year is empty",
+    "seat_count": "Seat Count",
+    "seat_count_error": "seat count is unknown",
+    "body_type": "Body Type",
+    "body_type_error": "body type is empty",
+    "transmission": "Transmission",
+    "automatic": "Automatic",
+    "manual": "Manual",
+    "fuel_type": "Fuel Type",
+    "gas": "Gasoline",
+    "natural_gas": "Natural Gas",
+    "options": "Options",
+    "abs": "ABS",
+    "air_conditioning": "Air Conditioning",
+    "sunroof": "Sunroof",
+    "radio": "Radio",
+    "rental_period": "Maximum Rental Period",
+    "rental_period_error": "rental period is unknown"
+  },
+  "settings": {
+    "profile": "profile",
+    "edit profile": "Edit Profile",
+    "settings": "settings",
+    "password": "change password",
+    "language": "language",
+    "account" : "Account",
+    "signout" : "Log Out",
+    "close"   : "close"
   }
 }
+
