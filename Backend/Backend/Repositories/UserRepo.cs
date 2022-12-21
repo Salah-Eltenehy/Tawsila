@@ -6,7 +6,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Repositories;
 
-public class UserRepo
+public interface IUserRepo
+{
+    bool IsUserExists(int id);
+    bool IsUserExists(string email);
+    Task<User> GetUser(int id);
+    Task<User> GetUser(string email);
+    Task<User[]> GetUsers(int[] ids);
+    Task RegisterUser(User user);
+    Task<User> VerifyUser(int id);
+    Task<User> UpdateUser(int id, UpdateUserRequest update);
+    Task DeleteUser(int id);
+    Task<Car[]> GetUserCars(int id);
+    Task<IEnumerable<Review>> GetReviews(int id, int offset, int limit);
+}
+
+public class UserRepo : IUserRepo
 {
     private readonly TawsilaContext _context;
 
@@ -80,7 +95,7 @@ public class UserRepo
         return user;
     }
 
-    public async Task<User> UpdateUser(int id, UpdateRequest update)
+    public async Task<User> UpdateUser(int id, UpdateUserRequest update)
     {
         var user = await _context.Users.FindAsync(id);
         if (user == null)
@@ -92,6 +107,7 @@ public class UserRepo
         user.FirstName = update.FirstName;
         user.LastName = update.LastName;
         user.PhoneNumber = update.PhoneNumber;
+        user.Avatar = update.Avatar ?? user.Avatar;
         user.HasWhatsapp = update.HasWhatsapp;
         user.UpdatedAt = DateTime.UtcNow;
         await _context.SaveChangesAsync();
@@ -109,9 +125,24 @@ public class UserRepo
         _context.Users.Remove(user);
         await _context.SaveChangesAsync();
     }
+    
+    public async Task<Car[]> GetUserCars(int id)
+    {
+        var user = await _context.Users.Include(u => u.Cars).FirstOrDefaultAsync(u => u.Id == id);
+        if (user == null)
+        {
+            throw new NotFoundException("User not found");
+        }
+
+        return user.Cars.ToArray();
+    }
 
     public async Task<IEnumerable<Review>> GetReviews(int id, int offset, int limit)
     {
-        return await _context.Reviews.Where(r => r.RevieweeId == id).Skip(offset).Take(limit).ToListAsync();
+        return await _context.Reviews
+            .Where(r => r.RevieweeId == id)
+            .Skip(offset)
+            .Take(limit)
+            .ToListAsync();
     }
 }

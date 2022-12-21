@@ -1,224 +1,357 @@
 ﻿using Backend.Contexts;
+using Backend.Models;
 using Backend.Models.API.CarAPI;
 using Backend.Models.Entities;
 using Backend.Models.Exceptions;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Server.IIS.Core;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
+
+namespace Backend.Repositories;
 
 public interface ICarRepo
 {
-    public   Task<ActionResult<IEnumerable<Car>>> GetCars();
-    public   Task<ActionResult<Car>> GetCar(int id);
-    public  Task<ActionResult> PostCar(Car car);
-    public Task<ActionResult> PutCar(int id, Car car);
-    public  Task<ActionResult> DeleteCar(Car car);
-    Task<IEnumerable<Car>> GetCarsFiltered(GetCarRequest carReq);
+    public Task<Car> GetCar(int id);
+    public Task<PaginatedList<Car>> GetCars(GetCarsRequest req);
+    public Task<Car> CreateCar(Car car);
+    public Task<Car> UpdateCar(int id, UpdateCarRequest update);
+    public Task DeleteCar(int id);
 }
 
-
-namespace Backend.Repositories
+public class CarRepo : ICarRepo
 {
-    public class CarRepo: ICarRepo
+    private readonly TawsilaContext _context;
+
+    public CarRepo(TawsilaContext context)
     {
-        private readonly TawsilaContext _context;
+        _context = context;
+    }
 
-        public CarRepo(TawsilaContext context)
+    public async Task<Car> GetCar(int id)
+    {
+        var car = await _context.Cars.FindAsync(id);
+        if (car == null)
         {
-            _context = context;
+            throw new NotFoundException("Car not found");
         }
 
-        public async Task<ActionResult<IEnumerable<Car>>> GetCars()
+        _context.Entry(car).State = EntityState.Detached;
+        return car;
+    }
+
+    public async Task<PaginatedList<Car>> GetCars(GetCarsRequest req)
+    {
+        string[] brands = req.Brands != null 
+            ? req.Brands.Split(",", StringSplitOptions.RemoveEmptyEntries)
+            : Array.Empty<string>();
+        string[] models = req.Models != null
+            ? req.Models.Split(",", StringSplitOptions.RemoveEmptyEntries)
+            : Array.Empty<string>();
+        int? minYear = req.MinYear;
+        int? maxYear = req.MaxYear;
+        int? minPrice = req.MinPrice;
+        int? maxPrice = req.MaxPrice;
+        int? seatsCount = req.SeatsCount;
+        string[] Transmission = req.Transmission != null
+            ? req.Transmission.Split(",", StringSplitOptions.RemoveEmptyEntries)
+            : Array.Empty<string>();
+        string[] fuelTypes = req.FuelTypes != null
+            ? req.FuelTypes.Split(",", StringSplitOptions.RemoveEmptyEntries)
+            : Array.Empty<string>();
+        string[] bodyTypes = req.BodyTypes != null
+            ? req.BodyTypes.Split(",", StringSplitOptions.RemoveEmptyEntries)
+            : Array.Empty<string>();
+        bool? hasAirConditioning = req.HasAirConditioning;
+        bool? hasAbs = req.HasAbs;
+        bool? hasRadio = req.HasRadio;
+        bool? hasSunroof = req.HasSunroof;
+        double longitude = req.Longitude;
+        double latitude = req.Latitude;
+        string sortBy = req.SortBy ?? "PRICE_DESC";
+        int? offset = req.Offset;
+
+        if (minYear < 1901)
         {
-            return await _context.Cars.ToListAsync();
+            throw new BadRequestException("Minimum year cannot be less than 1901");
         }
 
-        public async Task<ActionResult<Car>> GetCar(int id)
+        if (maxYear < 1901)
         {
-            try
-            {
-                var car = await _context.Cars.FindAsync(id);
-                if(car == null)
-                {
-                    throw new NotFoundException("Car not found");
-                }
-                return car;
-            }catch (Exception e)
-            {
-                return new StatusCodeResult(500);
-            }
+            throw new BadRequestException("Maximum year cannot be less than 1901");
         }
 
-        public async Task<ActionResult> PostCar(Car car)
+        if (minPrice < 50)
         {
-            try
-            {
-                _context.Cars.Add(car);
-                await _context.SaveChangesAsync();
-               
-            }catch (Exception e)
-            {
-                return new StatusCodeResult(500);
-            }
-            return new StatusCodeResult(200);
-            
+            throw new BadRequestException("Minimum price cannot be less than 50");
         }
 
-        public async Task<ActionResult> PutCar(int id, Car car)
+        if (maxPrice < 50)
         {
-
-            _context.Entry(car).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CarExists(id))
-                {
-                    return new StatusCodeResult(404);
-                }
-                else
-                {
-                    throw;
-                }
-            }catch(Exception e)
-            {
-                return new StatusCodeResult(500);
-            }
-            return new StatusCodeResult(200);
+            throw new BadRequestException("Maximum price cannot be less than 50");
         }
 
-
-        public async Task<ActionResult> DeleteCar(Car car)
+        if (seatsCount < 1)
         {
-            try
-            {
-                _context.Cars.Remove(car);
-                await _context.SaveChangesAsync();
-            }catch(Exception e)
-            {
-                return new StatusCodeResult(500);
-            }
-            return new StatusCodeResult(200);
+            throw new BadRequestException("Seats count cannot be less than 1");
         }
 
-        public async Task<IEnumerable<Car>> GetCarsFiltered(GetCarRequest carRequest)
+        if (longitude < -180 || longitude > 180)
         {
-            CarFilterCriteria CFC = carRequest.criteria;
-            /*string[] brands = CFC.brand.Split(",");
-            string[] model = CFC.model.Split(",");
-            string[] year = CFC.year.Split(",");
-            string[] price = CFC.price.Split(",");
-            string[] transmision = CFC.transmission.Split(",");
-            string[] feulType = CFC.fuelType.Split(",");
-            string[] bodyType = CFC.bodyType.Split(",");
-            string[] options = CFC.options.Split(",");*/
-
-            string brands = CFC.brand;
-            string model = CFC.model;
-            string yearS = CFC.year;
-            string priceS = CFC.price;
-            string transmision = CFC.transmission;
-            string feulType = CFC.fuelType;
-            string bodyType = CFC.bodyType;
-            string[] options = CFC.options.Split(",");
-            bool hasAirConditioning = false;
-            bool hasAbs = false;
-            bool hasRadio = false;
-            bool hasSunroof = false;
-
-            int yearBegin = 0;
-            int priceBegin = 0;
-
-            int yearEnd = 2023;
-            long priceEnd = 10000000000;
-
-            if (yearS.Length > 0)
-            {
-                yearBegin = int.Parse(yearS.Split(",")[0]);
-                yearEnd = int.Parse(yearS.Split(",")[1]);
-            }
-            if (priceS.Length > 0)
-            {
-                priceBegin = int.Parse(priceS.Split(",")[0]);
-                priceEnd = int.Parse(priceS.Split(",")[1]);
-            }
-
-            foreach (string option in options)
-            {
-                if (option == "Sun Roof") hasSunroof =true;
-                else if (option == "has abs") hasAbs = true;
-                else if (option == "Air Conditioning") hasAirConditioning = true;
-                else if (option == "Radio") hasRadio = true;
-            }
-
-         
-
-            IEnumerable<Car> cars = new List<Car>();
-            int total_count = carRequest.total_count;
-            int offset = carRequest.offset;
-            int updatedOffset = carRequest.updatedOffset;
-            double latitude = CFC.latitude;
-            double longitude = CFC.longitude;
-
-            if (brands.Length == 0 && model.Length == 0 && yearS.Length == 0 && priceS.Length == 0 && transmision.Length == 0 && feulType.Length == 0 && bodyType.Length == 0 && CFC.options.Length == 0)
-            { 
-                cars = _context.Cars.Where(c => c.Brand.Contains(brands))
-                    .Where(c => c.Model.Contains(model))
-                    .Where(c => c.Transmission.Contains(transmision))
-                    .Where(c => c.FuelType.Contains(feulType))
-                    .Where(c => c.BodyType.Contains(bodyType))
-                    .Where(c => c.Year > yearBegin)
-                    .Where(c => c.Year < yearEnd)
-                    .Where(c => c.Price > priceBegin)
-                    .Where(c => c.Price < priceEnd);
-            }
-            else
-            {
-                cars = _context.Cars.Where(c => c.Brand.Contains(brands))
-                    .Where(c => c.Model.Contains(model))
-                    .Where(c => c.Transmission.Contains(transmision))
-                    .Where(c => c.FuelType.Contains(feulType))
-                    .Where(c => c.BodyType.Contains(bodyType))
-                    .Where(c => c.Year > yearBegin)
-                    .Where(c => c.Year < yearEnd)
-                    .Where(c => c.Price > priceBegin)
-                    .Where(c => c.Price < priceEnd)
-                    .Where(c => c.HasAirConditioning == hasAirConditioning)
-                    .Where(c => c.HasAbs == hasAbs)
-                    .Where(c => c.HasRadio == hasRadio)
-                    .Where(c => c.HasSunroof == hasSunroof);
-            }
-
-
-            foreach (Car car in cars)
-            {
-                Debug.WriteLine("iam here : " + cars.ToList().Count());
-                car.distanceFromUser = Math.Sqrt((car.Longitude - longitude) * (car.Longitude - longitude)) + ((car.Latitude - latitude) * (car.Latitude - latitude));
-            }
-            cars = cars.OrderBy(c => c.distanceFromUser);
-
-
-            Debug.WriteLine("iam here : " + cars.ToList().Count());
-
-            return cars;
-
-
-            //return new StatusCodeResult(500);
-            //return new StatusCodeResult(200);
+            throw new BadRequestException("Longitude must be between -180 and 180");
         }
 
-        public async Task<IEnumerable<Review>> GetReviews(int id, int offset, int limit)
+        if (latitude < -90 || latitude > 90)
         {
-            return await _context.Reviews.Where(r => r.RevieweeId == id).Skip(offset).Take(limit).ToListAsync();
+            throw new BadRequestException("Latitude must be between -90 and 90");
         }
 
-        public bool CarExists(int id)
+        if (
+            !(
+                sortBy == "PRICE_ASC"
+                || sortBy == "PRICE_DESC"
+                || sortBy == "YEAR_DESC"
+                || sortBy == "YEAR_ASC"
+            )
+        )
         {
-            return _context.Cars.Any(e => e.Id == id);
+            throw new BadRequestException(
+                "SortBy must be one of the following: PRICE_ASC, PRICE_DESC, YEAR_DESC, YEAR_ASC"
+            );
         }
+
+        IQueryable<Car> cars = _context.Cars.AsNoTracking().Where(c => c.IsListed == true);
+
+        if (brands.Length > 0)
+        {
+            cars = cars.Where(c => brands.Contains(c.Brand));
+        }
+
+        if (models.Length > 0)
+        {
+            cars = cars.Where(c => models.Contains(c.Model));
+        }
+
+        if (minYear != null)
+        {
+            cars = cars.Where(c => c.Year >= minYear);
+        }
+
+        if (maxYear != null)
+        {
+            cars = cars.Where(c => c.Year <= maxYear);
+        }
+
+        if (minPrice != null)
+        {
+            cars = cars.Where(c => c.Price >= minPrice);
+        }
+
+        if (maxPrice != null)
+        {
+            cars = cars.Where(c => c.Price <= maxPrice);
+        }
+
+        if (seatsCount != null)
+        {
+            cars = cars.Where(c => c.SeatsCount == seatsCount);
+        }
+
+        if (Transmission.Length > 0)
+        {
+            cars = cars.Where(c => Transmission.Contains(c.Transmission));
+        }
+
+        if (fuelTypes.Length > 0)
+        {
+            cars = cars.Where(c => fuelTypes.Contains(c.FuelType));
+        }
+
+        if (bodyTypes.Length > 0)
+        {
+            cars = cars.Where(c => bodyTypes.Contains(c.BodyType));
+        }
+
+        if (hasAirConditioning != null)
+        {
+            cars = cars.Where(c => c.HasAirConditioning == hasAirConditioning);
+        }
+
+        if (hasAbs != null)
+        {
+            cars = cars.Where(c => c.HasAbs == hasAbs);
+        }
+
+        if (hasRadio != null)
+        {
+            cars = cars.Where(c => c.HasRadio == hasRadio);
+        }
+
+        if (hasSunroof != null)
+        {
+            cars = cars.Where(c => c.HasSunroof == hasSunroof);
+        }
+
+        var nearCars = cars.Select(
+                c =>
+                    new
+                    {
+                        Car = c,
+                        Distance = 3959 * Math.Acos(
+                            Math.Cos(
+                                Math.PI * latitude / 180
+                            ) * Math.Cos(
+                                Math.PI * c.Latitude / 180
+                            ) * Math.Cos(
+                                Math.PI * c.Longitude / 180 - Math.PI * longitude / 180
+                            ) + Math.Sin(
+                                Math.PI * latitude / 180
+                            ) * Math.Sin(
+                                Math.PI * c.Latitude / 180
+                            )
+                        )
+                    }
+            )
+            .Where(c => c.Distance <= 4)
+            .OrderBy(c => c.Distance);
+
+        if (sortBy == "PRICE_ASC")
+        {
+            nearCars = nearCars.ThenBy(c => c.Car.Price);
+        }
+        else if (sortBy == "PRICE_DESC")
+        {
+            nearCars = nearCars.ThenByDescending(c => c.Car.Price);
+        }
+        else if (sortBy == "YEAR_DESC")
+        {
+            nearCars = nearCars.ThenByDescending(c => c.Car.Year);
+        }
+        else if (sortBy == "YEAR_ASC")
+        {
+            nearCars = nearCars.ThenBy(c => c.Car.Year);
+        }
+
+        return new PaginatedList<Car>(
+            await nearCars.Select(c => c.Car).Skip(offset ?? 0).Take(10).ToArrayAsync(),
+            await nearCars.CountAsync(),
+            offset ?? 0
+        );
+    }
+
+    public async Task<Car> CreateCar(Car car)
+    {
+        int price = car.Price;
+        int year = car.Year;
+        int seatsCount = car.SeatsCount;
+        int period = car.Period;
+        double longitude = car.Longitude;
+        double latitude = car.Latitude;
+
+        if (price < 50)
+        {
+            throw new BadRequestException("Price cannot be less than 50");
+        }
+
+        if (year < 1901)
+        {
+            throw new BadRequestException("Year cannot be less than 1901");
+        }
+
+        if (seatsCount < 1)
+        {
+            throw new BadRequestException("Seats count cannot be less than 1");
+        }
+
+        if (period < 1)
+        {
+            throw new BadRequestException("Period cannot be less than 1");
+        }
+
+        if (longitude < -180 || longitude > 180)
+        {
+            throw new BadRequestException("Longitude must be between -180 and 180");
+        }
+
+        if (latitude < -90 || latitude > 90)
+        {
+            throw new BadRequestException("Latitude must be between -90 and 90");
+        }
+
+        Car trackedCar = (Car) car.Clone();
+        await _context.Cars.AddAsync(trackedCar);
+        trackedCar.CreatedAt = DateTime.UtcNow;
+        trackedCar.UpdatedAt = DateTime.UtcNow;
+        await _context.SaveChangesAsync();
+        _context.Entry(trackedCar).State = EntityState.Detached;
+        return trackedCar;
+    }
+
+    public async Task<Car> UpdateCar(int id, UpdateCarRequest update)
+    {
+        var car = await _context.Cars.FindAsync(id);
+        if (car == null)
+        {
+            throw new NotFoundException("Car not found");
+        }
+
+        if (update.Price < 50)
+        {
+            throw new BadRequestException("Price cannot be less than 50");
+        }
+
+        if (update.Year < 1901)
+        {
+            throw new BadRequestException("Year cannot be less than 1901");
+        }
+
+        if (update.SeatsCount < 1)
+        {
+            throw new BadRequestException("Seats count cannot be less than 1");
+        }
+
+        if (update.Period < 1)
+        {
+            throw new BadRequestException("Period cannot be less than 1");
+        }
+
+        if (update.Longitude < -180 || update.Longitude > 180)
+        {
+            throw new BadRequestException("Longitude must be between -180 and 180");
+        }
+
+        if (update.Latitude < -90 || update.Latitude > 90)
+        {
+            throw new BadRequestException("Latitude must be between -90 and 90");
+        }
+
+        car.Brand = update.Brand;
+        car.Model = update.Model;
+        car.Year = update.Year;
+        car.Price = update.Price;
+        car.SeatsCount = update.SeatsCount;
+        car.Transmission = update.Transmission;
+        car.FuelType = update.FuelType;
+        car.BodyType = update.BodyType;
+        car.HasAirConditioning = update.HasAirConditioning;
+        car.HasAbs = update.HasAbs;
+        car.HasRadio = update.HasRadio;
+        car.HasSunroof = update.HasSunroof;
+        car.Period = update.Period;
+        car.Description = update.Description;
+        car.Longitude = update.Longitude;
+        car.Latitude = update.Latitude;
+        await _context.SaveChangesAsync();
+        _context.Entry(car).State = EntityState.Detached;
+        return car;
+    }
+
+    public async Task DeleteCar(int id)
+    {
+        var car = await _context.Cars.FindAsync(id);
+        if (car == null)
+        {
+            throw new NotFoundException("Car not found");
+        }
+
+        _context.Cars.Remove(car);
+        await _context.SaveChangesAsync();
     }
 }
