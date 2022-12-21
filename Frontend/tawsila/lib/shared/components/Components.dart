@@ -20,17 +20,9 @@ class UserLocation {
       permissionGranted = await location.requestPermission();
     }
     locationData = await location.getLocation();
-    print("LOCATION");
-    print("LATITUDE: ${locationData.latitude}");
-    print("LONGTIUDE: ${locationData.longitude}");
     // await location.getLocation().then((value) => locationData = value);
     CachHelper.saveData(key: 'latitude', value: locationData.latitude);
     CachHelper.saveData(key: 'longitude', value: locationData.longitude);
-    double d1 = await CachHelper.getData(key: "latitude") as double;
-    double d2 = await CachHelper.getData(key: "longitude") as double;
-    print("LATITUDE: ${d1}");
-    print("LONGTIUDE: ${d2}");
-    print("DONNNNNNNNNNNNNNNNNNNNNNNNNE");
   }
 }
 Widget defaultTextFormFieldRow({

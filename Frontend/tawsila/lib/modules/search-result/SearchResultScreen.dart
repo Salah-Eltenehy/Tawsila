@@ -11,21 +11,10 @@ import 'package:tawsila/shared/components/Components.dart';
 import '../filter/FilterScreen.dart';
 
 class SearchResultScreen extends StatelessWidget {
-
-  Map<String, dynamic> car = {
-    "image": "assets/images/nissan.jpg",
-    "brand": "Nissan",
-    "model": "Sanny",
-    "seatsCount": 4,
-    "year": "2022",
-    "price": 250,
-    "date": "25 Nov 2022"
-  };
-  int total = 50;
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (BuildContext context) => SearchCubit(),
+      create: (BuildContext context) => SearchCubit()..getData(),
       child: BlocConsumer<SearchCubit, SearchStates>(
         listener: (context, state) {},
         builder:(context, state) {
@@ -59,7 +48,7 @@ class SearchResultScreen extends StatelessWidget {
               ],
             ),
             body: ConditionalBuilder(
-              condition: total > 0,
+              condition: searchCubit.totalCount > 0,
               builder: (BuildContext context) {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -67,7 +56,7 @@ class SearchResultScreen extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(left: 18, top: 8),
                       child: Text(
-                        "${total} results found",
+                        "${searchCubit.totalCount} results found",
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold
@@ -77,13 +66,13 @@ class SearchResultScreen extends StatelessWidget {
                     Expanded(
                       child: ListView.separated(
                           itemBuilder: (context, index) {
-                            return buildCar(car);
+                            return buildCar(searchCubit.cars[index]);
                           },
                           separatorBuilder: (context, index) => const SizedBox(
                             height: 4,
                             width: double.infinity,
                           ),
-                          itemCount: total),
+                          itemCount: searchCubit.totalCount),
                     ),
                   ],
                 );
@@ -116,7 +105,7 @@ class SearchResultScreen extends StatelessWidget {
                 ),
               ),
               child: Image(
-                image: AssetImage("${car['image']}"),
+                image: NetworkImage('${car['thumbnail']}'),
                 width: double.infinity,
                 height: double.infinity,
                 fit: BoxFit.cover,
@@ -167,7 +156,7 @@ class SearchResultScreen extends StatelessWidget {
                       Row(
                         children:  [
                           Text(
-                            "${car['date']}",
+                            "${car['updatedAt']}",
                             style: const TextStyle(
                               color: Colors.white,
                               // fontWeight: FontWeight.bold,
@@ -197,76 +186,3 @@ class SearchResultScreen extends StatelessWidget {
     );
   }
 }
-/*
-Row(
-              children: [
-                Text(
-                    "${car['brand']}  ${car['model']}",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 30,
-                  ),
-                ),
-                const SizedBox(height: 10,),
-                Row(
-                  children:  [
-                    const Icon(Icons.ac_unit, color: Colors.white,),
-                    Text(
-                      "${car['year']}.${car['seatsCount']} Seats",
-                      style: const TextStyle(
-                        color: Colors.white,
-                        // fontWeight: FontWeight.bold,
-                        fontSize: 30,
-                      ),
-                    ),
-                    const Spacer(),
-                    Text(
-                      "${car['price']} EGP",
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 30,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10,),
-                Row(
-                  children:  [
-                    Text(
-                      "${car['year']}.${car['seatsCount']} Seats",
-                      style: const TextStyle(
-                        color: Colors.white,
-                        // fontWeight: FontWeight.bold,
-                        fontSize: 30,
-                      ),
-                    ),
-                    const Spacer(),
-                    const Text(
-                      "per day",
-                      style: TextStyle(
-                        color: Colors.white,
-                        // fontWeight: FontWeight.bold,
-                        fontSize: 30,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10,),
-              ],
-            ),
- */
-/*
-                    Text(
-                      '${searchCubit.totalCount} results found',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 36,
-                        color: Colors.white
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
- */

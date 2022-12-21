@@ -28,7 +28,6 @@ void main() async {
   Bloc.observer = MyBlocObserver();
   DioHelper.init();
 
-
   runApp(MyApp());
 }
 

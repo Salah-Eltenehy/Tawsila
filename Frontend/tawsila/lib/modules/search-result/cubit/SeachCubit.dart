@@ -3,18 +3,44 @@ import 'package:tawsila/modules/search-result/cubit/SearchStates.dart';
 import 'package:tawsila/shared/end-points.dart';
 import 'package:tawsila/shared/network/remote/DioHelper.dart';
 
+import '../../../shared/network/local/Cachhelper.dart';
+
 class SearchCubit extends Cubit<SearchStates> {
 
   SearchCubit(): super(InitialSearchStates());
 
   static SearchCubit get(context) => BlocProvider.of(context);
 
-  List<Map<String, dynamic>>? cars;
+  late List<Map<String, dynamic>> cars;
   int totalCount = 0;
-  void getData() {
-    DioHelper.getData(url: SEARCHRESULTS)
+  double latitude = 0.0;
+  double longitude = 0.0;
+
+  void getData() async{
+    latitude = await CachHelper.getData(key: "latitude") as double;
+    longitude = await CachHelper.getData(key: "longitude") as double;
+    Map<String, dynamic> query = {
+      "brands": "",
+      "fuelTypes": "",
+      "hasAbs": false,
+      "hasAirConditioning": false,
+      "hasRadio": false,
+      "hasSunroof": false,
+      "latitude": latitude,
+      "longitude":longitude,
+      "maxPrice":"",
+      "maxYear":"",
+      "minPrice":"",
+      "minYear":"",
+      "models":"",
+      "offset": 0,
+      "seatsCount": 0,
+      "sortBy":"",
+      "transmission":"",
+    };
+    DioHelper.getData(url: SEARCHRESULTS, query: query)
         .then((value) {
-          print("data: ${value}");
+          print("data: ${value.data['cars']}");
           cars = value.data['cars'];
           totalCount = value.data['totalCount'];
          });
