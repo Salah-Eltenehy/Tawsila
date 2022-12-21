@@ -22,20 +22,23 @@ public class MailService : IMailService
 
     public async Task SendEmailAsync(string toEmail, string subject, string body)
     {
-        var email = new MimeMessage();
-        email.Sender = MailboxAddress.Parse(_mailSettings.Mail);
+        var email = new MimeMessage
+        {
+            Sender = MailboxAddress.Parse(_mailSettings.Mail)
+        };
         email.To.Add(MailboxAddress.Parse(toEmail));
         email.Subject = subject;
-        var builder = new BodyBuilder
-        {
-            HtmlBody = body
-        };
+        var builder = new BodyBuilder { HtmlBody = body };
         email.Body = builder.ToMessageBody();
         using var smtp = new SmtpClient();
         #if DEBUG
-        await smtp.ConnectAsync(_mailSettings.Host, _mailSettings.Port);
+            await smtp.ConnectAsync(_mailSettings.Host, _mailSettings.Port);
         #else
-        await smtp.ConnectAsync(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);
+        await smtp.ConnectAsync(
+            _mailSettings.Host,
+            _mailSettings.Port,
+            SecureSocketOptions.StartTls
+        );
         #endif
         await smtp.AuthenticateAsync(_mailSettings.Username, _mailSettings.Password);
         await smtp.SendAsync(email);

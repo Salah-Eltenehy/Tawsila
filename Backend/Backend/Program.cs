@@ -23,46 +23,62 @@ var configuration = builder.Configuration;
 
 builder.Services.AddDbContext<TawsilaContext>(options =>
 {
-#if DEBUG
+    #if DEBUG
     options.UseInMemoryDatabase(databaseName: "TawsilaDB");
-#else
+    #else
     options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
-#endif
+    #endif
 });
 
 builder.Services.Configure<MailSettings>(configuration.GetSection("MailSettings"));
 builder.Services.AddTransient<IMailService, MailService>();
 
-builder.Services.AddControllers()
-    .AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+builder.Services.Configure<StorageSettings>(configuration.GetSection("StorageSettings"));
+builder.Services.AddTransient<IStorageService, StorageService>();
+
+builder.Services.AddTransient<IImageService, ImageService>();
+
+builder.Services
+    .AddControllers()
+    .AddJsonOptions(
+        options => options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles
+    );
 
 builder.Services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
 builder.Services.AddSingleton<IJwtService, JwtService>();
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(options =>
-{
-    options.SaveToken = true;
-    options.RequireHttpsMetadata = false;
-    options.TokenValidationParameters = new TokenValidationParameters()
+builder.Services
+    .AddAuthentication(options =>
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidAudience = configuration["JwtSettings:Audience"],
-        ValidIssuer = configuration["JwtSettings:Issuer"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:Secret"]))
-    };
-});
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.SaveToken = true;
+        options.RequireHttpsMetadata = false;
+        options.TokenValidationParameters = new TokenValidationParameters()
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidAudience = configuration["JwtSettings:Audience"],
+            ValidIssuer = configuration["JwtSettings:Issuer"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(configuration["JwtSettings:Secret"])
+            )
+        };
+    });
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("UnverifiedUser", policy =>
-        policy.RequireClaim(ClaimTypes.Role, "UnverifiedUser"));
-    options.AddPolicy("VerifiedUser", policy =>
-        policy.RequireClaim(ClaimTypes.Role, "VerifiedUser"));
+    options.AddPolicy(
+        "UnverifiedUser",
+        policy => policy.RequireClaim(ClaimTypes.Role, "UnverifiedUser")
+    );
+    options.AddPolicy(
+        "VerifiedUser",
+        policy => policy.RequireClaim(ClaimTypes.Role, "VerifiedUser")
+    );
 });
 
 builder.Services.AddControllers();
@@ -84,35 +100,40 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Wedding Planner API", Version = "v1" });
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Description = @"JWT Authorization header using the Bearer scheme. \r\n\r\n 
+    c.AddSecurityDefinition(
+        "Bearer",
+        new OpenApiSecurityScheme
+        {
+            Description =
+                @"JWT Authorization header using the Bearer scheme. \r\n\r\n 
                       Enter 'Bearer' [space] and then your token in the text input below.
                       \r\n\r\nExample: 'Bearer 123'",
-        Name = "Authorization",
-        In = ParameterLocation.Header,
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
-    });
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement()
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                },
-                Scheme = "oauth2",
-                Name = "Bearer",
-                In = ParameterLocation.Header,
-            },
-            new List<string>()
+            Name = "Authorization",
+            In = ParameterLocation.Header,
+            Type = SecuritySchemeType.ApiKey,
+            Scheme = "Bearer"
         }
-    });
+    );
+    c.AddSecurityRequirement(
+        new OpenApiSecurityRequirement()
+        {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    },
+                    Scheme = "oauth2",
+                    Name = "Bearer",
+                    In = ParameterLocation.Header,
+                },
+                new List<string>()
+            }
+        }
+    );
 });
-
 
 var app = builder.Build();
 
@@ -127,63 +148,73 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.Use(async (context, next) =>
-{
-    await next();
-    if (!context.Response.HasStarted)
+app.Use(
+    async (context, next) =>
     {
-        context.Response.ContentType = "application/json";
-        switch (context.Response.StatusCode)
+        await next();
+        if (!context.Response.HasStarted)
         {
-            case (int)HttpStatusCode.Unauthorized:
+            context.Response.ContentType = "application/json";
+            switch (context.Response.StatusCode)
             {
-                var res = new ErrorResponse("Login to access this resource");
-                await context.Response.WriteAsync(JsonSerializer.Serialize(res));
-                break;
-            }
-            case (int)HttpStatusCode.Forbidden:
-            {
-                var claims = context.User.Claims;
-                var role = claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
-                context.Response.ContentType = "application/json";
-                var res = new GenericResponse(
-                    role switch
-                    {
-                        "UnverifiedUser" => "Please verify your email to access this resource",
-                        "VerifiedUser" => "Your email is already verified",
-                        _ => "You are not authorized to access this resource"
-                    }
-                );
-                await context.Response.WriteAsync(JsonSerializer.Serialize(res));
-                break;
+                case (int)HttpStatusCode.Unauthorized:
+                {
+                    var res = new ErrorResponse("Login to access this resource");
+                    await context.Response.WriteAsync(JsonSerializer.Serialize(res));
+                    break;
+                }
+                case (int)HttpStatusCode.Forbidden:
+                {
+                    var claims = context.User.Claims;
+                    var role = claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+                    context.Response.ContentType = "application/json";
+                    var res = new GenericResponse(
+                        role switch
+                        {
+                            "UnverifiedUser" => "Please verify your email to access this resource",
+                            "VerifiedUser" => "Your email is already verified",
+                            _ => "You are not authorized to access this resource"
+                        }
+                    );
+                    await context.Response.WriteAsync(JsonSerializer.Serialize(res));
+                    break;
+                }
             }
         }
     }
-});
+);
 
 app.UseAuthentication();
 
 app.UseAuthorization();
 
-app.Use(async (context, next) =>
-{
-    var claims = context.User.Claims;
-    var endpointFeatures = context.Features.Get<IEndpointFeature>()?.Endpoint?.Metadata;
-    if (endpointFeatures != null && context.Request.Path != "/error")
+app.Use(
+    async (context, next) =>
     {
-        var authorize = endpointFeatures.GetMetadata<AuthorizeAttribute>();
-        if (authorize != null)
+        var claims = context.User.Claims;
+        var endpointFeatures = context.Features.Get<IEndpointFeature>()?.Endpoint?.Metadata;
+        if (endpointFeatures != null && context.Request.Path != "/error")
         {
-            var userId = int.Parse(claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)!.Value);
-            var dbContext = context.RequestServices.GetRequiredService<TawsilaContext>();
-            var user = dbContext.Users.Find(userId);
-            if (user == null)
+            var authorize = endpointFeatures.GetMetadata<AuthorizeAttribute>();
+            if (authorize != null)
             {
-                context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                context.Response.ContentType = "application/json";
-                var res = new ErrorResponse("Your account might have been deleted");
-                await context.Response.WriteAsync(JsonSerializer.Serialize(res));
-                await context.Response.CompleteAsync();
+                var userId = int.Parse(
+                    claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)!.Value
+                );
+                var dbContext = context.RequestServices.GetRequiredService<TawsilaContext>();
+                var user = dbContext.Users.Find(userId);
+                if (user == null)
+                {
+                    context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                    context.Response.ContentType = "application/json";
+                    var res = new ErrorResponse("Your account might have been deleted");
+                    await context.Response.WriteAsync(JsonSerializer.Serialize(res));
+                    await context.Response.CompleteAsync();
+                }
+                else
+                {
+                    await next();
+                }
             }
             else
             {
@@ -195,11 +226,7 @@ app.Use(async (context, next) =>
             await next();
         }
     }
-    else
-    {
-        await next();
-    }
-});
+);
 
 app.MapControllers();
 

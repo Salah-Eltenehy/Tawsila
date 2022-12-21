@@ -6,6 +6,9 @@ using Backend.Models.API.User;
 using Backend.Models.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
+using Backend.Models.API.CarAPI;
+using Backend.Models.DTO.User;
+using Backend.Services;
 
 namespace Backend.Controllers;
 
@@ -29,18 +32,23 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetUsers([FromRoute] string usersIds)
     {
-        var usersIdsArray = usersIds.Split(',').Select(int.Parse).ToArray();
+        var usersIdsArray = usersIds.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToArray();
         var users = await _userService.GetUsers(usersIdsArray);
-        var userItems = users.Select(user => new UserItem(
-            user.Id,
-            user.FirstName,
-            user.LastName,
-            user.PhoneNumber,
-            user.HasWhatsapp,
-            user.CreatedAt.ToString(CultureInfo.CurrentCulture)
-        )).ToArray();
-        var res = new GetUsersResponse(userItems);
-        return Ok(res);
+        var userItems = users
+            .Select(
+                user =>
+                    new UserItem(
+                        user.Id,
+                        user.FirstName,
+                        user.LastName,
+                        user.PhoneNumber,
+                        user.Avatar,
+                        user.HasWhatsapp,
+                        user.CreatedAt.ToString(CultureInfo.CurrentCulture)
+                    )
+            )
+            .ToArray();
+        return Ok(new GetUsersResponse(userItems));
     }
 
     [AllowAnonymous]
@@ -48,7 +56,7 @@ public class UsersController : ControllerBase
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<TokenResponse>> Login([FromBody] LoginRequest req)
+    public async Task<IActionResult> Login([FromBody] LoginRequest req)
     {
         var token = await _userService.LoginUser(req);
         return Ok(new TokenResponse(token));
@@ -60,7 +68,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<TokenResponse>> Register([FromBody] RegisterRequest req)
+    public async Task<IActionResult> Register([FromBody] RegisterRequest req)
     {
         var token = await _userService.RegisterUser(req);
         return Ok(new TokenResponse(token));
@@ -72,7 +80,10 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<TokenResponse>> Verify([FromRoute] int id, [FromBody] VerifyUserRequest req)
+    public async Task<IActionResult> Verify(
+        [FromRoute] int id,
+        [FromBody] VerifyUserRequest req
+    )
     {
         var claims = HttpContext.User.Claims.ToArray();
         var claimedId = int.Parse(claims.First(c => c.Type == ClaimTypes.Name).Value);
@@ -82,8 +93,9 @@ public class UsersController : ControllerBase
         }
 
         var notBefore = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        notBefore = notBefore.AddSeconds(double.Parse(claims.First(c => c.Type == "nbf").Value,
-            CultureInfo.InvariantCulture));
+        notBefore = notBefore.AddSeconds(
+            double.Parse(claims.First(c => c.Type == "nbf").Value, CultureInfo.InvariantCulture)
+        );
         var token = await _userService.VerifyUser(id, req.EmailVerificationCode, notBefore);
         return Ok(new TokenResponse(token));
     }
@@ -94,7 +106,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> UpdateUser([FromRoute] int id, [FromBody] UpdateRequest update)
+    public async Task<IActionResult> UpdateUser([FromRoute] int id, [FromBody] UpdateUserRequest update)
     {
         var claims = HttpContext.User.Claims;
         var claimedId = int.Parse(claims.First(c => c.Type == ClaimTypes.Name).Value);
@@ -127,6 +139,35 @@ public class UsersController : ControllerBase
         return Ok(new GenericResponse("User deleted successfully"));
     }
 
+    [Authorize(Policy = "VerifiedUser")]
+    [HttpGet("{id:int}/cars")]
+    [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetCars([FromRoute] int id)
+    {
+        var carsPaginatedList = await _userService.GetUserCars(id);
+        var carItems = carsPaginatedList
+            .Select(
+                car =>
+                    new UserCarItem(
+                        car.Id,
+                        car.Brand,
+                        car.Model,
+                        car.Year,
+                        car.SeatsCount,
+                        car.HasAirConditioning,
+                        car.Price,
+                        car.Images[0],
+                        car.UpdatedAt
+                    )
+            )
+            .ToArray();
+        return Ok(new GetUserCarsResponse(carItems));
+    }
+
     [ApiExplorerSettings(IgnoreApi = true)]
     [Route("/error")]
     public IActionResult Error()
@@ -141,10 +182,14 @@ public class UsersController : ControllerBase
                 return Unauthorized(new GenericResponse(exception.Message));
             case ConflictException:
                 return Conflict(new GenericResponse(exception.Message));
+            case BadRequestException:
+                return BadRequest(new GenericResponse(exception.Message));
             default:
                 _logger.LogError(exception, "An unhandled exception occurred");
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                    new ErrorResponse("Internal server error"));
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    new ErrorResponse("Internal server error")
+                );
         }
     }
 }
