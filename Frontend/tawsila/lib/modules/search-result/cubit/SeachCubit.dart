@@ -11,7 +11,7 @@ class SearchCubit extends Cubit<SearchStates> {
 
   static SearchCubit get(context) => BlocProvider.of(context);
 
-  late List<Map<String, dynamic>> cars;
+  late List cars;
   int totalCount = 0;
   double latitude = 0.0;
   double longitude = 0.0;
@@ -23,12 +23,18 @@ class SearchCubit extends Cubit<SearchStates> {
   }
   void getData({
   required Map<String, dynamic> query
-  }) {
-    DioHelper.getData(url: SEARCHRESULTS, query: query)
+  }) async {
+    print("i am heeeeerrrrrreeeee");
+    String token = await CachHelper.getData(key: 'token');
+    print("out of herrrrrrrrrrrrre");
+    await DioHelper.getData(url: SEARCHRESULTS,token:  token,query: query)
         .then((value) {
-          print("data: ${value.data['cars']}");
+          //print("lalalalaalallalallaalaalla");
           cars = value.data['cars'];
-          totalCount = value.data['totalCount'];
+          print("data: ${cars}");
+          totalCount = value.data['totalCount'] as int;
+          print(totalCount);
+          emit(state);
          });
   }
 }

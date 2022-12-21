@@ -1,5 +1,6 @@
 String baseUrl = 'https://student.valuxapps.com/api/';
 
+
 const LOGIN = 'login';
 
 const REGISTER = 'register';
@@ -12,7 +13,7 @@ const USERFNAME = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenna
 
 const USERLNAME = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname";
 
-const USEREMAIL = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress:";
+const USEREMAIL = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress";
 
 const USERPHONE = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/mobilephone";
 

@@ -21,7 +21,7 @@ class SettingsScreen extends StatelessWidget {
       create: (context) =>
       SignUpCubit()
         ..setLanguage(l: language)
-        ..readJson('settings'),
+        ..readJson('settings')..getUserInfo(),
       child: BlocConsumer<SignUpCubit, SignUpStates>(
           listener: (context, state) {},
           builder: (context, state) {
@@ -197,7 +197,8 @@ class EditProfilePageState extends StatelessWidget{
   @override
   Widget build(BuildContext context)  {
     return BlocProvider(
-      create: (context) => SignUpCubit()..setLanguage(l: language)..readJson('SignUp'),
+      create: (context) => SignUpCubit()..setLanguage(l: language)
+        ..readJson('SignUp')..getUserInfo(),
       child: BlocConsumer<SignUpCubit, SignUpStates>(
       listener: (context, state) {},
       builder: (context, state) {

@@ -139,6 +139,7 @@ class SignInScreen extends StatelessWidget{
                                         print(value);
                                     }).catchError((error) {
                                     sss.init(context);
+                                    print(error.toString());
                                     Toast.show("Invalid email or password",
                                     duration: Toast.lengthLong,
                                     gravity:  Toast.bottom,backgroundColor: Colors.red);

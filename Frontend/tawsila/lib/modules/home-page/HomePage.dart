@@ -12,6 +12,7 @@ import 'package:tawsila/shared/components/Components.dart';
 
 import '../../shared/network/local/Cachhelper.dart';
 import '../Setting/SettingsScreen.dart';
+import '../car-offer/CarOfferScreen.dart';
 
 class HomePageScreen extends StatelessWidget {
   final language;
@@ -75,6 +76,7 @@ class HomePageScreen extends StatelessWidget {
                                 title2: homePageCubit.items['offerCar2']??'',
                                 image: AssetImage('assets/images/car.png'),
                                 onTapFunc: () {
+                                  navigateTo(context: context, screen: CarOfferScreen(language: language));
                                   print("Offer Car page");
                                   print("Width = ${imageSize}");
                                 },
@@ -147,19 +149,19 @@ class HomePageScreen extends StatelessWidget {
                               Map<String, dynamic> query = {
                                 "brands": "",
                                 "fuelTypes": "",
-                                "hasAbs": false,
-                                "hasAirConditioning": false,
-                                "hasRadio": false,
-                                "hasSunroof": false,
-                                "latitude": latitude,
-                                "longitude": longitude,
+                                "hasAbs": "",
+                                "hasAirConditioning": "",
+                                "hasRadio": "",
+                                "hasSunroof": "",
+                                "latitude": 27.5667,
+                                "longitude": 53.9,
                                 "maxPrice":"",
                                 "maxYear":"",
                                 "minPrice":"",
                                 "minYear":"",
                                 "models":"",
-                                "offset": 0,
-                                "seatsCount": 0,
+                                "offset": "",
+                                "seatsCount": "",
                                 "sortBy":"",
                                 "transmission":"",
                               };

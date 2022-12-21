@@ -7,7 +7,7 @@ class DioHelper {
   {
     dio = Dio(
       BaseOptions(
-        baseUrl: 'https://app-tawsila-api-prod-eastus-001.azurewebsites.net/',
+        baseUrl: 'https://app-tawsila-api-staging-eastus-001.azurewebsites.net/',
         receiveDataWhenStatusError: true,
       ),
     );
@@ -15,11 +15,15 @@ class DioHelper {
 
   static Future<Response> getData({
     required String url,
+    required String token,
     required Map<String, dynamic> query
   }) async
   {
     return await dio.get(
       url,
+      options: Options(
+        headers: {"Authorization" : "Bearer ${token}"}
+      ),
       queryParameters: query
     );
   }

@@ -82,19 +82,35 @@ class SignUpCubit extends Cubit<SignUpStates> {
   }
 
   late Map<String, dynamic> usersInfo;
-  late Map<String, dynamic> tokenInfo;
-  void getUserInfo() {
-    String token = CachHelper.getData(key: 'token');
+  Map<String, dynamic> tokenInfo={};
+
+  void getUserInfo() async{
+    usersInfo = {};
+    print("here###################################");
+    String token = await CachHelper.getData(key: 'token') as String;
     tokenInfo = parseJwt(token);
+    print(tokenInfo[USERID]);
+    emit(TokenState());
+    print(tokenInfo);
+    print(GETUSER);
     DioHelper.getData(
-        url: GETUSER,
+        url: "users/${tokenInfo[USERID]}",
         query: {
-          'userId': "${tokenInfo[USERID]}"
-        }
+          //'userId': "${tokenInfo[USERID]}"
+        }, token: token,
     ).then((value) {
-        usersInfo = value.data[0];
+        print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+        print(value);
+        print("value --------------------");
+        usersInfo = value.data['users'][0];
+        print(usersInfo);
+        print("kkkkkkkkkkkkkkkkk");
         emit(GetUserInfoState());
+    }).catchError((error) {
+      print("************************************************************************");
+      print(error.toString());
     });
   }
 
 }
+

@@ -592,6 +592,8 @@ class _FilterSearchResultsScreenState extends State<FilterSearchResultsScreen> {
               InkWell(
                 onTap: () {
                   print("GET SEARCH RESULTS");
+                  Navigator.of(context).pop();
+                  //navigateTo(context: context, screen: );
                 },
                 child: Container(
                   height: 40,

@@ -8,6 +8,8 @@ class GetLanguageFromDatabaseState extends SignUpStates {}
 
 class ChangePasswordVisibiltyState extends SignUpStates {}
 
+class TokenState extends SignUpStates {}
+
 class ChangeConfirmPasswordVisibiltyState extends SignUpStates {}
 
 class HasWhatsAppChangeState extends SignUpStates {}
