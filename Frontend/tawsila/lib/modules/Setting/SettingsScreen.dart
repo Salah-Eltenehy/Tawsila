@@ -2,6 +2,8 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tawsila/modules/log-in/SignInScreen.dart';
+import 'package:tawsila/shared/end-points.dart';
+import 'package:tawsila/shared/network/local/Cachhelper.dart';
 import 'package:toast/toast.dart';
 import '../../shared/components/Components.dart';
 import '../home-page/HomePage.dart';
@@ -178,13 +180,6 @@ class SettingsScreen extends StatelessWidget {
   }
 }
 
-// class EditProfilePage extends StatefulWidget {
-//   var language = "";
-//   EditProfilePage({super.key ,required this.language});
-//   @override
-//   _EditProfilePageState createState() => _EditProfilePageState(language: language,);
-// }
-
 class AlwaysDisabledFocusNode extends FocusNode {
   @override
   bool get hasFocus => false;
@@ -200,13 +195,14 @@ class EditProfilePageState extends StatelessWidget{
   var language = "";
   EditProfilePageState({required this.language, required this.edit });
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context)  {
     return BlocProvider(
       create: (context) => SignUpCubit()..setLanguage(l: language)..readJson('SignUp'),
       child: BlocConsumer<SignUpCubit, SignUpStates>(
       listener: (context, state) {},
       builder: (context, state) {
       var signUpCubit = SignUpCubit.get(context);
+
       return Scaffold(
         appBar: bar(context,),
         body: Container(
@@ -239,12 +235,9 @@ class EditProfilePageState extends StatelessWidget{
                                   offset: const Offset(0, 10))
                             ],
                             shape: BoxShape.circle,
-                            image: const DecorationImage(
+                            image: DecorationImage(
                                 fit: BoxFit.cover,
-                                // image: NetworkImage(
-                                //   "link returned from server",
-                                // )
-                                image: AssetImage('assets/images/owner.png'),
+                                image: NetworkImage('${signUpCubit.usersInfo['avatar']}'),
                             )
                         ),
                       ),
@@ -293,7 +286,7 @@ class EditProfilePageState extends StatelessWidget{
                             labelText: signUpCubit.items['Fname']??"",
                             floatingLabelBehavior: FloatingLabelBehavior.always,
                             // hintText: "first name returned from server"
-                            hintText: "user",
+                            hintText: "${signUpCubit.usersInfo['firstName']}",
 
                             hintStyle: const TextStyle(
                                 fontSize: 16,
@@ -315,7 +308,7 @@ class EditProfilePageState extends StatelessWidget{
                           labelText: signUpCubit.items['Lname']??"",
                           floatingLabelBehavior: FloatingLabelBehavior.always,
                           // hintText: "last name returned from server"
-                          hintText: "name",
+                          hintText: "${signUpCubit.usersInfo['lastName']}",
                           hintStyle: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -337,7 +330,7 @@ class EditProfilePageState extends StatelessWidget{
                       prefixIcon: Icon(Icons.email),
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       // hintText: "email returned from server"
-                      hintText: "joe@example.com",
+                      hintText: "${signUpCubit.tokenInfo[USEREMAIL]}",
                       hintStyle: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -357,7 +350,7 @@ class EditProfilePageState extends StatelessWidget{
                       prefixIcon: Icon(Icons.phone),
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       // hintText: "phone returned from server"
-                      hintText: "+201234567891",
+                      hintText: "${signUpCubit.usersInfo['phoneNumber']}",
                       hintStyle: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,

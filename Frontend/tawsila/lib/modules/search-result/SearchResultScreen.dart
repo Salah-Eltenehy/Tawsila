@@ -8,13 +8,36 @@ import 'package:tawsila/modules/search-result/cubit/SearchStates.dart';
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:tawsila/shared/components/Components.dart';
 
+import '../../shared/network/local/Cachhelper.dart';
 import '../filter/FilterScreen.dart';
-
+/*
+  Map<String, dynamic> query = {
+    "brands": "",
+    "fuelTypes": "",
+    "hasAbs": false,
+    "hasAirConditioning": false,
+    "hasRadio": false,
+    "hasSunroof": false,
+    "latitude": searchCubit.latitude,
+    "longitude": searchCubit.longitude,
+    "maxPrice":"",
+    "maxYear":"",
+    "minPrice":"",
+    "minYear":"",
+    "models":"",
+    "offset": 0,
+    "seatsCount": 0,
+    "sortBy":"",
+    "transmission":"",
+  };
+ */
 class SearchResultScreen extends StatelessWidget {
+  final Map<String, dynamic> query;
+  const SearchResultScreen({super.key, required this.query});
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (BuildContext context) => SearchCubit()..getData(),
+      create: (BuildContext context) => SearchCubit()..getLocation()..getData(query: query),
       child: BlocConsumer<SearchCubit, SearchStates>(
         listener: (context, state) {},
         builder:(context, state) {

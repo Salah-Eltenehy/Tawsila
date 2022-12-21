@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io' as Io;
 import 'package:bloc/bloc.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,7 +16,7 @@ class OfferCubit extends Cubit<OfferStates>{
   String fuelType = "g";
   List<bool> options = [false, false, false, false];
   List<String> title = ["Aps", "Air Condition", "Sunroof", "Radio"];
-  List<XFile>? images;
+  List? images;
   final ImagePicker picker = ImagePicker();
 
 
@@ -52,16 +53,25 @@ class OfferCubit extends Cubit<OfferStates>{
     emit(ChooseOption());
   }
 
+  void testConversion() async {
+    final bytes = images![0].readAsBytes();
+    String img = base64Encode(bytes);
+
+  }
   void pickImage() async{
     var pickedFiles = await picker.pickMultiImage();
     if(pickedFiles != null){
       print("images is selected: ${pickedFiles.length}");
       images = pickedFiles;
+
       emit(SelectImage());
     }
     else{
       print("No image is selected");
     }
+  }
+  void saveCar() {
+
   }
 
 }

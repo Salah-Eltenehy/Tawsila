@@ -16,28 +16,14 @@ class SearchCubit extends Cubit<SearchStates> {
   double latitude = 0.0;
   double longitude = 0.0;
 
-  void getData() async{
+
+  void getLocation() async {
     latitude = await CachHelper.getData(key: "latitude") as double;
     longitude = await CachHelper.getData(key: "longitude") as double;
-    Map<String, dynamic> query = {
-      "brands": "",
-      "fuelTypes": "",
-      "hasAbs": false,
-      "hasAirConditioning": false,
-      "hasRadio": false,
-      "hasSunroof": false,
-      "latitude": latitude,
-      "longitude":longitude,
-      "maxPrice":"",
-      "maxYear":"",
-      "minPrice":"",
-      "minYear":"",
-      "models":"",
-      "offset": 0,
-      "seatsCount": 0,
-      "sortBy":"",
-      "transmission":"",
-    };
+  }
+  void getData({
+  required Map<String, dynamic> query
+  }) {
     DioHelper.getData(url: SEARCHRESULTS, query: query)
         .then((value) {
           print("data: ${value.data['cars']}");

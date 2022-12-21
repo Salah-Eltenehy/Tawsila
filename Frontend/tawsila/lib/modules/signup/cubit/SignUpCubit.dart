@@ -3,6 +3,8 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tawsila/shared/components/Components.dart';
+import 'package:tawsila/shared/network/local/Cachhelper.dart';
 
 import '../../../shared/network/remote/DioHelper.dart';
 import '../../../shared/end-points.dart';
@@ -77,6 +79,22 @@ class SignUpCubit extends Cubit<SignUpStates> {
       hasWhatsAppColor = hasWhatsApp ?  Color.fromARGB(255, 214, 214, 214):  Colors.red;
       agreeColor = Colors.red;
       emit(AgreeTermsAndConditionsColorState());
+  }
+
+  late Map<String, dynamic> usersInfo;
+  late Map<String, dynamic> tokenInfo;
+  void getUserInfo() {
+    String token = CachHelper.getData(key: 'token');
+    tokenInfo = parseJwt(token);
+    DioHelper.getData(
+        url: GETUSER,
+        query: {
+          'userId': "${tokenInfo[USERID]}"
+        }
+    ).then((value) {
+        usersInfo = value.data[0];
+        emit(GetUserInfoState());
+    });
   }
 
 }

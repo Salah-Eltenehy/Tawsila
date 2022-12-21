@@ -26,3 +26,5 @@ class TawsilaLoginSuccessState extends SignUpStates {}
 class TawsilaLoginErrorState extends SignUpStates {}
 class HasNoWhatsAppState extends SignUpStates {}
 class AgreeTermsAndConditionsColorState extends SignUpStates {}
+
+class GetUserInfoState extends SignUpStates {}

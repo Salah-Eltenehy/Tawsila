@@ -10,6 +10,9 @@ import 'package:tawsila/modules/home-page/Map.dart';
 import 'package:tawsila/modules/search-result/SearchResultScreen.dart';
 import 'package:tawsila/shared/components/Components.dart';
 
+import '../../shared/network/local/Cachhelper.dart';
+import '../Setting/SettingsScreen.dart';
+
 class HomePageScreen extends StatelessWidget {
   final language;
 
@@ -47,7 +50,7 @@ class HomePageScreen extends StatelessWidget {
                     InkWell(
                       onTap: () {
                         print("User page");
-                        navigateTo(context: context, screen: EditProfilePageState(language: language,));
+                        navigateTo(context: context, screen: EditProfilePageState(language: language, edit: false,));
                       },
                       child: const CircleAvatar(
                         child: Image(
@@ -138,8 +141,29 @@ class HomePageScreen extends StatelessWidget {
                             height: 10,
                           ),
                           InkWell(
-                            onTap: () {
-                              navigateTo(context: context, screen: SearchResultScreen());
+                            onTap: () async{
+                              double latitude = await CachHelper.getData(key: "latitude") as double;
+                              double longitude = await CachHelper.getData(key: "longitude") as double;
+                              Map<String, dynamic> query = {
+                                "brands": "",
+                                "fuelTypes": "",
+                                "hasAbs": false,
+                                "hasAirConditioning": false,
+                                "hasRadio": false,
+                                "hasSunroof": false,
+                                "latitude": latitude,
+                                "longitude": longitude,
+                                "maxPrice":"",
+                                "maxYear":"",
+                                "minPrice":"",
+                                "minYear":"",
+                                "models":"",
+                                "offset": 0,
+                                "seatsCount": 0,
+                                "sortBy":"",
+                                "transmission":"",
+                              };
+                              navigateTo(context: context, screen: SearchResultScreen(query: query,));
                             },
                             child: Container(
                               height: 40,

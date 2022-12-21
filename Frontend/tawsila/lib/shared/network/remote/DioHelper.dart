@@ -7,7 +7,7 @@ class DioHelper {
   {
     dio = Dio(
       BaseOptions(
-        baseUrl: 'https://app-tawsila-api-prod-eastus-001.azurewebsites.net',
+        baseUrl: 'https://app-tawsila-api-prod-eastus-001.azurewebsites.net/',
         receiveDataWhenStatusError: true,
       ),
     );
