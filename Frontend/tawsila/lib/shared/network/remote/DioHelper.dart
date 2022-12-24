@@ -20,14 +20,15 @@ class DioHelper {
   }) async
   {
     return await dio.get(
-      url,
-      options: Options(
-        headers: {"Authorization" : "Bearer ${token}"}
-      ),
-      queryParameters: query
+        url,
+        options: Options(
+            headers: {"Authorization" : "Bearer ${token}"}
+        ),
+        queryParameters: query
     );
   }
 
+  //unauthorized post request
   static Future<Response> postData({
     required String url,
     required Map<String, dynamic> data,
@@ -39,13 +40,33 @@ class DioHelper {
     );
   }
 
+  //authorized post request
+  static Future<Response> postDataVer({
+    required String url,
+    required String token,
+    required Map<String, dynamic> data,
+  }) async
+  {
+    return dio.post(
+      url,
+      options: Options(
+          headers: {"Authorization" : "Bearer ${token}"}
+      ),
+      data: data,
+    );
+  }
+
   static Future<Response> putData({
     required String url,
+    required String token,
     required Map<String, dynamic> data,
   }) async
   {
     return dio.put(
       url,
+      options: Options(
+          headers: {"Authorization" : "Bearer ${token}"}
+      ),
       data: data,
     );
   }

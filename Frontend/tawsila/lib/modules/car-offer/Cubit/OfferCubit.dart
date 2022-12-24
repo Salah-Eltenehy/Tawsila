@@ -18,7 +18,7 @@ class OfferCubit extends Cubit<OfferStates>{
   List<bool> options = [true, false, false, false];
   List<String> title = ["Aps", "Air Condition", "Sunroof", "Radio"];
   Map<String, bool> brands = {
-    "lada": true,
+    "lada": false,
     "verna": false,
     "daewoo": false,
     "nissan": false,
@@ -27,10 +27,10 @@ class OfferCubit extends Cubit<OfferStates>{
     "bmw": false,
     "mercedes": false,
     "fiat": false,
-    "other": false
+    "other": true
   };
   Map<String, bool> moreBrands = {
-    "Convertible": false,
+    "Convertible": true,
     "Coupe": false,
     "Hatchback": false,
     "MPV": false,

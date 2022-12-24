@@ -12,6 +12,9 @@ import 'package:tawsila/shared/network/local/Cachhelper.dart';
 import 'package:tawsila/shared/network/remote/DioHelper.dart';
 import 'package:toast/toast.dart';
 
+import '../../shared/end-points.dart';
+import '../VerificationScreen/verification.dart';
+
 class SignInScreen extends StatelessWidget{
 
   final String language;      //hold the language of the program(arabic-english)
@@ -129,22 +132,43 @@ class SignInScreen extends StatelessWidget{
                                 DioHelper.postData(url: 'Users/LogIn',
                                     data: {'email' : emailController.text,
                                       'password' : passwordController.text}).
-                                    then((value){
-                                    CachHelper.saveData(key: 'token', value: value.data['token']);
-                                    sss.init(context);
+                                then((value) async {
+                                  CachHelper.saveData(
+                                      key: 'token', value: value.data['token']);
+                                  sss.init(context);
+                                  String token = await CachHelper.getData(
+                                      key: 'token') as String;
+                                  Map<String, dynamic> tokenInfo = parseJwt(
+                                      token);
+                                  print(tokenInfo[VERIFYUSER]);
+                                  if (tokenInfo[VERIFYUSER] ==
+                                      "UnverifiedUser") {
+                                    Toast.show("please verify your account",
+                                        duration: Toast.lengthShort,
+                                        gravity: Toast.bottom,
+                                        backgroundColor: Colors.green);
+                                    navigateAndFinish(context: context,
+                                        screen: Verification(
+                                            language: language));
+                                    print(value);
+                                  } else {
                                     Toast.show("Log In Successfully",
                                         duration: Toast.lengthShort,
-                                        gravity:  Toast.bottom,backgroundColor: Colors.green);
-                                        navigateAndFinish(context: context, screen: HomePageScreen(language: language));
-                                        print(value);
-                                    }).catchError((error) {
-                                    sss.init(context);
-                                    print(error.toString());
-                                    Toast.show("Invalid email or password",
-                                    duration: Toast.lengthLong,
-                                    gravity:  Toast.bottom,backgroundColor: Colors.red);
+                                        gravity: Toast.bottom,
+                                        backgroundColor: Colors.green);
+                                    navigateAndFinish(context: context,
+                                        screen: HomePageScreen(
+                                            language: language));
+                                    print(value);
+                                  }
+                                }).catchError((error) {
+                                  sss.init(context);
+                                  print(error.toString());
+                                  Toast.show("Invalid email or password",
+                                      duration: Toast.lengthLong,
+                                      gravity:  Toast.bottom,backgroundColor: Colors.red);
 
-                                print("#############");
+                                  print("#############");
                                 });
                               }
                             },

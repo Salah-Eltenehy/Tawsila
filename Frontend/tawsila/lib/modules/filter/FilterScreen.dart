@@ -322,7 +322,7 @@ class _FilterSearchResultsScreenState extends State<FilterSearchResultsScreen> {
               ),
               // more brands
               const Text(
-                "More Brands",
+                "Body type",
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 20
