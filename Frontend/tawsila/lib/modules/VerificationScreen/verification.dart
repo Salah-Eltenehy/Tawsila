@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tawsila/modules/home-page/HomePage.dart';
-import 'package:tawsila/shared/components/Components.dart';
+import 'package:toast/toast.dart';
 
 import '../signup/cubit/SignUpCubit.dart';
 import '../signup/cubit/SignUpStates.dart';
@@ -21,6 +20,7 @@ class Verification extends StatelessWidget{
             listener: (context, state) {},
             builder: (context, state) {
               var signUpCubit = SignUpCubit.get(context);
+              ToastContext toast = ToastContext();
               return Scaffold(
                   body: Column(
                     children: [
@@ -158,7 +158,8 @@ class Verification extends StatelessWidget{
                                   res = replaceCharAt(res, 5, value);
 
                                   if(!res.contains("f")) {
-                                    navigateAndFinish(context: context, screen: HomePageScreen(language: language));
+                                    signUpCubit.verify(query: {"emailVerificationCode": res}, context: context);
+                                    //navigateAndFinish(context: context, screen: HomePageScreen(language: language));
                                   }
                                 }
                               },
@@ -197,14 +198,20 @@ class Verification extends StatelessWidget{
                         child: TextButton(
                           child: Text(
                             "${signUpCubit.items['enter']??""}",
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 20,
                             ),
                           ),
                           onPressed: () {
                             if(!res.contains("f")) {
-                              navigateAndFinish(context: context, screen: HomePageScreen(language: language));
+                              signUpCubit.verify(query: {"emailVerificationCode": res}, context: context);
+                              //navigateAndFinish(context: context, screen: HomePageScreen(language: language));
+                            }
+                            else{
+                              Toast.show("${signUpCubit.items['error']??""}",
+                                  duration: Toast.lengthShort, backgroundColor: Colors.red
+                              );
                             }
                           },
                         ),
