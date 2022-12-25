@@ -95,29 +95,20 @@ class SignUpCubit extends Cubit<SignUpStates> {
   }
 
   void getUserInfo() async{
-    print("here###################################");
     String token = await CachHelper.getData(key: 'token') as String;
     tokenInfo = parseJwt(token);
-    print(tokenInfo[USERID]);
     emit(TokenState());
-    print(tokenInfo);
-    print(GETUSER);
     DioHelper.getData(
       url: "users/${tokenInfo[USERID]}",
       query: {
         //'userId': "${tokenInfo[USERID]}"
       }, token: token,
     ).then((value) {
-      print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
       print(value);
-      print("value --------------------");
       usersInfo = value.data['users'][0];
       print(usersInfo);
-      print("kkkkkkkkkkkkkkkkk");
       emit(GetUserInfoState());
     }).catchError((error) {
-      print("************************************************************************");
-      print(error.toString());
     });
   }
   void updeteUserInfo({

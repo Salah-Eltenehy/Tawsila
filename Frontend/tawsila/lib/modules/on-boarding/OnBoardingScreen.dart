@@ -160,7 +160,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                 children: [
                   SmoothPageIndicator(
                     controller: boardController,
-                    effect: ExpandingDotsEffect(
+                    effect: const ExpandingDotsEffect(
                       dotColor: Colors.grey,
                       activeDotColor: Colors.blue,
                       dotHeight: 10,

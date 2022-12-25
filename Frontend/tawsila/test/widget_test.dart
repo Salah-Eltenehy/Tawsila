@@ -10,8 +10,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:tawsila/main.dart';
 import 'package:tawsila/shared/components/Components.dart';
+import 'package:geocoding/geocoding.dart';
 
-void main() {
+void main() async {
 
   // testWidgets('Counter increments smoke test', (WidgetTester tester) async {
   //   // Build our app and trigger a frame.
