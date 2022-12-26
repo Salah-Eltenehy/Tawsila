@@ -110,7 +110,7 @@ namespace Backend.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UpdateReview([FromRoute] int id, [FromBody] CreateReviewRequest req)
+        public async Task<IActionResult> UpdateReview([FromRoute] int id, [FromBody] UpdateReviewRequest req)
         {
             var claims = HttpContext.User.Claims.ToArray();
             var claimedId = int.Parse(claims.First(c => c.Type == ClaimTypes.Name).Value);

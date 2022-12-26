@@ -21,7 +21,7 @@ namespace Tests.Reviews.Service
             var mockUserService = new Mock<IUserService>();
             var review = ReviewHelper.GetTestReview(1);
             mockRepo.Setup(x => x.GetReview(review.Id)).ReturnsAsync(review);
-            mockRepo.Setup(x => x.DeleteReview(review.Id)).ReturnsAsync(new StatusCodeResult(200));
+            mockRepo.Setup(x => x.DeleteReview(review.Id));
             var reviewService = new ReviewService(mockRepo.Object, mockUserService.Object);
 
             // Act
@@ -41,8 +41,8 @@ namespace Tests.Reviews.Service
             var mockRepo = new Mock<IReviewRepo>();
             var mockUserService = new Mock<IUserService>();
             var review = ReviewHelper.GetTestReview(reivewId);
-            mockRepo.Setup(x => x.GetReview(review.Id)).Throws(new NotFoundException(""));
-            mockRepo.Setup(x => x.DeleteReview(review.Id)).ReturnsAsync(new StatusCodeResult(200));
+            mockRepo.Setup(x => x.GetReview(review.Id)).Throws(new NotFoundException("Review not found"));
+            mockRepo.Setup(x => x.DeleteReview(review.Id));
             var reviewService = new ReviewService(mockRepo.Object, mockUserService.Object);
 
             // Act
@@ -61,14 +61,14 @@ namespace Tests.Reviews.Service
             var mockUserService = new Mock<IUserService>();
             var review = ReviewHelper.GetTestReview(reivewId);
             mockRepo.Setup(x => x.GetReview(review.Id)).ReturnsAsync(review);
-            mockRepo.Setup(x => x.DeleteReview(review.Id)).ReturnsAsync(new StatusCodeResult(200));
+            mockRepo.Setup(x => x.DeleteReview(review.Id)).ThrowsAsync(new UnauthorizedException("You can only Delete your reviews")); ;
             var reviewService = new ReviewService(mockRepo.Object, mockUserService.Object);
 
             // Act
             var result = async () => await reviewService.DeleteReview(userId, reivewId);
 
             // Assert
-            UnauthorizedAccessException exception = Assert.ThrowsAsync<UnauthorizedAccessException>(result).Result; ;
+            UnauthorizedException exception = Assert.ThrowsAsync<UnauthorizedException>(result).Result; ;
         }
 
     }

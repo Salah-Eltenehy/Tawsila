@@ -1,11 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 namespace Backend.Models.DTO.Review;
-public record CreateReviewRequest(
+public record UpdateReviewRequest(
 
     [Required] int Rating,
 
-    [Required] string Comment,
-
-    [Required] int RevieweeId
+    [Required] string Comment
  );

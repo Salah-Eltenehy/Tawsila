@@ -2,17 +2,19 @@
 using Backend.Models;
 using Backend.Models.DTO.Review;
 using Backend.Models.Entities;
+using Backend.Models.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Ocsp;
 
 
 public interface IReviewRepo
 {
-    Task<PaginatedList<Review>> GetAllReviews();
-    Task<Review> GetReview(int id);
-    Task<IActionResult> DeleteReview(int id);
-    Task<IActionResult> UpdateReview(int id, CreateReviewRequest update);
-    Task<IActionResult> CreateReview(Review review);
+    Task <PaginatedList<Review>> GetAllReviews();
+    Task <Review> GetReview(int id);
+    Task DeleteReview(int id);
+    Task<Review> UpdateReview(int id, UpdateReviewRequest update);
+    Task<Review> CreateReview(Review review);
 }
 
 
@@ -42,25 +44,23 @@ namespace Backend.Repositories
             return review;
         }
 
-        public async Task<IActionResult> CreateReview(Review review)
+        public async Task<Review> CreateReview(Review review)
         {
             _context.Reviews.Add(review);
             await _context.SaveChangesAsync();
-            return new StatusCodeResult(200);
+            return review;
         }
 
-        public async Task<IActionResult> DeleteReview(int id)
+        public async Task DeleteReview(int id)
         {
             var review = await _context.Reviews.FindAsync(id);
             if (review == null)
             {
-                return null;
+                throw new NotFoundException("Review not found");
             }
 
             _context.Reviews.Remove(review);
             await _context.SaveChangesAsync();
-
-            return new StatusCodeResult(200);
         }
 
         public bool ReviewExists(int id)
@@ -68,9 +68,19 @@ namespace Backend.Repositories
             return _context.Reviews.Any(e => e.Id == id);
         }
 
-        public async Task<IActionResult> UpdateReview(int id, CreateReviewRequest update)
+        public async Task<Review> UpdateReview(int id, UpdateReviewRequest req)
         {
-            return new StatusCodeResult(200);
+            var review = await _context.Reviews.FindAsync(id);
+            if (review == null)
+            {
+                throw new NotFoundException("Review not found");
+            }
+            review.Rating = req.Rating;
+            review.Comment = req.Comment;
+            review.UpdatedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+            _context.Entry(review).State = EntityState.Detached;
+            return review;
         }
     }
 }

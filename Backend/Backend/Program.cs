@@ -92,7 +92,8 @@ builder.Services.AddScoped<ICarService, CarService>();
 builder.Services.AddScoped<ICarRepo, CarRepo>();
 
 builder.Services.AddScoped<ReviewsController>();
-builder.Services.AddScoped<ReviewRepo>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<IReviewRepo, ReviewRepo>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
