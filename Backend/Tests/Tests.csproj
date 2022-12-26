@@ -28,4 +28,8 @@
     <ProjectReference Include="..\Backend\Backend.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Reviews\Repository\" />
+  </ItemGroup>
+
 </Project>
