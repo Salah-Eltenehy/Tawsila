@@ -36,7 +36,15 @@ namespace Tests.Reviews
         {
             return new CreateReviewRequest
             (
-                4,"a very good car and service",DateTime.MinValue, DateTime.MinValue, 1
+                4,"a very good car and service", 1
+            );
+        }
+
+        public static UpdateReviewRequest GetTestUpdateReviewRequest()
+        {
+            return new UpdateReviewRequest
+            (
+                4, "Excellent service"
             );
         }
 

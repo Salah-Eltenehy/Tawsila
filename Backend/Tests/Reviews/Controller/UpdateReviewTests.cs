@@ -19,7 +19,7 @@ namespace Tests.Reviews.Controller
             int userId = 1, ReviewId = 1;
             var controllerContext = ReviewHelper.GetTestIdentity();
             var mockService = new Mock<IReviewService>();
-            var reivewRequest = ReviewHelper.GetTestReviewRequest();
+            var reivewRequest = ReviewHelper.GetTestUpdateReviewRequest();
             mockService.Setup(x => x.UpdateReview(userId, ReviewId, reivewRequest));//.Returns(new StatusCodeResult(200));
             var reviewController = new ReviewsController(mockService.Object)
             {
@@ -43,7 +43,7 @@ namespace Tests.Reviews.Controller
             int userId = 1, ReviewId = 1;
             var controllerContext = ReviewHelper.GetTestIdentity();
             var mockService = new Mock<IReviewService>();
-            var reivewRequest = ReviewHelper.GetTestReviewRequest();
+            var reivewRequest = ReviewHelper.GetTestUpdateReviewRequest();
             mockService.Setup(x => x.UpdateReview(userId, ReviewId, reivewRequest)).Throws(new NotFoundException(""));
             var reviewController = new ReviewsController(mockService.Object)
             {
@@ -64,7 +64,7 @@ namespace Tests.Reviews.Controller
             int userId = 1, ReviewId = 1;
             var controllerContext = ReviewHelper.GetTestIdentity();
             var mockService = new Mock<IReviewService>();
-            var reivewRequest = ReviewHelper.GetTestReviewRequest();
+            var reivewRequest = ReviewHelper.GetTestUpdateReviewRequest();
             mockService.Setup(x => x.UpdateReview(userId, ReviewId, reivewRequest)).Throws(new UnauthorizedAccessException(""));
             var reviewController = new ReviewsController(mockService.Object)
             {

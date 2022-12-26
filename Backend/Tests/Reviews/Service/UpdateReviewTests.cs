@@ -1,7 +1,9 @@
 ﻿using Backend.Controllers;
+using Backend.Models.Entities;
 using Backend.Models.Exceptions;
 using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,19 +23,22 @@ namespace Tests.Reviews.Service
             var mockRepo = new Mock<IReviewRepo>();
             var mockUserService = new Mock<IUserService>();
             var review = ReviewHelper.GetTestReview(1);
-            var reviewReq = ReviewHelper.GetTestReviewRequest();
+            var reviewReq = ReviewHelper.GetTestUpdateReviewRequest();
             mockRepo.Setup(x => x.GetReview(review.Id)).ReturnsAsync(review);
-            mockRepo.Setup(x => x.UpdateReview(review.Id, reviewReq)).ReturnsAsync(new StatusCodeResult(200));
+   
+            mockRepo.Setup(x => x.UpdateReview(review.Id, reviewReq)).ReturnsAsync(review);
             var reviewService = new ReviewService(mockRepo.Object, mockUserService.Object);
-
 
             // Act
             var result = await reviewService.UpdateReview(userId, review.Id, reviewReq);
-            var ok = result as StatusCodeResult;
+
 
             // Assert
-            Assert.NotNull(ok);
-            Assert.Equal(200, ok.StatusCode);
+            review.WithDeepEqual(result)
+            .IgnoreSourceProperty(x => x!.Id)
+            .IgnoreSourceProperty(x => x!.CreatedAt)
+            .IgnoreSourceProperty(x => x!.UpdatedAt)
+            .Assert();
         }
 
         [Fact]
@@ -44,9 +49,9 @@ namespace Tests.Reviews.Service
             var mockRepo = new Mock<IReviewRepo>();
             var mockUserService = new Mock<IUserService>();
             var review = ReviewHelper.GetTestReview(1);
-            var reviewReq = ReviewHelper.GetTestReviewRequest();
+            var reviewReq = ReviewHelper.GetTestUpdateReviewRequest();
             mockRepo.Setup(x => x.GetReview(review.Id)).Throws(new NotFoundException(""));
-            mockRepo.Setup(x => x.UpdateReview(review.Id, reviewReq)).ReturnsAsync(new StatusCodeResult(200));
+            mockRepo.Setup(x => x.UpdateReview(review.Id, reviewReq));
             var carService = new ReviewService(mockRepo.Object, mockUserService.Object);
 
             // Act
@@ -65,9 +70,9 @@ namespace Tests.Reviews.Service
             var mockRepo = new Mock<IReviewRepo>();
             var mockUserService = new Mock<IUserService>();
             var review = ReviewHelper.GetTestReview(reviewId);
-            var reviewReq = ReviewHelper.GetTestReviewRequest();
+            var reviewReq = ReviewHelper.GetTestUpdateReviewRequest();
             mockRepo.Setup(x => x.GetReview(review.Id)).ReturnsAsync(review);
-            mockRepo.Setup(x => x.UpdateReview(review.Id, reviewReq)).ReturnsAsync(new StatusCodeResult(200));
+            mockRepo.Setup(x => x.UpdateReview(review.Id, reviewReq));
             var carService = new ReviewService(mockRepo.Object, mockUserService.Object);
 
             // Act

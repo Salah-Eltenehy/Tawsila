@@ -22,19 +22,22 @@ namespace Tests.Reviews.Service
             int userId = 1;
             var mockRepo = new Mock<IReviewRepo>();
             var mockUserService = new Mock<IUserService>();
-
+            var review = ReviewHelper.GetTestReview(1);
             mockUserService.Setup(x => x.GetUsers(It.IsAny<int[]>())).ReturnsAsync(new User[1]);
             var reviewReq = ReviewHelper.GetTestReviewRequest();
-            mockRepo.Setup(x => x.CreateReview(It.IsAny<Review>())).ReturnsAsync(new StatusCodeResult(200));
+            mockRepo.Setup(x => x.CreateReview(It.IsAny<Review>())).ReturnsAsync(review);
             var reviewService = new ReviewService(mockRepo.Object, mockUserService.Object);
 
             // Act
             var result = await reviewService.CreateReview(userId, reviewReq);
-            var okResult = result as StatusCodeResult;
+
 
             // Assert
-            Assert.NotNull(okResult);
-            Assert.Equal(200, okResult.StatusCode);
+            review.WithDeepEqual(result)
+            .IgnoreSourceProperty(x => x!.Id)
+            .IgnoreSourceProperty(x => x!.CreatedAt)
+            .IgnoreSourceProperty(x => x!.UpdatedAt)
+            .Assert();
         }
     }
 }
