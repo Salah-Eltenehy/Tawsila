@@ -10,7 +10,7 @@ using Org.BouncyCastle.Ocsp;
 
 public interface IReviewRepo
 {
-    Task <PaginatedList<Review>> GetAllReviews();
+   /* Task <PaginatedList<Review>> GetAllReviews();*/
     Task <Review> GetReview(int id);
     Task DeleteReview(int id);
     Task<Review> UpdateReview(int id, UpdateReviewRequest update);
@@ -29,14 +29,14 @@ namespace Backend.Repositories
             _context = context;
         }
 
-        public async Task<PaginatedList<Review>> GetAllReviews()
+        /*public async Task<PaginatedList<Review>> GetAllReviews()
         {
 
             Review[] items = new Review[1];
             PaginatedList<Review> pagniatedListReviews = new PaginatedList<Review>(items,0,0);
 
             return pagniatedListReviews;
-        }
+        }*/
 
         public async Task<Review> GetReview(int id)
         {

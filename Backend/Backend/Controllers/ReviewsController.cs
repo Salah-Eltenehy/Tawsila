@@ -31,7 +31,7 @@ namespace Backend.Controllers
             _reviewService = reviewService;
         }
 
-        [HttpGet]
+        /*[HttpGet]
         [Authorize(Policy = "VerifiedUser")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -73,7 +73,7 @@ namespace Backend.Controllers
                 review.UpdatedAt
             );
             return Ok(res);
-        }
+        }*/
 
         [HttpPost]
         [Authorize(Policy = "VerifiedUser")]
