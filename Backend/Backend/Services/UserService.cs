@@ -16,7 +16,7 @@ public interface IUserService
     public Task<string> UpdateUser(int id, UpdateUserRequest req);
     public Task DeleteUser(int id, DeleteUserRequest req);
     public Task<IEnumerable<Car>> GetUserCars(int id);
-    public Task<GetReviewsResponse> GetUserReviews(int id, int offset, int pageSize);
+    public Task<GetReviewsResponse> GetUserReviews(int id, int offset);
 }
 
 public class UserService : IUserService
@@ -157,9 +157,10 @@ public class UserService : IUserService
         return cars;
     }
 
-    public async Task<GetReviewsResponse> GetUserReviews(int id, int offset, int pageSize)
+    public async Task<GetReviewsResponse> GetUserReviews(int id, int offset)
     {
-        var reviewsList =  await _userRepo.GetReviews(id, offset, pageSize);
+        int pagesize = 10;
+        var reviewsList =  await _userRepo.GetReviews(id, offset, pagesize);
         ReviewItem[] reviews = new ReviewItem[reviewsList.Count()];
         int i = 0;
         foreach (var review in reviewsList)
