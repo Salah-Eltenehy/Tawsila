@@ -14,7 +14,7 @@ public class CarCreation
     private readonly Mock<IStorageService> _storageSercie;
     private readonly ICarService _carService;
     private readonly Car _dummyCar;
-    public CarCreation()
+    /*public CarCreation()
     {
          _carRepo = new Mock<ICarRepo>();
          _imageService = new Mock<IImageService>();
@@ -41,7 +41,7 @@ public class CarCreation
              Latitude = 30.123,
              OwnerId = 1
          };
-     }
+     }*/
 
      [Fact]
      public async Task ExistentCarAuthorized()
