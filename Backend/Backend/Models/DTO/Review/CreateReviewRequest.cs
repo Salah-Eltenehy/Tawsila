@@ -7,5 +7,5 @@ public record CreateReviewRequest(
 
     [Required] string Comment,
 
-    [Required] int RevieweeId
+    [Required] int Reviewee
  );

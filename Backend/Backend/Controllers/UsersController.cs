@@ -168,6 +168,20 @@ public class UsersController : ControllerBase
         return Ok(new GetUserCarsResponse(carItems));
     }
 
+    [Authorize(Policy = "VerifiedUser")]
+    [HttpGet("{id:int}/reviews/{offset:int}/{pagesize:int}")]
+    [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetReviews([FromRoute] int id, [FromRoute] int offset, [FromRoute] int pagesize)
+    {
+        var ReviewsList = await _userService.GetUserReviews(id, offset, pagesize);
+        
+        return Ok(ReviewsList);
+    }
+
     [ApiExplorerSettings(IgnoreApi = true)]
     [Route("/error")]
     public IActionResult Error()

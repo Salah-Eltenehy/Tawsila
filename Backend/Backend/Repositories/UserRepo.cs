@@ -3,6 +3,7 @@ using Backend.Models.API.User;
 using Backend.Models.Entities;
 using Backend.Models.Exceptions;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace Backend.Repositories;
 
@@ -19,6 +20,7 @@ public interface IUserRepo
     Task DeleteUser(int id);
     Task<Car[]> GetUserCars(int id);
     Task<IEnumerable<Review>> GetReviews(int id, int offset, int limit);
+    double GetAverageRating(int id);
 }
 
 public class UserRepo : IUserRepo
@@ -144,5 +146,12 @@ public class UserRepo : IUserRepo
             .Skip(offset)
             .Take(limit)
             .ToListAsync();
+    }
+
+    public double GetAverageRating(int id)
+    {
+        return _context.Reviews
+            .Where(r => r.RevieweeId == id).Average(c => c.Rating);
+            
     }
 }

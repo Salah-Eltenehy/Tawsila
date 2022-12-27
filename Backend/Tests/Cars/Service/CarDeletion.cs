@@ -16,7 +16,7 @@ public class CarCreation
     private readonly Car _dummyCar;
     public CarCreation()
     {
-         _carRepo = new Mock<ICarRepo>();
+        /* _carRepo = new Mock<ICarRepo>();
          _imageService = new Mock<IImageService>();
          _storageSercie = new Mock<IStorageService>();
          _carService = new CarService(_carRepo.Object, _imageService.Object, _storageSercie.Object);
@@ -66,6 +66,6 @@ public class CarCreation
          NotFoundException ex = await Assert.ThrowsAsync<NotFoundException>(async () => await _carService.DeleteCar(1, 2));
          Assert.Equal("Car not found", ex.Message);
      }
-       
-    
- }
+        */
+    }
+}
