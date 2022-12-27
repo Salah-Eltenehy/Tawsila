@@ -8,7 +8,7 @@ using System.Data;
 
 public interface IReviewService
 {
-    /*Task<PaginatedList<Review>> GetAllReviews();*/
+/*    Task<PaginatedList<Review>> GetAllReviews();*/
     Task<Review> GetReview(int reviewId);
     public Task<Review> CreateReview(int Userid, CreateReviewRequest review);
     public Task<IActionResult> DeleteReview(int UserId, int id);
@@ -28,7 +28,7 @@ namespace Backend.Services
             this._userService = userService;
         }
 
-        /*public async Task<PaginatedList<Review>> GetAllReviews()
+/*        public async Task<PaginatedList<Review>> GetAllReviews()
         {
             PaginatedList<Review> reviews = await _reviewRepo.GetAllReviews();
 
@@ -50,7 +50,7 @@ namespace Backend.Services
                 Comment = reviewReq.Comment,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow, 
-                RevieweeId = reviewReq.RevieweeId,
+                RevieweeId = reviewReq.Reviewee,
                 ReviewerId = UserId
             };
             return await _reviewRepo.CreateReview(review);

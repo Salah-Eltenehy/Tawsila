@@ -7,10 +7,18 @@ public record ReviewItem(
 
     [Required] int Rating ,
 
-    [Required] string Comment,
+    [Required] string Content,
+
+    [Required] int reviewerId,
+
+    [Required] string reviewerFirstName,
+
+    [Required] string reviewerLastName,
+
+    [Required] string reviewerAvatar,
 
     [Required] DateTime CreatedAt,
 
     [Required] DateTime UpdatedAt
-    
+
     );

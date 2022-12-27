@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Backend.Contexts;
 using Backend.Models;
-using Backend.Models.API.Review;
 using Backend.Models.Entities;
 using Backend.Repositories;
 using Microsoft.AspNetCore.Authorization;
@@ -31,7 +30,7 @@ namespace Backend.Controllers
             _reviewService = reviewService;
         }
 
-        /*[HttpGet]
+/*        [HttpGet]
         [Authorize(Policy = "VerifiedUser")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]

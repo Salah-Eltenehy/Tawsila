@@ -1,7 +1,9 @@
 ﻿using Backend.Models.API.User;
+using Backend.Models.DTO.Review;
 using Backend.Models.Entities;
 using Backend.Models.Exceptions;
 using Backend.Repositories;
+using MimeKit.Text;
 
 namespace Backend.Services;
 
@@ -14,7 +16,7 @@ public interface IUserService
     public Task<string> UpdateUser(int id, UpdateUserRequest req);
     public Task DeleteUser(int id, DeleteUserRequest req);
     public Task<IEnumerable<Car>> GetUserCars(int id);
-    public Task<IEnumerable<Review>> GetUserReviews(int id, int offset, int pageSize);
+    public Task<GetReviewsResponse> GetUserReviews(int id, int offset, int pageSize);
 }
 
 public class UserService : IUserService
@@ -155,8 +157,25 @@ public class UserService : IUserService
         return cars;
     }
 
-    public async Task<IEnumerable<Review>> GetUserReviews(int id, int offset, int pageSize)
+    public async Task<GetReviewsResponse> GetUserReviews(int id, int offset, int pageSize)
     {
-        return await _userRepo.GetReviews(id, offset, pageSize);
+        var reviewsList =  await _userRepo.GetReviews(id, offset, pageSize);
+        ReviewItem[] reviews = new ReviewItem[reviewsList.Count()];
+        int i = 0;
+        foreach (var review in reviewsList)
+        {
+            User reviewer = await _userRepo.GetUser(review.ReviewerId);
+
+            if (reviewer.Avatar != "")
+            {
+                reviewer.Avatar = _storageService.GetBlobUrl("user-avatars", reviewer.Avatar);
+            }
+            ReviewItem rI = new(review.Id, review.Rating, review.Comment, review.ReviewerId,
+                reviewer.FirstName, reviewer.LastName, reviewer.Avatar, 
+                review.CreatedAt, review.UpdatedAt);
+            reviews[i++] = rI;  
+        }
+        var averageRating =  _userRepo.GetAverageRating(id);
+        return new(reviews, averageRating, reviews.Length, offset);
     }
 }
