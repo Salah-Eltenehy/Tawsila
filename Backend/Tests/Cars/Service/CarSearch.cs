@@ -17,7 +17,7 @@ public class CarSearch
     private readonly ICarService _carService;
     private readonly GetCarsRequest _getCarsRequestTemplate;
     private readonly Car _dummyCar;
-    /*public CarSearch()
+    public CarSearch()
     {
         _carRepo = new Mock<ICarRepo>();
         _imageService = new Mock<IImageService>();
@@ -48,7 +48,7 @@ public class CarSearch
             Latitude = 30.123,
             OwnerId = 1
         };
-    }*/
+    }
 
     [Fact]
     public async Task ValidCarSearch()
