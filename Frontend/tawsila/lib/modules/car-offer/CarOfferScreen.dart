@@ -88,7 +88,7 @@ class CarOfferScreen extends StatelessWidget{
                               "latitude":await CachHelper.getData(key: "latitude") as double,
                               "images": offerCubit.imgs,
                             };
-                            offerCubit.updeteUserInfo(query: query, context: context);
+                            offerCubit.createNewCar(query: query, context: context);
                           }
                         },
                         icon: const Icon(
