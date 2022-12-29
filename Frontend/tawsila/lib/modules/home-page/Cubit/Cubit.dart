@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tawsila/shared/network/local/Cachhelper.dart';
 
+import '../../../shared/components/Components.dart';
 import '../../../shared/network/remote/DioHelper.dart';
 import '../../../shared/end-points.dart';
 
@@ -54,6 +55,36 @@ class HomePageCubit extends Cubit<HomePageStates> {
   //   );
   // }
 
+  Map<String, dynamic> usersInfo = {};
+  Map<String, dynamic> tokenInfo={};
+
+  void getUserInfo() async{
+    print("here###################################");
+    String token = await CachHelper.getData(key: 'token') as String;
+    tokenInfo = parseJwt(token);
+    print(tokenInfo[USERID]);
+    emit(TokenState());
+    print(tokenInfo);
+    print(GETUSER);
+    DioHelper.getData(
+      url: "users/${tokenInfo[USERID]}",
+      query: {
+        //'userId': "${tokenInfo[USERID]}"
+      }, token: token,
+    ).then((value) {
+      print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+      print(value);
+      print("value --------------------");
+      usersInfo = value.data['users'][0];
+      print(usersInfo);
+      print("kkkkkkkkkkkkkkkkk");
+      emit(GetUserInfoState());
+    }).catchError((error) {
+      print("************************************************************************");
+      print(error.toString());
+    });
+  }
+
   Location location = new Location();
   late bool serviceEnabled;
   late PermissionStatus permissionGranted;
@@ -71,6 +102,9 @@ class HomePageCubit extends Cubit<HomePageStates> {
     locationData = await location.getLocation();
     CachHelper.saveData(key: 'latitude', value: locationData.latitude);
     CachHelper.saveData(key: 'longitude', value: locationData.longitude);
+    print( locationData.latitude);
+    userLocationLatidue =  locationData.latitude as double;
+    userCurrentLongtidue = locationData.longitude as double;
     print("DONNNNNNNNNNNNNNNNNNNNNNNNNE");
     emit(GetLocationState());
   }
@@ -96,10 +130,9 @@ class HomePageCubit extends Cubit<HomePageStates> {
   void getPrevLocation () async {
     userCurrentLatitude = await CachHelper.getData(key: "latitude") as double;
     userCurrentLongtidue = await CachHelper.getData(key: "longitude") as double;
-    print("TEST");
+    print("TEST                              sssssssssssss");
     print(userCurrentLongtidue);
     print(userCurrentLatitude);
     emit(GetLocationState());
   }
-
 }

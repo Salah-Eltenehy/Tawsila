@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:open_street_map_search_and_pick/open_street_map_search_and_pick.dart';
@@ -9,7 +8,6 @@ import 'package:tawsila/modules/home-page/Cubit/CubitStates.dart';
 import 'package:tawsila/modules/home-page/Map.dart';
 import 'package:tawsila/modules/search-result/SearchResultScreen.dart';
 import 'package:tawsila/shared/components/Components.dart';
-
 import '../../shared/network/local/Cachhelper.dart';
 import '../Setting/SettingsScreen.dart';
 import '../car-offer/CarOfferScreen.dart';
@@ -32,7 +30,8 @@ class HomePageScreen extends StatelessWidget {
 
     // TODO: implement build
     return BlocProvider(
-      create: (BuildContext context) => HomePageCubit()..setLanguage(l: language)..readJson('HomePage'),
+      create: (BuildContext context) => HomePageCubit()..setLanguage(l: language)..readJson('HomePage')
+      ..getUserInfo()..getLocation(),
       child: BlocConsumer<HomePageCubit , HomePageStates>(
           listener: (BuildContext context, state) {},
           builder: (BuildContext context, state)
@@ -51,13 +50,11 @@ class HomePageScreen extends StatelessWidget {
                     InkWell(
                       onTap: () {
                         print("User page");
-                        navigateTo(context: context, screen: EditProfilePageState(language: language, edit: false,));
+                        navigateTo(context: context, screen: EditProfilePage(language: language, edit: false,));
                       },
-                      child: const CircleAvatar(
-                        child: Image(
-                          image: AssetImage('assets/images/owner.png')
+                      child: CircleAvatar(
+                        backgroundImage: avatar(homePageCubit),
                         ),
-                      ),
                     ),
                   ]
               ),
@@ -100,12 +97,12 @@ class HomePageScreen extends StatelessWidget {
                               )
                             ],
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 10,
                           ),
                           Text(
                             '${homePageCubit.items['RentCar']??''}',
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 20
                             ),
@@ -117,12 +114,12 @@ class HomePageScreen extends StatelessWidget {
                               '${homePageCubit.items['RentalPeriod']??''}'
                           ),
                           buildTextField(controller: rentCarPeriodController, placeHolder: homePageCubit.items['RentalPeriodHint']?? ''),
-                          SizedBox(
+                          const SizedBox(
                             height: 8,
                           ),
                           Text('${homePageCubit.items['AddressOfPickup'] ?? ''}'),
                           buildTextField(controller: addressOfPicupController, placeHolder: homePageCubit.items['AddressOfPickupHint']?? ''),
-                          SizedBox(
+                          const SizedBox(
                             height: 10,
                           ),
                           Center(
@@ -132,14 +129,14 @@ class HomePageScreen extends StatelessWidget {
                                 onTap: () {
                                   navigateTo(context: context, screen: MapScreen());
                                 },
-                                child: Image(
+                                child: const Image(
                                   // image: NetworkImage('https://th.bing.com/th/id/OIP.3g6HqqAnz-PK2SmNWsUfbwHaHa?w=178&h=180&c=7&r=0&o=5&pid=1.7')
                                   image: AssetImage('assets/images/map.png'),
                                 ),
                               ),
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 10,
                           ),
                           InkWell(
@@ -153,8 +150,8 @@ class HomePageScreen extends StatelessWidget {
                                 "hasAirConditioning": "",
                                 "hasRadio": "",
                                 "hasSunroof": "",
-                                "latitude": 27.5667,
-                                "longitude": 53.9,
+                                "latitude": 27.5667,//latitude,
+                                "longitude": 53.9,//longitude,
                                 "maxPrice":"",
                                 "maxYear":"",
                                 "minPrice":"",
@@ -274,4 +271,12 @@ class HomePageScreen extends StatelessWidget {
       ),
     ),
   );
+  ImageProvider avatar(var homePageCubit){
+    if(homePageCubit.usersInfo['avatar'] != ""){
+      return NetworkImage('${homePageCubit.usersInfo['avatar']}');
+    }
+    else{
+      return AssetImage('assets/images/owner.png');
+    }
+  }
 }
