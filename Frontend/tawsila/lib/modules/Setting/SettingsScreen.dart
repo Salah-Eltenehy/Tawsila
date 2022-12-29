@@ -29,152 +29,155 @@ class SettingsScreen extends StatelessWidget {
           listener: (context, state) {},
           builder: (context, state) {
             var signUpCubit = SignUpCubit.get(context);
-            return Scaffold(
-              appBar: AppBar(
-                elevation: 1,
-                leading: IconButton(
-                  onPressed: () {
-                    navigateAndFinish(context: context, screen: EditProfilePage(language: language,edit: false,));
-                  },
-                  icon: const Icon(
-                    Icons.arrow_back,
-                    color: Colors.white,
+            return Directionality(
+              textDirection: signUpCubit.language == "English" ? TextDirection.ltr: TextDirection.rtl,
+              child: Scaffold(
+                appBar: AppBar(
+                  elevation: 1,
+                  leading: IconButton(
+                    onPressed: () {
+                      navigateAndFinish(context: context, screen: EditProfilePage(language: language,edit: false,));
+                    },
+                    icon: const Icon(
+                      Icons.arrow_back,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
-              ),
-              body: Container(
-                  padding: const EdgeInsets.only(left: 16, top: 25, right: 16),
-                  child: ListView(
-                      children: [
-                        Text(
-                          "${signUpCubit.items['settings']??''}",
-                          style: const TextStyle(
-                              fontSize: 25, fontWeight: FontWeight.w500),
-                        ),
-                        const SizedBox(
-                          height: 40,
-                        ),
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.person,
-                              color: Colors.blue,
-                            ),
-                            const SizedBox(
-                              width: 8,
-                            ),
-                            Text(
-                              "${signUpCubit.items['account']??''}",
-                              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                        const Divider(
-                          height: 15,
-                          thickness: 2,
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        GestureDetector(
-                          onTap: (){
-                            navigateTo(context: context, screen: EditProfilePage(language: language, edit: true));
-                          },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                body: Container(
+                    padding: const EdgeInsets.only(left: 16, top: 25, right: 16),
+                    child: ListView(
+                        children: [
+                          Text(
+                            "${signUpCubit.items['settings']??''}",
+                            style: const TextStyle(
+                                fontSize: 25, fontWeight: FontWeight.w500),
+                          ),
+                          const SizedBox(
+                            height: 40,
+                          ),
+                          Row(
                             children: [
-                              Text(
-                                "${signUpCubit.items['edit profile']??''}",
-                                style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.grey[600]
-                                ),
-                              ),
                               const Icon(
-                                Icons.arrow_forward_ios,
-                                color: Colors.grey,
+                                Icons.person,
+                                color: Colors.blue,
+                              ),
+                              const SizedBox(
+                                width: 8,
+                              ),
+                              Text(
+                                "${signUpCubit.items['account']??''}",
+                                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
-                        ),
-                        const SizedBox(height: 15,),
-                        GestureDetector(
-                          onTap: (){
-                            showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: Text("${signUpCubit.items['language']??''}"),
-                                    content: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        TextButton(
-                                            onPressed: () {
-                                              language = "العربية";
-                                              Navigator.of(context).push(MaterialPageRoute(
-                                                  builder: (BuildContext context) => SettingsScreen(language: language)));
-                                            },
-                                            child: const Text("العربية")),
-                                        const SizedBox(height: 10,),
-                                        TextButton(
-                                            onPressed: () {
-                                              language = "English";
-                                              Navigator.of(context).push(MaterialPageRoute(
-                                                  builder: (BuildContext context) => SettingsScreen(language: language)));
-                                            },
-                                            child: const Text("English")),
-                                      ],
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                          child: Text("${signUpCubit.items['close']??''}")),
-                                    ],
-                                  );
-                                });
-                          },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "${signUpCubit.items['language']??''}",
-                                style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.grey[600]
-                                ),
-                              ),
-                              const Icon(
-                                Icons.arrow_forward_ios,
-                                color: Colors.grey,
-                              ),
-                            ],
+                          const Divider(
+                            height: 15,
+                            thickness: 2,
                           ),
-                        ),
-                        const SizedBox(
-                          height: 50,
-                        ),
-                        Center(
-                          child: OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(horizontal: 40),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20)),
-                            ),
-                            onPressed: () {
-                              navigateAndFinish(context: context, screen: SignInScreen(language: language));
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          GestureDetector(
+                            onTap: (){
+                              navigateTo(context: context, screen: EditProfilePage(language: language, edit: true));
                             },
-                            child: Text(
-                                "${signUpCubit.items['signout']??''}",
-                                style: const TextStyle(
-                                    fontSize: 16, letterSpacing: 2.2, color: Colors.black)),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "${signUpCubit.items['edit profile']??''}",
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.grey[600]
+                                  ),
+                                ),
+                                const Icon(
+                                  Icons.arrow_forward_ios,
+                                  color: Colors.grey,
+                                ),
+                              ],
+                            ),
                           ),
-                        )
-                      ]
-                  )
+                          const SizedBox(height: 15,),
+                          GestureDetector(
+                            onTap: (){
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text("${signUpCubit.items['language']??''}"),
+                                      content: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          TextButton(
+                                              onPressed: () {
+                                                language = "العربية";
+                                                Navigator.of(context).push(MaterialPageRoute(
+                                                    builder: (BuildContext context) => SettingsScreen(language: language)));
+                                              },
+                                              child: const Text("العربية")),
+                                          const SizedBox(height: 10,),
+                                          TextButton(
+                                              onPressed: () {
+                                                language = "English";
+                                                Navigator.of(context).push(MaterialPageRoute(
+                                                    builder: (BuildContext context) => SettingsScreen(language: language)));
+                                              },
+                                              child: const Text("English")),
+                                        ],
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: Text("${signUpCubit.items['close']??''}")),
+                                      ],
+                                    );
+                                  });
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "${signUpCubit.items['language']??''}",
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.grey[600]
+                                  ),
+                                ),
+                                const Icon(
+                                  Icons.arrow_forward_ios,
+                                  color: Colors.grey,
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 50,
+                          ),
+                          Center(
+                            child: OutlinedButton(
+                              style: OutlinedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(horizontal: 40),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20)),
+                              ),
+                              onPressed: () {
+                                navigateAndFinish(context: context, screen: SignInScreen(language: language));
+                              },
+                              child: Text(
+                                  "${signUpCubit.items['signout']??''}",
+                                  style: const TextStyle(
+                                      fontSize: 16, letterSpacing: 2.2, color: Colors.black)),
+                            ),
+                          )
+                        ]
+                    )
+                ),
               ),
             );
           }
@@ -224,161 +227,164 @@ class EditProfilePageState extends State<EditProfilePage>{
           listener: (context, state) {},
           builder: (context, state) {
             var signUpCubit = SignUpCubit.get(context);
-            return Scaffold(
-              appBar: bar(context,),
-              body: Container(
-                padding: const EdgeInsets.only(left: 16, top: 25, right: 16),
-                child: GestureDetector(
-                  onTap: () {
-                    FocusScope.of(context).unfocus();
-                  },
-                  child: ListView(
-                    children: [
-                      header(context, signUpCubit),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      Center(
-                        child: Stack(
-                          children: [
-                            Container(
-                              width: 130,
-                              height: 130,
-                              decoration: BoxDecoration(
-                                  border: Border.all(
-                                      width: 4,
-                                      color: Theme.of(context).scaffoldBackgroundColor),
-                                  boxShadow: [
-                                    BoxShadow(
-                                        spreadRadius: 2,
-                                        blurRadius: 10,
-                                        color: Colors.black.withOpacity(0.1),
-                                        offset: const Offset(0, 10))
-                                  ],
-                                  shape: BoxShape.circle,
-                                  image: DecorationImage(
-                                    fit: BoxFit.cover,
-                                    image: _imageFile.path==""? avatar(signUpCubit) : FileImage(File(_imageFile.path)),//NetworkImage('${signUpCubit.usersInfo['avatar']}'),
-                                  )
+            return Directionality(
+              textDirection: signUpCubit.language == "English" ? TextDirection.ltr: TextDirection.rtl,
+              child: Scaffold(
+                appBar: bar(context,),
+                body: Container(
+                  padding: const EdgeInsets.only(left: 16, top: 25, right: 16),
+                  child: GestureDetector(
+                    onTap: () {
+                      FocusScope.of(context).unfocus();
+                    },
+                    child: ListView(
+                      children: [
+                        header(context, signUpCubit),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        Center(
+                          child: Stack(
+                            children: [
+                              Container(
+                                width: 130,
+                                height: 130,
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                        width: 4,
+                                        color: Theme.of(context).scaffoldBackgroundColor),
+                                    boxShadow: [
+                                      BoxShadow(
+                                          spreadRadius: 2,
+                                          blurRadius: 10,
+                                          color: Colors.black.withOpacity(0.1),
+                                          offset: const Offset(0, 10))
+                                    ],
+                                    shape: BoxShape.circle,
+                                    image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: _imageFile.path==""? avatar(signUpCubit) : FileImage(File(_imageFile.path)),//NetworkImage('${signUpCubit.usersInfo['avatar']}'),
+                                    )
+                                ),
+                              ),
+                              Positioned(
+                                  bottom: 0,
+                                  right: 0,
+                                  child: Container(
+                                    height: 40,
+                                    width: 40,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        width: 4,
+                                        color: Theme.of(context).scaffoldBackgroundColor,
+                                      ),
+                                      color: Colors.blue,
+                                    ),
+                                    child: profile(signUpCubit),
+                                  )),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 35,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children:[
+                            Flexible(
+                              child:TextField(
+                                enableInteractiveSelection: edit, // will disable paste operation
+                                focusNode: (edit)? null : AlwaysDisabledFocusNode(),
+                                style: textStyle,
+                                onChanged: (value){
+                                  fName = value;
+                                },
+                                decoration: InputDecoration(
+                                  labelText: signUpCubit.items['Fname']??"",
+                                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                                  // hintText: "first name returned from server"
+                                  hintText: "${signUpCubit.usersInfo['firstName']}",
+
+                                  hintStyle: textStyle,
+                                ),
                               ),
                             ),
-                            Positioned(
-                                bottom: 0,
-                                right: 0,
-                                child: Container(
-                                  height: 40,
-                                  width: 40,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      width: 4,
-                                      color: Theme.of(context).scaffoldBackgroundColor,
-                                    ),
-                                    color: Colors.blue,
-                                  ),
-                                  child: profile(signUpCubit),
-                                )),
+                            const SizedBox(width: 15,),
+                            Flexible(
+                              child:TextField(
+                                enableInteractiveSelection: edit, // will disable paste operation
+                                focusNode: (edit)? null : AlwaysDisabledFocusNode(),
+                                onChanged: (value){
+                                  lName = value;
+                                },
+                                style: textStyle,
+                                decoration: InputDecoration(
+                                  labelText: signUpCubit.items['Lname']??"",
+                                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                                  // hintText: "last name returned from server"
+                                  hintText: "${signUpCubit.usersInfo['lastName']}",
+                                  hintStyle: textStyle,
+                                ),
+                              ),
+                            ),
                           ],
                         ),
-                      ),
-                      const SizedBox(
-                        height: 35,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children:[
-                          Flexible(
-                            child:TextField(
-                              enableInteractiveSelection: edit, // will disable paste operation
-                              focusNode: (edit)? null : AlwaysDisabledFocusNode(),
-                              style: textStyle,
-                              onChanged: (value){
-                                fName = value;
-                              },
-                              decoration: InputDecoration(
-                                labelText: signUpCubit.items['Fname']??"",
-                                floatingLabelBehavior: FloatingLabelBehavior.always,
-                                // hintText: "first name returned from server"
-                                hintText: "${signUpCubit.usersInfo['firstName']}",
-
-                                hintStyle: textStyle,
-                              ),
-                            ),
+                        TextField(
+                          enableInteractiveSelection: edit, // will disable paste operation
+                          focusNode: (edit)? null : AlwaysDisabledFocusNode(),
+                          style: textStyle,
+                          onChanged: (value){
+                            email = value;
+                          },
+                          decoration: InputDecoration(
+                              labelText: signUpCubit.items['email']??"",
+                              prefixIcon: const Icon(Icons.email),
+                              floatingLabelBehavior: FloatingLabelBehavior.always,
+                              // hintText: "email returned from server"
+                              hintText: "${signUpCubit.tokenInfo[USEREMAIL]}",
+                              hintStyle: textStyle
                           ),
-                          const SizedBox(width: 15,),
-                          Flexible(
-                            child:TextField(
-                              enableInteractiveSelection: edit, // will disable paste operation
-                              focusNode: (edit)? null : AlwaysDisabledFocusNode(),
-                              onChanged: (value){
-                                lName = value;
-                              },
-                              style: textStyle,
-                              decoration: InputDecoration(
-                                labelText: signUpCubit.items['Lname']??"",
-                                floatingLabelBehavior: FloatingLabelBehavior.always,
-                                // hintText: "last name returned from server"
-                                hintText: "${signUpCubit.usersInfo['lastName']}",
-                                hintStyle: textStyle,
-                              ),
-                            ),
+                        ),
+                        TextField(
+                          enableInteractiveSelection: edit, // will disable paste operation
+                          focusNode: (edit)? null : AlwaysDisabledFocusNode(),
+                          keyboardType: TextInputType.phone,
+                          onChanged: (value){
+                            phone = value;
+                          },
+                          style: textStyle,
+                          decoration: InputDecoration(
+                              labelText: signUpCubit.items['phone']??"",
+                              prefixIcon: const Icon(Icons.phone),
+                              floatingLabelBehavior: FloatingLabelBehavior.always,
+                              // hintText: "phone returned from server"
+                              hintText: "${signUpCubit.usersInfo['phoneNumber']}",
+                              hintStyle: textStyle
                           ),
-                        ],
-                      ),
-                      TextField(
-                        enableInteractiveSelection: edit, // will disable paste operation
-                        focusNode: (edit)? null : AlwaysDisabledFocusNode(),
-                        style: textStyle,
-                        onChanged: (value){
-                          email = value;
-                        },
-                        decoration: InputDecoration(
-                            labelText: signUpCubit.items['email']??"",
-                            prefixIcon: const Icon(Icons.email),
+                        ),
+                        TextField(
+                          enableInteractiveSelection: edit, // will disable paste operation
+                          focusNode: (edit)? null : AlwaysDisabledFocusNode(),
+                          onChanged: (value){
+                            city = value;
+                          },
+                          style: textStyle,
+                          decoration: InputDecoration(
+                            prefixIcon: const Icon(Icons.location_city),
+                            labelText: signUpCubit.items['city']??"",
                             floatingLabelBehavior: FloatingLabelBehavior.always,
                             // hintText: "email returned from server"
-                            hintText: "${signUpCubit.tokenInfo[USEREMAIL]}",
-                            hintStyle: textStyle
+                            hintText: "alexandria",
+                            hintStyle: textStyle,
+                          ),
                         ),
-                      ),
-                      TextField(
-                        enableInteractiveSelection: edit, // will disable paste operation
-                        focusNode: (edit)? null : AlwaysDisabledFocusNode(),
-                        keyboardType: TextInputType.phone,
-                        onChanged: (value){
-                          phone = value;
-                        },
-                        style: textStyle,
-                        decoration: InputDecoration(
-                            labelText: signUpCubit.items['phone']??"",
-                            prefixIcon: const Icon(Icons.phone),
-                            floatingLabelBehavior: FloatingLabelBehavior.always,
-                            // hintText: "phone returned from server"
-                            hintText: "${signUpCubit.usersInfo['phoneNumber']}",
-                            hintStyle: textStyle
+                        const SizedBox(
+                          height: 35,
                         ),
-                      ),
-                      TextField(
-                        enableInteractiveSelection: edit, // will disable paste operation
-                        focusNode: (edit)? null : AlwaysDisabledFocusNode(),
-                        onChanged: (value){
-                          city = value;
-                        },
-                        style: textStyle,
-                        decoration: InputDecoration(
-                          prefixIcon: const Icon(Icons.location_city),
-                          labelText: signUpCubit.items['city']??"",
-                          floatingLabelBehavior: FloatingLabelBehavior.always,
-                          // hintText: "email returned from server"
-                          hintText: "alexandria",
-                          hintStyle: textStyle,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 35,
-                      ),
-                      buttons(context, signUpCubit),
-                    ],
+                        buttons(context, signUpCubit),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -486,7 +492,7 @@ class EditProfilePageState extends State<EditProfilePage>{
                   );
                 }
               }
-              if(!error&& (email!="" || phone!="" || fName != "" || lName != "" || city != "")){
+              if(!error&& (email!="" || phone!="" || fName != "" || lName != "" || city != "" ||  img64!="")){
                 Map<String, dynamic> query = {
                   "email": email==""? "${signUpCubit.tokenInfo[USEREMAIL]}" : email,
                   "firstName": fName==""? "${signUpCubit.usersInfo['firstName']}":fName,
@@ -496,6 +502,9 @@ class EditProfilePageState extends State<EditProfilePage>{
                   "hasWhatsapp": true
                 };
                 signUpCubit.updeteUserInfo(query: query, context: context);
+              }
+              else if(!error){
+                navigateAndFinish(context: context, screen: SettingsScreen(language: language));
               }
             },
             style: ElevatedButton.styleFrom(

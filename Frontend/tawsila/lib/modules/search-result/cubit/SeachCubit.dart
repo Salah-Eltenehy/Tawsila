@@ -4,6 +4,7 @@ import 'package:tawsila/modules/search-result/cubit/SearchStates.dart';
 import 'package:tawsila/shared/end-points.dart';
 import 'package:tawsila/shared/network/remote/DioHelper.dart';
 
+import '../../../shared/components/Components.dart';
 import '../../../shared/network/local/Cachhelper.dart';
 
 class SearchCubit extends Cubit<SearchStates> {
@@ -61,31 +62,36 @@ class SearchCubit extends Cubit<SearchStates> {
     "reviews": [
       {
         "content": "Very good car",
-        "image": "assets/images/1.png",
+        "reviewerAvatar": "assts/images/1.png",
         "reviewerFirstName": "Salah",
         "reviewerLastName": "Ahmed",
-        "rating": 3
+        "updatedAt": "12/2/2022 1:06:16 AM",
+        "rating" : "5",
       },
       {
         "content": "bla bla bla",
-        "image": "assets/images/2.png",
+        "reviewerAvatar": "assets/images/2.png",
         "reviewerFirstName": "Salah",
         "reviewerLastName": "Ahmed",
-        "rating": 4.5
+        "updatedAt": "12/2/2022 1:06:16 AM",
+        "rating" : "4",
       },
       {
         "content": "Nice car",
-        "image": "assets/images/owner.png",
+        "reviewerAvatar": "assets/images/owner.png",
         "reviewerFirstName": "Salah",
         "reviewerLastName": "Ahmed",
-        "rating": 2.5
+        "updatedAt": "12/2/2022 1:06:16 AM",
+        "rating" : "3",
       },
     ]
   };
+  Map<String, dynamic> tokenInfo={};
   Map<String, dynamic> userInfo = {};
   Future<void> getUserById(id) async {
-    emit(GetUserByIDState());
+    //emit(GetUserByIDState());
     String token = await CachHelper.getData(key: 'token') as String;
+    tokenInfo = parseJwt(token);
     DioHelper.getData(
       url: "users/${id}",
       query: {
@@ -101,9 +107,10 @@ class SearchCubit extends Cubit<SearchStates> {
   List<Map<String, dynamic>> reviews = [];
   double averageRating = 0;
   double offset = 0;
+  String token="";
   Future<void> getUserReviewsById(id) async {
     emit(GetUserReviewsByIDState());
-    String token = await CachHelper.getData(key: 'token') as String;
+    token = await CachHelper.getData(key: 'token') as String;
     DioHelper.getData(
       url: "users/${id}/reviews",
       query: {
@@ -122,19 +129,21 @@ class SearchCubit extends Cubit<SearchStates> {
   String carCity = "";
   Future<void> getCarById(id)  async {
     print(id);
-    String token = await CachHelper.getData(key: 'token') as String;
+    token = await CachHelper.getData(key: 'token') as String;
     DioHelper.getData(
-        url: 'car/${id}',
+        url: 'cars/${id}',
         token: token,
         query: {}
     ).then((value) async {
       print("ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
       print(value.data);
-      carResponse = value.data['car'];
+      carResponse = value.data;
       double carLatitude = value.data['latitude'];
       double carLongitude = value.data['longitude'];
       List<Placemark> placemarks = await placemarkFromCoordinates(carLatitude, carLongitude);
       carCity = placemarks[0].administrativeArea as String;
+      await getUserById(value.data['ownerId']);
+      //await getUserReviewsById(value.data['ownerId']);
       emit(GetCarSuccessState());
     });
   }
