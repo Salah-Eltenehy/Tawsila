@@ -134,7 +134,7 @@ class OfferCubit extends Cubit<OfferStates>{
     }
     emit(SelectMoreCarBrand());
   }
-  void updeteUserInfo({
+  void createNewCar({
     required Map<String, dynamic> query,
     required BuildContext context
   }) async{
