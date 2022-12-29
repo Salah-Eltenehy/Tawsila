@@ -40,7 +40,7 @@ class ViewCarScreen extends StatelessWidget {
                           //FlutterOpenWhatsapp.sendSingleMessage("${viewCarCubit.userInfo['phoneNumber']}", "Hello");
                           print("Call whats app");
                         },
-                        icon: const Icon(Icons.whatsapp, color: Colors.green,)
+                        icon: const Icon(Icons.whatshot, color: Colors.green,)
                     ),
                   ),
                   Expanded(

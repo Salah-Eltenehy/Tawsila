@@ -135,8 +135,6 @@ class SearchCubit extends Cubit<SearchStates> {
         token: token,
         query: {}
     ).then((value) async {
-      print("ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
-      print(value.data);
       carResponse = value.data;
       double carLatitude = value.data['latitude'];
       double carLongitude = value.data['longitude'];
