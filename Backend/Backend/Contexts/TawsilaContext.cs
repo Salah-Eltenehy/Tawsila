@@ -7,9 +7,12 @@ namespace Backend.Contexts;
 public class TawsilaContext : DbContext
 {
     public TawsilaContext(DbContextOptions<TawsilaContext> options) : base(options) { }
-
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<User>()
+            .HasIndex(u => new { u.Email })
+            .IsUnique();
         modelBuilder.Entity<Car>()
             .Property(e => e.Images)
             .HasConversion(

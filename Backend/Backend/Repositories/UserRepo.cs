@@ -2,6 +2,7 @@
 using Backend.Models.API.User;
 using Backend.Models.Entities;
 using Backend.Models.Exceptions;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Repositories;
@@ -82,13 +83,27 @@ public class UserRepo : IUserRepo
 
     public async Task<User> RegisterUser(User user)
     {
-        User trackedUser = (User)user.Clone();
-        _context.Users.Add(trackedUser);
-        trackedUser.CreatedAt = DateTime.UtcNow;
-        trackedUser.UpdatedAt = DateTime.UtcNow;
-        await _context.SaveChangesAsync();
-        _context.Entry(trackedUser).State = EntityState.Detached;
-        return trackedUser;
+        try
+        {
+            User trackedUser = (User)user.Clone();
+            _context.Users.Add(trackedUser);
+            trackedUser.CreatedAt = DateTime.UtcNow;
+            trackedUser.UpdatedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+            _context.Entry(trackedUser).State = EntityState.Detached;
+            return trackedUser;
+        }
+        catch (DbUpdateException ex)
+        {
+            if (ex.InnerException is SqlException sqlException && sqlException.Number == 2601)
+            {
+                throw new ConflictException("Email already exists");
+            }
+            else
+            {
+                throw ex;
+            }
+        }
     }
 
     public async Task<User> VerifyUser(int id)
