@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tawsila/modules/home-page/HomePage.dart';
 import 'package:tawsila/modules/search-result/cubit/SeachCubit.dart';
 import 'package:tawsila/modules/search-result/cubit/SearchStates.dart';
 
@@ -36,7 +37,8 @@ import 'ViewCar.dart';
  */
 class SearchResultScreen extends StatelessWidget {
   final Map<String, dynamic> query;
-  SearchResultScreen({super.key, required this.query});
+  var lang="";
+  SearchResultScreen({super.key, required this.query,required this.lang});
   Widget reload = Center(child: CircularProgressIndicator());
   @override
   Widget build(BuildContext context) {
@@ -52,7 +54,7 @@ class SearchResultScreen extends StatelessWidget {
               elevation: 0,
               leading: IconButton(
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  navigateTo(context: context, screen: HomePageScreen(language: lang));
                 },
                 icon: Icon(Icons.arrow_back, color: Colors.black,),
               ),
@@ -127,7 +129,7 @@ class SearchResultScreen extends StatelessWidget {
         height: 200,
         child: InkWell(
           onTap: () {
-            navigateTo(context: context, screen: ViewCarScreen(id: '${car['id']}'));
+            navigateTo(context: context, screen: ViewCarScreen(id: '${car['id']}', title: '${car['brand']} ${car['model']}',));
           },
           child: Stack(
             children: [

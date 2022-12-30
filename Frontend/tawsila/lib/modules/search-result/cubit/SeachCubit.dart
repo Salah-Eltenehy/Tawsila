@@ -1,8 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:get/get.dart';
 import 'package:tawsila/modules/search-result/cubit/SearchStates.dart';
 import 'package:tawsila/shared/end-points.dart';
 import 'package:tawsila/shared/network/remote/DioHelper.dart';
+import 'package:toast/toast.dart';
 
 import '../../../shared/components/Components.dart';
 import '../../../shared/network/local/Cachhelper.dart';
@@ -88,6 +90,7 @@ class SearchCubit extends Cubit<SearchStates> {
   };
   Map<String, dynamic> tokenInfo={};
   Map<String, dynamic> userInfo = {};
+  var avatar="";
   Future<void> getUserById(id) async {
     //emit(GetUserByIDState());
     String token = await CachHelper.getData(key: 'token') as String;
@@ -104,25 +107,33 @@ class SearchCubit extends Cubit<SearchStates> {
     }).catchError((error) {
     });
   }
+  var count = 1;
   List<Map<String, dynamic>> reviews = [];
   double averageRating = 0;
-  double offset = 0;
+  int offset = 0;
   String token="";
+  int tot = 0;
   Future<void> getUserReviewsById(id) async {
     emit(GetUserReviewsByIDState());
     token = await CachHelper.getData(key: 'token') as String;
+    avatar = await CachHelper.getData(key: 'avatar') as String;
     DioHelper.getData(
       url: "users/${id}/reviews",
       query: {
       }, token: token,
     ).then((value) {
-      print("reeeeeviewwwwwwwwwwwwwwwwwwwwww");
-      print(value.data);
-      reviews = value.data['reviews'];
+
+      reviews = List<Map<String, dynamic>>.from(value.data['reviews']);
+      print(reviews);
+      print("whuuuuuuuuuuuuuuuuuuuuuuuu");
       averageRating = value.data['averageRating'];
-      offset = value.data['offset'];
+      offset = value.data['offset'] + value.data['totalCount'];
+      tot = value.data['totalCount'];
+      print("reeeeeviewwwwwwwwwwwwwwwwwwwwww");
+      print(tot);
       emit(GetUserReviewsByIdSuccessState());
     }).catchError((error) {
+      print(error.toString());
     });
   }
   Map<String, dynamic> carResponse = {};
@@ -135,14 +146,26 @@ class SearchCubit extends Cubit<SearchStates> {
         token: token,
         query: {}
     ).then((value) async {
+      print("ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
+      print(value.data);
       carResponse = value.data;
       double carLatitude = value.data['latitude'];
       double carLongitude = value.data['longitude'];
       List<Placemark> placemarks = await placemarkFromCoordinates(carLatitude, carLongitude);
       carCity = placemarks[0].administrativeArea as String;
       await getUserById(value.data['ownerId']);
-      //await getUserReviewsById(value.data['ownerId']);
+      count = value.data['images'].length;
+      await getUserReviewsById(value.data['ownerId']);
       emit(GetCarSuccessState());
     });
+  }
+  void review({
+    required Map<String, dynamic> query
+  }) async{
+    print("wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
+    print(tokenInfo);
+    print(token.toString());
+    print(query);
+
   }
 }

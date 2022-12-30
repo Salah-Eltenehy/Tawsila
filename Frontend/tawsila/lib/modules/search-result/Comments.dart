@@ -3,26 +3,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:intl/intl.dart';
+import 'package:tawsila/modules/search-result/ViewCar.dart';
+import '../../shared/components/Components.dart';
 import '../../shared/end-points.dart';
+import '../../shared/network/remote/DioHelper.dart';
+import '../Setting/SettingsScreen.dart';
 import 'cubit/SeachCubit.dart';
 import 'cubit/SearchStates.dart';
 
 class TestMe extends StatefulWidget {
   var language = "";
   var id = "";
-  TestMe({super.key ,required this.language,required this.id});
+  var carID = "";
+  var title = "";
+  TestMe({super.key ,required this.language,required this.id,required this.carID,required this.title});
   @override
-  _TestMeState createState() => _TestMeState(language: language, id: id);
+  _TestMeState createState() => _TestMeState(language: language, id: id, carID: carID, title: title);
 }
 
 class _TestMeState extends State<TestMe> {
   var language = "";
   var id = "";
-  _TestMeState({required this.language,required this.id});
+  var carID = "";
+  var title = "";
+  _TestMeState({required this.language,required this.id,required this.carID,required this.title});
   final formKey = GlobalKey<FormState>();
   final TextEditingController commentController = TextEditingController();
   List filedata = [];
-  double rate = 3.0;
+  double rate = 3;
   Widget commentChild(data,viewCarCubit) {
     return ListView(
       children: <Widget>[
@@ -38,13 +46,12 @@ class _TestMeState extends State<TestMe> {
                 child: Container(
                   height: 50.0,
                   width: 50.0,
-                  decoration: new BoxDecoration(
+                  decoration: const BoxDecoration(
                       color: Colors.blue,
-                      borderRadius: new BorderRadius.all(Radius.circular(50))),
+                      borderRadius: BorderRadius.all(Radius.circular(50))),
                   child: CircleAvatar(
                         radius: 50,
-                        backgroundImage: CommentBox.commentImageParser(
-                            imageURLorPath: data[i]['reviewerAvatar'])),
+                        backgroundImage: avatar(data[i]['reviewerAvatar'])),
                   ),
               ),
               title: Text(
@@ -54,12 +61,12 @@ class _TestMeState extends State<TestMe> {
               subtitle: Text(data[i]['content']),
               trailing: Column(
                 children: [
-                  SizedBox(height: 10,),
+                  const SizedBox(height: 10,),
                   Text(data[i]['updatedAt'], style: TextStyle(fontSize: 10)),
                   RatingBar.builder(
                     itemCount: 5,
                     allowHalfRating: true,
-                    initialRating:  double.parse(data[i]['rating']),
+                    initialRating: double.parse(data[i]['rating'].toString()),
                     ignoreGestures: true,
                     itemSize: 20,
                     itemBuilder: (context, index) {
@@ -74,7 +81,7 @@ class _TestMeState extends State<TestMe> {
               )
             ),
           ),
-        button(viewCarCubit.offset, viewCarCubit.totlCount),
+        button(viewCarCubit.offset, viewCarCubit.tot,viewCarCubit),
         SizedBox(height: 70,)
       ],
     );
@@ -89,15 +96,24 @@ class _TestMeState extends State<TestMe> {
         builder: (context, state) {
           var viewCarCubit = SearchCubit.get(context);
           filedata = viewCarCubit.reviews;
+          print(filedata);
           return Scaffold(
             appBar: AppBar(
-              title: Text("Comment Page"),
+              leading: IconButton(
+                onPressed: () {
+                  navigateAndFinish(context: context, screen: ViewCarScreen(id: carID, title: title,));
+                },
+                icon: const Icon(
+                  Icons.arrow_back,
+                  color: Colors.white,
+                ),
+              ),
+              title: const Text("Review Page"),
               backgroundColor: Colors.blue,
             ),
             body: Container(
               child: CommentBox(
-                userImage: CommentBox.commentImageParser(
-                    imageURLorPath: "assets/img/userpic.jpg"),
+                userImage: avatar(viewCarCubit.avatar),
                 labelText: 'Write a comment...',
                 errorText: 'Comment cannot be blank',
                 withBorder: false,
@@ -105,20 +121,34 @@ class _TestMeState extends State<TestMe> {
                   if (formKey.currentState!.validate()) {
                     print(commentController.text);
                     setState(() {
+                      filedata = viewCarCubit.reviews;
                       var value = {
                         'reviewerFirstName': viewCarCubit.tokenInfo[USERFNAME],
                         "reviewerLastName":  viewCarCubit.tokenInfo[USERFNAME],
-                        'reviewerAvatar':
-                        'https://lh3.googleusercontent.com/a-/AOh14GjRHcaendrf6gU5fPIVd8GIl1OgblrMMvGUoCBj4g=s400',
+                        'reviewerAvatar': viewCarCubit.avatar,
                         'content': commentController.text,
-                        "createdAt": DateFormat('dd-MM-yyyyTkk:mm').format(DateTime.now()),
                         "updatedAt": DateFormat('dd-MM-yyyyTkk:mm').format(DateTime.now()),
-                        "rating" : rate.toString()
+                        "rating" :rate.toString().substring(0,1),
                       };
-                      filedata.insert(0, Map<String, String>.from(value));
+                      DioHelper.postDataVer(
+                        url: "reviews",
+                        data: {
+                          "rating": rate.toString().substring(0,1),
+                          "comment": commentController.text,
+                          "reviewee": viewCarCubit.tokenInfo[USERID],
+                        }
+                        , token: viewCarCubit.token,
+                      ).then((v) {
+                        filedata.insert(0, Map<String, String>.from(value));
+                        print(v.data);
+                        commentController.clear();
+                        FocusScope.of(context).unfocus();
+                        //navigateAndFinish(context: context, screen: HomePageScreen(language: language));
+                      }).catchError((error) {
+                        print("************************************************************************");
+                        print(error.toString());
+                      });
                     });
-                    commentController.clear();
-                    FocusScope.of(context).unfocus();
                   } else {
                     print("Not validated");
                   }
@@ -140,7 +170,7 @@ class _TestMeState extends State<TestMe> {
                               initialRating: rate,
                               minRating: 1,
                               direction: Axis.horizontal,
-                              allowHalfRating: true,
+                              allowHalfRating: false,
                               itemCount: 5,
                               itemPadding: EdgeInsets.only(right: 45,left: 5),
                               itemBuilder: (context, _) => const Icon(
@@ -166,9 +196,27 @@ class _TestMeState extends State<TestMe> {
     );
   }
 
-  Widget button(var offset,var total){
-    if(offset<total){
-      return IconButton(onPressed: (){},
+  Widget button(int offset,int total,var viewCarCubit){
+    if(10==viewCarCubit.tot){
+      return IconButton(onPressed: (){
+        print(offset+10);
+        DioHelper.getData(
+          url: "users/${id}/reviews",
+          query: {"offset":(viewCarCubit.offset)}, token: viewCarCubit.token,
+        ).then((value) {
+          setState(() {
+          print(value.data);
+          List<Map<String, dynamic>> reviews = List<Map<String, dynamic>>.from(value.data['reviews']);
+          viewCarCubit.offset = value.data['offset'] + 10;
+          viewCarCubit.tot = value.data['totalCount'];
+          filedata = filedata..addAll(reviews);
+          print(filedata.length);
+          viewCarCubit.reviews = filedata;
+          });
+        }).catchError((error) {
+          print(error.toString());
+        });
+      },
           icon: Icon(
             Icons.expand_more
           )
@@ -176,6 +224,14 @@ class _TestMeState extends State<TestMe> {
     }
     else {
       return SizedBox(height: 2,);
+    }
+  }
+  ImageProvider avatar(var av){
+    if(av != ""){
+      return NetworkImage(av);
+    }
+    else{
+      return AssetImage('assets/images/owner.png');
     }
   }
 }
