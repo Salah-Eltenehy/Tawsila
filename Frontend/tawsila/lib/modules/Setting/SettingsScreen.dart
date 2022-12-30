@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tawsila/modules/log-in/SignInScreen.dart';
 import 'package:tawsila/shared/end-points.dart';
+import 'package:tawsila/shared/network/local/Cachhelper.dart';
 import 'package:toast/toast.dart';
 import '../../shared/components/Components.dart';
 import '../home-page/HomePage.dart';
@@ -166,7 +167,8 @@ class SettingsScreen extends StatelessWidget {
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(20)),
                               ),
-                              onPressed: () {
+                              onPressed: () async {
+                                await CachHelper.saveData(key: 'token', value: "");
                                 navigateAndFinish(context: context, screen: SignInScreen(language: language));
                               },
                               child: Text(

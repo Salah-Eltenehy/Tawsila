@@ -12,36 +12,53 @@ import 'package:tawsila/modules/on-boarding/OnBoardingScreen.dart';
 import 'package:tawsila/modules/search-result/SearchResultScreen.dart';
 import 'package:tawsila/shared/bloc_observer.dart';
 import 'package:tawsila/shared/components/Components.dart';
+import 'package:tawsila/shared/end-points.dart';
 import 'package:tawsila/shared/network/local/Cachhelper.dart';
 import 'package:tawsila/shared/network/remote/DioHelper.dart';
 
 import 'layout/CurrentScreen.dart';
 import 'modules/Language/ChooseLanguage.dart';
+import 'modules/VerificationScreen/verification.dart';
 import 'modules/filter/FilterScreen.dart';
 import 'modules/forget-password/ForgetPassword.dart';
 import 'modules/forget-password/RestPassword.dart';
 
 void main() async {
-
-
-
   WidgetsFlutterBinding.ensureInitialized();
-  
   UserLocation()..getLocation();
   await CachHelper.init();
-  // String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiMyIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2dpdmVubmFtZSI6IkpvZSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL3N1cm5hbWUiOiJEb2UiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJqb2VAZXhhbXBsZS5jb20iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9tb2JpbGVwaG9uZSI6IjAwMjAxMTIzNDU2Nzg5IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiVmVyaWZpZWRVc2VyIiwibmJmIjoxNjcwMjY2NzMzLCJleHAiOjE2NzAyNzAzMzMsImlzcyI6Imh0dHBzOi8vYXBpLnRhd3NpbGEuY29tIiwiYXVkIjoibW9iaWxlLWFwcCJ9.mJ2Qknav22EU6DtcPRR5GMQZN6gnUjqQ1U6Ab3WBrtM";
-  // CachHelper.saveData(key: 'token', value: token);
-  //String t = await CachHelper.getData(key: 'token')?? "";
-  //Map<String, dynamic> m = parseJwt(t);
-  //print(m);
-  Bloc.observer = MyBlocObserver();
+  var screen;
+  if(await CachHelper.getData(key: 'token') != null) {
+    String token = await CachHelper.getData(key: 'token');
+    if(token == ""){
+      screen = SignInScreen(language: 'English');
+    }
+    else {
+      Map<String, dynamic> tokenInfo = parseJwt(token);
+      if (tokenInfo[VERIFYUSER] == "UnverifiedPasswordResetter") {
+        screen = Verification(language: 'English', reset: true,);
+      } else if (tokenInfo[VERIFYUSER] == "UnverifiedUser") {
+        screen = Verification(language: 'English', reset: false,);
+      } else if (tokenInfo[VERIFYUSER] == "VerifiedUser") {
+        screen = HomePageScreen(language: 'English');
+      } else {
+        screen = SignInScreen(language: 'English');
+      }
+    }
+  }
+  else{
+    screen = ChooseLanguage();
+  }
   DioHelper.init();
 
-  runApp(MyApp());
+  runApp(MyApp(screen: screen,));
 }
 
 class MyApp extends StatelessWidget {
   // This widget is the root of application.
+  final screen;
+
+  const MyApp({super.key, required this.screen});
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -49,7 +66,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(),
+      home: screen,
       debugShowCheckedModeBanner: false,
     );
   }
@@ -80,10 +97,10 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Text(
             "TAWSILA",
             style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 50,
-              decoration: TextDecoration.none
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 50,
+                decoration: TextDecoration.none
             ),
           ),
         ),

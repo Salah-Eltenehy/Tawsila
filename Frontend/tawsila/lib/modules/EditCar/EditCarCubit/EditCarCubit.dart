@@ -67,7 +67,7 @@ class EditCarCubit extends Cubit<EditCarStates>{
     final data = await json.decode(response);
     print("ssssssssssssssssssssssssssssssssssssssssss");
     print(data);
-    items = data[get];
+    items = data["editPage"];
     emit(GetLanguageFromDatabaseState());
   }
 
