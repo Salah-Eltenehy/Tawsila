@@ -70,4 +70,19 @@ class DioHelper {
       data: data,
     );
   }
+
+
+  static Future<Response> deleteData(
+  {
+    required String url,
+    required String token,
+  }) async
+  {
+    return dio.delete(
+      url,
+      options: Options(
+        headers: {"Authorization" : "Bearer ${token}"}
+      ),
+    );
+  }
 }

@@ -1,57 +1,61 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:tawsila/modules/car-offer/Cubit/OfferCubit.dart';
+import 'package:tawsila/modules/home-page/HomePage.dart';
+import 'package:tawsila/modules/mange-offer/ManageOfferScreen.dart';
 import 'package:tawsila/shared/bloc_observer.dart';
 import 'package:tawsila/shared/components/Components.dart';
-import '../../shared/network/local/Cachhelper.dart';
+import '../../../shared/network/local/Cachhelper.dart';
 import '../home-page/Map.dart';
-import 'Cubit/OfferStates.dart';
+import 'EditCarCubit/EditCarCubit.dart';
+import 'EditCarCubit/EditCarStates.dart';
 
-class CarOfferScreen extends StatelessWidget{
+class EditCarScreen extends StatelessWidget{
 
   final String language;      //hold the language of the program(arabic-english)
-  CarOfferScreen({super.key, required this.language});
+  final id;
+  Map<String, dynamic> carResponse = {};
+  EditCarScreen({super.key, required this.language, required this.id,required this.carResponse});
 
-  //Controllers for all text fields in the page
-  var brandController = TextEditingController();
-  var modelController = TextEditingController();
-  var modelYearController = TextEditingController();
-  var seatsCountController = TextEditingController();
-  var carDescriptionController = TextEditingController();
-  var rentalPeriod = TextEditingController();
-  var priceController = TextEditingController();
+  String brand = "";
+  String model = "";
+  String modelYear = "";
+  String seatsCount = "";
+  String carDescription ="";
+  String rentalPeriod = "";
+  String price = "";
+  bool isChanged = false;
+  List<dynamic> imgs =  [];
   var boardController = PageController();
 
   var formKey = GlobalKey<FormState>(); //key of the form used in the page
 
-
-  bool val = true;
   @override
   Widget build(BuildContext context) {
+    start();
     return  BlocProvider(
-      create: (context) => OfferCubit()..setLanguage(l: language)..readJson('offerPage'),
-      child: BlocConsumer<OfferCubit, OfferStates>(
+      create: (context) => EditCarCubit()..setLanguage(l: language)..readJson('offerPage')..updateInfo(carResponse),
+      child: BlocConsumer<EditCarCubit, EditCarStates>(
           listener: (context, state){},
           builder: (context, state){
-            var offerCubit = OfferCubit.get(context);
+            var editCubit = EditCarCubit.get(context);
+            print("33333333333333333333333333333333333333333333333333333333333");
             return Directionality(
-              textDirection: offerCubit.language == "English" ? TextDirection.ltr: TextDirection.rtl,
+              textDirection: editCubit.language == "English" ? TextDirection.ltr: TextDirection.rtl,
               child: Scaffold(
                   appBar: AppBar(
                     backgroundColor: Colors.white,
                     leading: IconButton(
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        navigateAndFinish(context: context, screen: ManageOfferScreen(language: language));
                       },
                       icon: const Icon(Icons.arrow_back, color: Colors.black,),
                     ),
                     title:  Text(
-                        "${offerCubit.items["offer"]??'offer'}",
+                        "${editCubit.items["offer"]??'offer'}",
                         style: const TextStyle(
                           color: Colors.black,
                           fontSize: 24,
@@ -59,50 +63,11 @@ class CarOfferScreen extends StatelessWidget{
                         )
                     ),
                     centerTitle: true,
-
-                    actions: [
-                      Container(
-                        margin: const EdgeInsets.only(right: 20) ,
-                        child: IconButton(
-                          onPressed: () async {
-                            if(formKey.currentState !. validate()){
-                              print("start creating query");
-                              print(await CachHelper.getData(key: "longitude"));
-                              print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
-                              Map<String, dynamic> query = {
-                                "brand": offerCubit.finalBrand,
-                                "model" : modelController.text,
-                                "year": modelYearController.text,
-                                "price": priceController.text,
-                                "seatsCount": seatsCountController.text,
-                                "transmission": offerCubit.transmission,
-                                "fuelType": offerCubit.fuelType,
-                                "bodyType": offerCubit.bodyType,
-                                "hasAirConditioning": offerCubit.options[1],
-                                "hasAbs":offerCubit.options[0],
-                                "hasRadio": offerCubit.options[3],
-                                "hasSunroof":offerCubit.options[2],
-                                "period":rentalPeriod.text,
-                                "description": carDescriptionController.text,
-                                "longitude":await CachHelper.getData(key: "longitude") as double,
-                                "latitude":await CachHelper.getData(key: "latitude") as double,
-                                "images": offerCubit.imgs,
-                              };
-                              offerCubit.createNewCar(query: query, context: context);
-                            }
-                          },
-                          icon: const Icon(
-                            Icons.check,
-                            color: Colors.black,
-                          ),
-                        ),
-                      )
-                    ],
                   ),
                   backgroundColor: Colors.white,
 
                   body: Directionality(
-                    textDirection: offerCubit.language == "English" ? TextDirection.ltr: TextDirection.rtl,
+                    textDirection: editCubit.language == "English" ? TextDirection.ltr: TextDirection.rtl,
                     child: Form (
                       key: formKey,
                       child: Padding(
@@ -111,6 +76,7 @@ class CarOfferScreen extends StatelessWidget{
                           child: SingleChildScrollView(
                             child: Column(
                               children: [
+                                //start(editCubit),
                                 Container(
                                   height: 214,
                                   width:500 ,
@@ -121,7 +87,7 @@ class CarOfferScreen extends StatelessWidget{
                                       borderRadius: BorderRadius.circular(10)
                                   ),
 
-                                  child: offerCubit.imgsFile.isNotEmpty? PageView.builder(
+                                  child: imgs.isNotEmpty? PageView.builder(
                                     physics: const BouncingScrollPhysics(),
                                     controller: boardController,
                                     itemBuilder: (context, index) {
@@ -131,12 +97,14 @@ class CarOfferScreen extends StatelessWidget{
                                         ),
                                         child: Stack(
                                           children: [
-                                            Image.file(
-                                              offerCubit.imgsFile[index],
+
+                                            Image(
+                                              image: NetworkImage(carResponse['images'][index]),
                                               width: double.infinity,
                                               height: double.infinity,
                                               fit: BoxFit.cover,
                                             ),
+
                                             Center(
                                               child: Column(
                                                 children: [
@@ -151,7 +119,7 @@ class CarOfferScreen extends StatelessWidget{
                                                       dotWidth: 10,
                                                       spacing: 5.0,
                                                     ),
-                                                    count: offerCubit.imgsFile.length>5?5:offerCubit.imgsFile.length,
+                                                    count: imgs.length>5?5:imgs.length,
                                                   ),
                                                   const SizedBox(height: 6,)
                                                 ],
@@ -161,29 +129,10 @@ class CarOfferScreen extends StatelessWidget{
                                         ),
                                       );
                                     },
-                                    itemCount: offerCubit.imgsFile.length>5?5:offerCubit.imgsFile.length,
+                                    itemCount: imgs.length>5?5:imgs.length,
                                   )
-                                      :Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      IconButton(
-                                        onPressed:() async {
-                                          OfferCubit.get(context).pickImage();
-                                        },
-                                        icon: const Icon(Icons.add_a_photo),
-                                        iconSize: 50,
-                                        color: Colors.grey,
-                                        tooltip:  "${offerCubit.items["addPhoto"]??''}",
-                                      ),
-
-                                      Text(
-                                        "${offerCubit.items["upload"]??'offer'}",
-                                        style: TextStyle(
-                                            color: Colors.grey[700]
-                                        ),
-                                      )
-
-                                    ],
+                                      :const Text(
+                                    "no images for this car",
                                   ),
                                 ),
 
@@ -191,10 +140,11 @@ class CarOfferScreen extends StatelessWidget{
                                   height: 10,
                                 ),
 
+                                //brands
                                 Container(
-                                  alignment: offerCubit.language == "English" ? Alignment.topLeft : Alignment.topRight,
+                                  alignment: editCubit.language == "English" ? Alignment.topLeft : Alignment.topRight,
                                   child:  Text(
-                                    "${offerCubit.items["brand"]??'offer'}",
+                                    "${editCubit.items["brand"]??'offer'}",
                                     style:const TextStyle(
                                         color: Colors.black,
                                         fontSize: 20
@@ -203,6 +153,8 @@ class CarOfferScreen extends StatelessWidget{
                                 ),
 
                                 const SizedBox(height: 4,),
+
+                                //brands options
                                 Column(
                                   children: [
 
@@ -212,11 +164,12 @@ class CarOfferScreen extends StatelessWidget{
                                           child: CheckboxListTile(
                                             controlAffinity: ListTileControlAffinity.leading,
                                             title: Text(
-                                              "${offerCubit.items["lada"]??""}",
+                                              "${editCubit.items["lada"]??""}",
                                             ),
-                                            value: offerCubit.brands['lada'],
+                                            value: editCubit.brands['lada'],
                                             onChanged: (value) {
-                                              offerCubit.changeBrand(brand: 'lada');
+                                              isChanged = true;
+                                              editCubit.changeBrand(brand: 'lada');
                                             },
                                           ),
                                         ),
@@ -224,11 +177,12 @@ class CarOfferScreen extends StatelessWidget{
                                           child: CheckboxListTile(
                                             controlAffinity: ListTileControlAffinity.leading,
                                             title:  Text(
-                                              "${offerCubit.items["verna"]??'verna'}",
+                                              "${editCubit.items["verna"]??'verna'}",
                                             ),
-                                            value: offerCubit.brands['verna'],
+                                            value: editCubit.brands['verna'],
                                             onChanged: (value) {
-                                              offerCubit.changeBrand(brand: 'verna');
+                                              isChanged = true;
+                                              editCubit.changeBrand(brand: 'verna');
                                             },
                                           ),
                                         ),
@@ -241,11 +195,12 @@ class CarOfferScreen extends StatelessWidget{
                                           child: CheckboxListTile(
                                             controlAffinity: ListTileControlAffinity.leading,
                                             title: Text(
-                                              "${offerCubit.items["daewoo"]??''}",
+                                              "${editCubit.items["daewoo"]??''}",
                                             ),
-                                            value: offerCubit.brands['daewoo'],
+                                            value: editCubit.brands['daewoo'],
                                             onChanged: (value) {
-                                              offerCubit.changeBrand(brand: 'daewoo');
+                                              isChanged = true;
+                                              editCubit.changeBrand(brand: 'daewoo');
                                             },
                                           ),
                                         ),
@@ -253,11 +208,12 @@ class CarOfferScreen extends StatelessWidget{
                                           child: CheckboxListTile(
                                             controlAffinity: ListTileControlAffinity.leading,
                                             title: Text(
-                                              "${offerCubit.items["nissan"]??''}",
+                                              "${editCubit.items["nissan"]??''}",
                                             ),
-                                            value: offerCubit.brands['nissan'],
+                                            value: editCubit.brands['nissan'],
                                             onChanged: (value) {
-                                              offerCubit.changeBrand(brand: 'nissan');
+                                              isChanged = true;
+                                              editCubit.changeBrand(brand: 'nissan');
                                             },
                                           ),
                                         ),
@@ -270,11 +226,12 @@ class CarOfferScreen extends StatelessWidget{
                                           child: CheckboxListTile(
                                             controlAffinity: ListTileControlAffinity.leading,
                                             title: Text(
-                                              "${offerCubit.items["elantra"]??''}",
+                                              "${editCubit.items["elantra"]??''}",
                                             ),
-                                            value: offerCubit.brands['elantra'],
+                                            value: editCubit.brands['elantra'],
                                             onChanged: (value) {
-                                              offerCubit.changeBrand(brand: 'elantra');
+                                              isChanged = true;
+                                              editCubit.changeBrand(brand: 'elantra');
                                             },
                                           ),
                                         ),
@@ -282,11 +239,12 @@ class CarOfferScreen extends StatelessWidget{
                                           child: CheckboxListTile(
                                             controlAffinity: ListTileControlAffinity.leading,
                                             title: Text(
-                                              "${offerCubit.items["kia"]??''}",
+                                              "${editCubit.items["kia"]??''}",
                                             ),
-                                            value: offerCubit.brands['kia'],
+                                            value: editCubit.brands['kia'],
                                             onChanged: (value) {
-                                              offerCubit.changeBrand(brand: 'kia');
+                                              isChanged = true;
+                                              editCubit.changeBrand(brand: 'kia');
                                             },
                                           ),
                                         ),
@@ -299,11 +257,12 @@ class CarOfferScreen extends StatelessWidget{
                                           child: CheckboxListTile(
                                             controlAffinity: ListTileControlAffinity.leading,
                                             title:  Text(
-                                              "${offerCubit.items["fiat"]??''}",
+                                              "${editCubit.items["fiat"]??''}",
                                             ),
-                                            value: offerCubit.brands['fiat'],
+                                            value: editCubit.brands['fiat'],
                                             onChanged: (value) {
-                                              offerCubit.changeBrand(brand: 'fiat');
+                                              isChanged = true;
+                                              editCubit.changeBrand(brand: 'fiat');
                                             },
                                           ),
                                         ),
@@ -311,11 +270,12 @@ class CarOfferScreen extends StatelessWidget{
                                           child: CheckboxListTile(
                                             controlAffinity: ListTileControlAffinity.leading,
                                             title: Text(
-                                              "${offerCubit.items["bmw"]??''}",
+                                              "${editCubit.items["bmw"]??''}",
                                             ),
-                                            value: offerCubit.brands['bmw'],
+                                            value: editCubit.brands['bmw'],
                                             onChanged: (value) {
-                                              offerCubit.changeBrand(brand: 'bmw');
+                                              isChanged = true;
+                                              editCubit.changeBrand(brand: 'bmw');
                                             },
                                           ),
                                         ),
@@ -328,11 +288,12 @@ class CarOfferScreen extends StatelessWidget{
                                           child: CheckboxListTile(
                                             controlAffinity: ListTileControlAffinity.leading,
                                             title: Text(
-                                              "${offerCubit.items["mercedes"]??''}",
+                                              "${editCubit.items["mercedes"]??''}",
                                             ),
-                                            value: offerCubit.brands['mercedes'],
+                                            value: editCubit.brands['mercedes'],
                                             onChanged: (value) {
-                                              offerCubit.changeBrand(brand: 'mercedes');
+                                              isChanged = true;
+                                              editCubit.changeBrand(brand: 'mercedes');
                                             },
                                           ),
                                         ),
@@ -340,11 +301,12 @@ class CarOfferScreen extends StatelessWidget{
                                           child: CheckboxListTile(
                                             controlAffinity: ListTileControlAffinity.leading,
                                             title:  Text(
-                                              "${offerCubit.items["other"]??''}",
+                                              "${editCubit.items["other"]??''}",
                                             ),
-                                            value: offerCubit.brands['other'],
+                                            value: editCubit.brands['other'],
                                             onChanged: (value) {
-                                              offerCubit.changeBrand(brand: 'other');
+                                              isChanged = true;
+                                              editCubit.changeBrand(brand: 'other');
                                             },
                                           ),
                                         ),
@@ -352,18 +314,22 @@ class CarOfferScreen extends StatelessWidget{
                                     ),
                                   ],
                                 ),
-                                // more brands
+
+                                //body Type
                                 Container(
-                                  alignment: offerCubit.language == "English" ? Alignment.topLeft : Alignment.topRight,
+                                  alignment: editCubit.language == "English" ? Alignment.topLeft : Alignment.topRight,
                                   child: Text(
-                                    "${offerCubit.items["body_type"]??''}",
+                                    "${editCubit.items["body_type"]??''}",
                                     style: const TextStyle(
                                         color: Colors.black,
                                         fontSize: 20
                                     ),
                                   ),
                                 ),
+
                                 const SizedBox(height: 4,),
+
+                                //body types options
                                 Column(
                                   children: [
                                     Row(
@@ -372,11 +338,12 @@ class CarOfferScreen extends StatelessWidget{
                                           child: CheckboxListTile(
                                             controlAffinity: ListTileControlAffinity.leading,
                                             title: Text(
-                                              "${offerCubit.items["convertible"]??''}",
+                                              "${editCubit.items["convertible"]??''}",
                                             ),
-                                            value: offerCubit.bodyTypes['Convertible'],
+                                            value: editCubit.bodyTypes['Convertible'],
                                             onChanged: (value) {
-                                              offerCubit.changeBodyType(body_type: 'Convertible');
+                                              isChanged = true;
+                                              editCubit.changeBodyType(body_type: 'Convertible');
                                             },
                                           ),
                                         ),
@@ -384,39 +351,12 @@ class CarOfferScreen extends StatelessWidget{
                                           child: CheckboxListTile(
                                             controlAffinity: ListTileControlAffinity.leading,
                                             title: Text(
-                                              "${offerCubit.items["coupe"]??''}",
+                                              "${editCubit.items["coupe"]??''}",
                                             ),
-                                            value: offerCubit.bodyTypes['Coupe'],
+                                            value: editCubit.bodyTypes['Coupe'],
                                             onChanged: (value) {
-                                              offerCubit.changeBodyType(body_type: 'Coupe');
-                                            },
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: CheckboxListTile(
-                                            controlAffinity: ListTileControlAffinity.leading,
-                                            title: Text(
-                                              "${offerCubit.items["hatchback"]??''}",
-                                            ),
-                                            value: offerCubit.bodyTypes['Hatchback'],
-                                            onChanged: (value) {
-                                              offerCubit.changeBodyType(body_type: 'Hatchback');
-                                            },
-                                          ),
-                                        ),
-                                        Expanded(
-                                          child: CheckboxListTile(
-                                            controlAffinity: ListTileControlAffinity.leading,
-                                            title: Text(
-                                              "${offerCubit.items["mpv"]??''}",
-                                            ),
-                                            value: offerCubit.bodyTypes['MPV'],
-                                            onChanged: (value) {
-                                              offerCubit.changeBodyType(body_type: 'MPV');
+                                              isChanged = true;
+                                              editCubit.changeBodyType(body_type: 'Coupe');
                                             },
                                           ),
                                         ),
@@ -428,11 +368,12 @@ class CarOfferScreen extends StatelessWidget{
                                           child: CheckboxListTile(
                                             controlAffinity: ListTileControlAffinity.leading,
                                             title: Text(
-                                              "${offerCubit.items["suv"]??''}",
+                                              "${editCubit.items["hatchback"]??''}",
                                             ),
-                                            value: offerCubit.bodyTypes['SUV'],
+                                            value: editCubit.bodyTypes['Hatchback'],
                                             onChanged: (value) {
-                                              offerCubit.changeBodyType(body_type: 'SUV');
+                                              isChanged = true;
+                                              editCubit.changeBodyType(body_type: 'Hatchback');
                                             },
                                           ),
                                         ),
@@ -440,11 +381,42 @@ class CarOfferScreen extends StatelessWidget{
                                           child: CheckboxListTile(
                                             controlAffinity: ListTileControlAffinity.leading,
                                             title: Text(
-                                              "${offerCubit.items["sedan"]??''}",
+                                              "${editCubit.items["mpv"]??''}",
                                             ),
-                                            value: offerCubit.bodyTypes['Sedan'],
+                                            value: editCubit.bodyTypes['MPV'],
                                             onChanged: (value) {
-                                              offerCubit.changeBodyType(body_type: 'Sedan');
+                                              isChanged = true;
+                                              editCubit.changeBodyType(body_type: 'MPV');
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: CheckboxListTile(
+                                            controlAffinity: ListTileControlAffinity.leading,
+                                            title: Text(
+                                              "${editCubit.items["suv"]??''}",
+                                            ),
+                                            value: editCubit.bodyTypes['SUV'],
+                                            onChanged: (value) {
+                                              isChanged = true;
+                                              editCubit.changeBodyType(body_type: 'SUV');
+                                            },
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: CheckboxListTile(
+                                            controlAffinity: ListTileControlAffinity.leading,
+                                            title: Text(
+                                              "${editCubit.items["sedan"]??''}",
+                                            ),
+                                            value: editCubit.bodyTypes['Sedan'],
+                                            onChanged: (value) {
+                                              isChanged = true;
+                                              editCubit.changeBodyType(body_type: 'Sedan');
                                             },
                                           ),
                                         ),
@@ -457,18 +429,25 @@ class CarOfferScreen extends StatelessWidget{
                                   height: 10,
                                 ),
 
+                                //model field
                                 TextFormField(
-                                  controller: modelController,
+                                  initialValue: model,
                                   decoration:  InputDecoration(
                                       border: const OutlineInputBorder(),
-                                      labelText: "${offerCubit.items["model"]??''}",
-                                      hintText:   "${offerCubit.items["modelHint"]??''}",
+                                      labelText: "${editCubit.items["model"]??''}",
+                                      hintText:   "${editCubit.items["modelHint"]??''}",
                                       floatingLabelBehavior: FloatingLabelBehavior.always
                                   ),
 
+                                  onChanged: (value){
+                                    model = value;
+                                    if(value != carResponse["model"]){isChanged |= true;}
+                                    else {isChanged |= false;}
+                                  },
+
                                   validator: (String? value){
                                     if(value == "" || value == null){
-                                      return "${offerCubit.items["model_error"]??''}";
+                                      return "${editCubit.items["model_error"]??''}";
                                     }
                                   },
 
@@ -478,19 +457,26 @@ class CarOfferScreen extends StatelessWidget{
                                   height: 10,
                                 ),
 
+                                //model year field
                                 TextFormField(
-                                  controller: modelYearController,
+                                  initialValue:"${carResponse["year"]}",
                                   keyboardType: TextInputType.number,
                                   decoration: InputDecoration(
                                     border: const OutlineInputBorder(),
-                                    labelText: "${offerCubit.items["model_year"]??''}",
-                                    hintText:  "${offerCubit.items["yearHint"]??''}",
+                                    labelText: "${editCubit.items["model_year"]??''}",
+                                    hintText:  "${editCubit.items["yearHint"]??''}",
                                     floatingLabelBehavior: FloatingLabelBehavior.always,
                                   ),
 
+                                  onChanged: (value){
+                                    modelYear = value;
+                                    if(value != carResponse["year"]){isChanged |= true;}
+                                    else {isChanged |= false;}
+                                  },
+
                                   validator: (String? value){
                                     if(value == "" || value == null){
-                                      return "${offerCubit.items["model_year_error"]??''}";
+                                      return "${editCubit.items["model_year_error"]??''}";
                                     }
                                   },
                                 ),
@@ -499,18 +485,25 @@ class CarOfferScreen extends StatelessWidget{
                                   height: 10,
                                 ),
 
+                                //seatCount field
                                 TextFormField(
-                                  controller: seatsCountController,
+                                  initialValue:"${carResponse["seatsCount"]}",
                                   keyboardType: TextInputType.number,
                                   decoration:  InputDecoration(
                                     border:const OutlineInputBorder(),
-                                    labelText: "${offerCubit.items["seat_count"]??''}",
-                                    hintText:  "${offerCubit.items["seatHint"]??''}",
+                                    labelText: "${editCubit.items["seat_count"]??''}",
+                                    hintText:  "${editCubit.items["seatHint"]??''}",
                                     floatingLabelBehavior: FloatingLabelBehavior.always,
                                   ),
+
+                                  onChanged: (value){
+                                    seatsCount = value;
+                                    if(value != carResponse["seatsCount"]){isChanged |= true;}
+                                    else {isChanged |= false;}
+                                  },
                                   validator: (String? value){
                                     if(value == "" || value == null){
-                                      return "${offerCubit.items["seat_count_error"]??''}";
+                                      return "${editCubit.items["seat_count_error"]??''}";
                                     }
                                   },
                                 ),
@@ -519,18 +512,25 @@ class CarOfferScreen extends StatelessWidget{
                                   height: 10,
                                 ),
 
+                                //car description field
                                 TextFormField(
-                                  controller: carDescriptionController,
+                                  initialValue: "${carResponse["description"]}",
                                   decoration:  InputDecoration(
                                       border: const OutlineInputBorder(),
-                                      labelText: "${offerCubit.items["description"]??''}",
-                                      hintText: "${offerCubit.items["descriptionHint"]??''}",
+                                      labelText: "${editCubit.items["description"]??''}",
+                                      hintText: "${editCubit.items["descriptionHint"]??''}",
                                       floatingLabelBehavior: FloatingLabelBehavior.always
                                   ),
 
+                                  onChanged: (value){
+                                    carDescription = value;
+                                    if(value != carResponse["description"]){isChanged |= true;}
+                                    else {isChanged |= false;}
+                                  },
+
                                   validator: (String? value){
                                     if(value == "" || value == null){
-                                      return "${offerCubit.items["descriptionError"]??''}";
+                                      return "${editCubit.items["descriptionError"]??''}";
                                     }
                                   },
 
@@ -540,10 +540,11 @@ class CarOfferScreen extends StatelessWidget{
                                   height : 10,
                                 ),
 
+                                //transmission
                                 Container(
-                                  alignment: offerCubit.language == "English" ? Alignment.topLeft : Alignment.topRight,
+                                  alignment: editCubit.language == "English" ? Alignment.topLeft : Alignment.topRight,
                                   child: Text(
-                                    "${offerCubit.items["transmission"]??''}",
+                                    "${editCubit.items["transmission"]??''}",
                                     style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
@@ -552,18 +553,20 @@ class CarOfferScreen extends StatelessWidget{
                                   ),
                                 ),
 
+                                //transmission options
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children:[
 
                                     Expanded(
                                       child:ListTile(
-                                        title:  Text("${offerCubit.items["automatic"]??''}",),
+                                        title:  Text("${editCubit.items["automatic"]??''}",),
                                         leading: Radio(
                                           value: "automatic",
-                                          groupValue: OfferCubit.get(context).transmission,
+                                          groupValue: editCubit.transmission,
                                           onChanged: (value) {
-                                            OfferCubit.get(context).toggleTransmissionButton(value);
+                                            isChanged = true;
+                                            editCubit.toggleTransmissionButton(value);
                                           },
                                         ),
                                       ),
@@ -571,12 +574,13 @@ class CarOfferScreen extends StatelessWidget{
 
                                     Expanded(
                                       child: ListTile(
-                                        title: Text("${offerCubit.items["manual"]??''}",),
+                                        title: Text("${editCubit.items["manual"]??''}",),
                                         leading: Radio(
                                           value: "manual",
-                                          groupValue: OfferCubit.get(context).transmission,
+                                          groupValue: editCubit.transmission,
                                           onChanged: (value) {
-                                            OfferCubit.get(context).toggleTransmissionButton(value);
+                                            isChanged = true;
+                                            editCubit.toggleTransmissionButton(value);
                                           },
                                         ),
                                       ),
@@ -588,10 +592,11 @@ class CarOfferScreen extends StatelessWidget{
                                   height:10,
                                 ),
 
+                                //fuel type
                                 Container(
-                                  alignment: offerCubit.language == "English" ? Alignment.topLeft : Alignment.topRight,
+                                  alignment: editCubit.language == "English" ? Alignment.topLeft : Alignment.topRight,
                                   child:  Text(
-                                    "${offerCubit.items["fuel_type"]??''}",
+                                    "${editCubit.items["fuel_type"]??''}",
                                     style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
@@ -600,18 +605,20 @@ class CarOfferScreen extends StatelessWidget{
                                   ),
                                 ),
 
+                                //fuel type options
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children:[
                                     Expanded(
                                       child:ListTile(
-                                        title:  Text("${offerCubit.items["gas"]??''}",),
+                                        title:  Text("${editCubit.items["gas"]??''}",),
                                         leading: Radio(
                                           value: "gasoline",
                                           toggleable: true,
-                                          groupValue: OfferCubit.get(context).fuelType,
+                                          groupValue: editCubit.fuelType,
                                           onChanged: (value) {
-                                            OfferCubit.get(context).toggleGasButton(value);
+                                            isChanged = true;
+                                            editCubit.toggleGasButton(value);
                                           },
                                         ),
                                       ),
@@ -619,13 +626,14 @@ class CarOfferScreen extends StatelessWidget{
 
                                     Expanded(
                                       child: ListTile(
-                                        title: Text("${offerCubit.items["natural_gas"]??''}",),
+                                        title: Text("${editCubit.items["natural_gas"]??''}",),
                                         leading: Radio(
                                           value: "natural gas",
                                           toggleable: true,
-                                          groupValue: OfferCubit.get(context).fuelType,
+                                          groupValue: editCubit.fuelType,
                                           onChanged: (value) {
-                                            OfferCubit.get(context).toggleGasButton(value);
+                                            isChanged = true;
+                                            editCubit.toggleGasButton(value);
                                           },
                                         ),
                                       ),
@@ -633,10 +641,11 @@ class CarOfferScreen extends StatelessWidget{
                                   ],
                                 ),
 
+                                //car options
                                 Container(
-                                  alignment: offerCubit.language == "English" ? Alignment.topLeft : Alignment.topRight,
+                                  alignment: editCubit.language == "English" ? Alignment.topLeft : Alignment.topRight,
                                   child:  Text(
-                                    "${offerCubit.items["options"]??''}",
+                                    "${editCubit.items["options"]??''}",
                                     style:const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
@@ -645,6 +654,7 @@ class CarOfferScreen extends StatelessWidget{
                                   ),
                                 ),
 
+                                //car options different options
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -654,14 +664,15 @@ class CarOfferScreen extends StatelessWidget{
                                         child: CheckboxListTile(
                                             contentPadding: EdgeInsets.all(0.0),
                                             controlAffinity: ListTileControlAffinity.leading,
-                                            title:  Text("${offerCubit.items["abs"]??''}",),
+                                            title:  Text("${editCubit.items["abs"]??''}",),
                                             autofocus: false,
                                             activeColor: Colors.blue,
                                             checkColor: Colors.white,
-                                            selected: OfferCubit.get(context).options[0],
-                                            value: OfferCubit.get(context).options[0],
+                                            selected: editCubit.options[0],
+                                            value: editCubit.options[0],
                                             onChanged: (bool? value){
-                                              OfferCubit.get(context).toggleOption(0);
+                                              isChanged = true;
+                                              editCubit.toggleOption(0);
                                             }
                                         ),
                                       ),
@@ -672,14 +683,15 @@ class CarOfferScreen extends StatelessWidget{
                                         child: Container(
                                           child: CheckboxListTile(
                                               controlAffinity: ListTileControlAffinity.leading,
-                                              title: Text("${offerCubit.items["air_conditioning"]??''}",),
+                                              title: Text("${editCubit.items["air_conditioning"]??''}",),
                                               autofocus: false,
                                               activeColor: Colors.blue,
                                               checkColor: Colors.white,
-                                              selected: OfferCubit.get(context).options[1],
-                                              value: OfferCubit.get(context).options[1],
+                                              selected: editCubit.options[1],
+                                              value: editCubit.options[1],
                                               onChanged: (bool? value){
-                                                OfferCubit.get(context).toggleOption(1);
+                                                isChanged = true;
+                                                editCubit.toggleOption(1);
                                               }
                                           ),
                                         )
@@ -696,14 +708,15 @@ class CarOfferScreen extends StatelessWidget{
                                         child: CheckboxListTile(
                                             contentPadding: EdgeInsets.all(0.0),
                                             controlAffinity: ListTileControlAffinity.leading,
-                                            title:  Text("${offerCubit.items["sunroof"]??''}",),
+                                            title:  Text("${editCubit.items["sunroof"]??''}",),
                                             autofocus: false,
                                             activeColor: Colors.blue,
                                             checkColor: Colors.white,
-                                            selected: OfferCubit.get(context).options[2],
-                                            value: OfferCubit.get(context).options[2],
+                                            selected: editCubit.options[2],
+                                            value: editCubit.options[2],
                                             onChanged: (bool? value){
-                                              OfferCubit.get(context).toggleOption(2);
+                                              isChanged = true;
+                                              editCubit.toggleOption(2);
                                             }
                                         ),
                                       ),
@@ -714,14 +727,15 @@ class CarOfferScreen extends StatelessWidget{
                                         child: Container(
                                           child: CheckboxListTile(
                                               controlAffinity: ListTileControlAffinity.leading,
-                                              title:  Text("${offerCubit.items["radio"]??''}",),
+                                              title:  Text("${editCubit.items["radio"]??''}",),
                                               autofocus: false,
                                               activeColor: Colors.blue,
                                               checkColor: Colors.white,
-                                              selected: OfferCubit.get(context).options[3],
-                                              value: OfferCubit.get(context).options[3],
+                                              selected: editCubit.options[3],
+                                              value: editCubit.options[3],
                                               onChanged: (bool? value){
-                                                OfferCubit.get(context).toggleOption(3);
+                                                isChanged = true;
+                                                editCubit.toggleOption(3);
                                               }
                                           ),
                                         )
@@ -733,10 +747,11 @@ class CarOfferScreen extends StatelessWidget{
                                   height: 20,
                                 ),
 
+                                //location
                                 Container(
-                                  alignment: offerCubit.language == "English" ? Alignment.topLeft : Alignment.topRight,
+                                  alignment: editCubit.language == "English" ? Alignment.topLeft : Alignment.topRight,
                                   child:  Text(
-                                    "${offerCubit.items["location"]??''}",
+                                    "${editCubit.items["location"]??''}",
                                     style:const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
@@ -749,6 +764,7 @@ class CarOfferScreen extends StatelessWidget{
                                   height: 10,
                                 ),
 
+                                //map button
                                 Container(
                                   color: Colors.blue,
                                   child: TextButton(
@@ -758,14 +774,12 @@ class CarOfferScreen extends StatelessWidget{
                                         navigateTo(context: context, screen: MapScreen());
                                       },
                                       child: Text(
-                                          "${offerCubit.items["locationButton"]??''}",
+                                          "${editCubit.items["locationButton"]??''}",
                                           style:const TextStyle(
                                             color: Colors.white,
-                                            // backgroundColor: Colors.blue,
                                             fontSize: 20,
                                             fontWeight: FontWeight.bold,
                                           )
-
                                       )
                                   ),
                                 ),
@@ -774,18 +788,24 @@ class CarOfferScreen extends StatelessWidget{
                                   height:10,
                                 ),
 
+                                //rental period field
                                 TextFormField(
-                                  controller: rentalPeriod,
+                                  initialValue: "${carResponse["period"]}",
                                   keyboardType: TextInputType.number,
                                   decoration:  InputDecoration(
                                       border:const OutlineInputBorder(),
-                                      labelText: "${offerCubit.items["rental_period"]??''}",
-                                      hintText:"${offerCubit.items["rentalHint"]??''}",
+                                      labelText: "${editCubit.items["rental_period"]??''}",
+                                      hintText:"${editCubit.items["rentalHint"]??''}",
                                       floatingLabelBehavior: FloatingLabelBehavior.always
                                   ),
+                                  onChanged: (value){
+                                    rentalPeriod = value;
+                                    if(value != carResponse["period"]){isChanged |= true;}
+                                    else {isChanged |= false;}
+                                  },
                                   validator: (String? value){
                                     if(value == null || value == ""){
-                                      return "${offerCubit.items["rental_period_error"]??''}";
+                                      return "${editCubit.items["rental_period_error"]??''}";
                                     }
                                   },
                                 ),
@@ -794,22 +814,98 @@ class CarOfferScreen extends StatelessWidget{
                                   height:10,
                                 ),
 
+                                //price field
                                 TextFormField(
-                                  controller: priceController,
+                                  initialValue: "${carResponse["price"].toString()}",
                                   keyboardType: TextInputType.number,
                                   decoration:  InputDecoration(
                                       border:const OutlineInputBorder(),
-                                      labelText: "${offerCubit.items["price"]??''}",
-                                      hintText: "${offerCubit.items["priceHint"]??''}",
+                                      labelText: "${editCubit.items["price"]??''}",
+                                      hintText: "${editCubit.items["priceHint"]??''}",
                                       floatingLabelBehavior: FloatingLabelBehavior.always
                                   ),
+                                  onChanged: (value){
+                                    price = value;
+                                    if(value != carResponse["price"]){isChanged |= true;}
+                                    else {isChanged |= false;}
+                                  },
+
                                   validator: (String? value){
                                     if(value == null || value == ""){
-                                      return "${offerCubit.items["priceError"]??''}";
+                                      return "${editCubit.items["priceError"]??''}";
                                     }
                                   },
                                 ),
 
+
+                                const SizedBox(
+                                  height: 50,
+                                ),
+
+
+                                Row(
+                                  children: [
+
+                                    //update car button
+                                    TextButton(
+                                      onPressed: () async{
+                                        if(formKey.currentState !. validate()){
+                                          if(isChanged){
+                                            print("start updating query");
+                                            print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+                                            Map<String, dynamic> query = {
+                                              "brand": editCubit.finalBrand,
+                                              "model" : model,
+                                              "year": modelYear,
+                                              "price": price,
+                                              "seatsCount": seatsCount,
+                                              "transmission": editCubit.transmission,
+                                              "fuelType": editCubit.fuelType,
+                                              "bodyType": editCubit.bodyType,
+                                              "hasAirConditioning": editCubit.options[1],
+                                              "hasAbs":editCubit.options[0],
+                                              "hasRadio": editCubit.options[3],
+                                              "hasSunroof":editCubit.options[2],
+                                              "period":rentalPeriod,
+                                              "description": carDescription,
+                                              "longitude":await CachHelper.getData(key: "longitude") as double,
+                                              "latitude":await CachHelper.getData(key: "latitude") as double,
+                                            };
+
+                                            print("22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222");
+                                            print(query);
+                                            await editCubit.updateCar(id: carResponse["id"], query: query);
+                                        }
+                                        }
+                                        navigateTo(context: context, screen: HomePageScreen(language: language));
+                                      },
+                                        child: Row(
+                                           children: const [
+                                             Text("confirm"),
+                                             Icon(Icons.check),
+                                          ],
+                                        ),
+                                    ),
+
+
+                                    //delete button
+                                    Container(
+                                      color: Colors.red,
+                                      child: TextButton(
+                                        onPressed: () async {
+                                          await editCubit.deleteCarById(carResponse["id"]);
+                                          navigateTo(context: context, screen: HomePageScreen(language: language));
+                                        },
+                                        child: Row(
+                                          children: const [
+                                            Text("Remove"),
+                                            Icon(Icons.close,),
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                )
                               ],
                             ),
                           ),
@@ -832,31 +928,16 @@ class CarOfferScreen extends StatelessWidget{
     }
     return images;
   }
-
-}
-
-
-void main() async {
-
-  WidgetsFlutterBinding.ensureInitialized();
-
-  Bloc.observer = MyBlocObserver();
-
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  // This widget is the root of application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Tawsila',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: CarOfferScreen(language: "Arabic"),
-      debugShowCheckedModeBanner: false,
-    );
+  void start(){
+    model = carResponse['model'];
+    modelYear = carResponse['year'].toString();
+    seatsCount = carResponse['seatsCount'].toString();
+    carDescription =carResponse['description'];
+    rentalPeriod = carResponse['period'].toString();
+    price = carResponse['price'].toString();
+    imgs = carResponse['images'];
   }
-
 }
+
+
+

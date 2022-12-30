@@ -44,43 +44,72 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
     super.initState();
   }
   var boardController = PageController();
-  List<BoardingModel> boarding = [
-    BoardingModel(
-        title1: "Rent",
-        title2: "Cars",
-        title3: "From",
-        title4: "Their",
-        title5: "Owners",
-        title6: "Directly",
-        image: "assets/images/1.png"
-    ),
-    BoardingModel(
-        title1: "Make",
-        title2: "Money",
-        title3: "Out Of",
-        title4: "Your",
-        title5: "Spare",
-        title6: "Cars",
-        image: "assets/images/2.png"
-    ),
-  ];
+  List<BoardingModel> lang() {
+    List<BoardingModel> boarding;
+    language == "English" ? boarding = [
+      BoardingModel(
+          title1: "Rent",
+          title2: "Cars",
+          title3: "From",
+          title4: "Their",
+          title5: "Owners",
+          title6: "Directly",
+          image: "assets/images/1.png"
+      ),
+      BoardingModel(
+          title1: "Make",
+          title2: "Money",
+          title3: "Out Of",
+          title4: "Your",
+          title5: "Spare",
+          title6: "Cars",
+          image: "assets/images/2.png"
+      ),
+    ] :
+    boarding = [
+      BoardingModel(
+          title1: "استأجر",
+          title2: "سيارات",
+          title3: "من",
+          title4: "مالكهم",
+          title5: "مباشرة",
+          title6: "",
+          image: "assets/images/1.png"
+      ),
+      BoardingModel(
+          title1: "اجني",
+          title2: "ربحا",
+          title3: "من",
+          title4: "سيارتك",
+          title5: "المركونة",
+          title6: "",
+          image: "assets/images/2.png"
+      ),
+    ];
+    return boarding;
+  }
+
   final String language;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        color: Colors.black,
-        child: PageView.builder(
-          physics: BouncingScrollPhysics(),
-          controller: boardController,
-          itemBuilder: (context, index) =>
-              buildBoardingItem(boarding[index]),
-          itemCount: boarding.length,
+    var boarding = lang();
+    return Directionality(
+      textDirection: language == "English" ? TextDirection.ltr: TextDirection.rtl,
+      child: Scaffold(
+        body: Container(
+          color: Colors.black,
+          child: PageView.builder(
+            physics: BouncingScrollPhysics(),
+            controller: boardController,
+            itemBuilder: (context, index) =>
+                buildBoardingItem(boarding[index],boarding),
+            itemCount: boarding.length,
+          ),
         ),
       ),
     );
   }
-  Widget buildBoardingItem(BoardingModel model) => Stack(
+  Widget buildBoardingItem(BoardingModel model,var boarding) => Stack(
     children:
     [
       Image(
@@ -96,6 +125,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              SizedBox(height: 25),
               Text(
                 '${model.title1}',
                 style: TextStyle(
@@ -173,7 +203,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                   SizedBox(height: 5,),
                   buildButton(
                       color: Colors.white,
-                      title: "Create free accout",
+                      title: language=="English"? "Create free accout":"انشاء حساب مجانا",
                       titleColor: Colors.black,
                       function: () {
                         navigateTo(context: context, screen: SignUpScreen(language: language));
@@ -181,7 +211,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                   SizedBox(height: 5,),
                   buildButton(
                       color: Colors.blue,
-                      title: "Login",
+                      title: language=="English"?"Login":"تسجيل الدخول",
                       titleColor: Colors.white,
                       function: () {
                         navigateAndFinish(context: context, screen: SignInScreen(language: language));

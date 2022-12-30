@@ -1,11 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:tawsila/modules/home-page/HomePage.dart';
+import 'package:toast/toast.dart';
 
+import '../../../shared/components/Components.dart';
+import '../../../shared/network/local/Cachhelper.dart';
+import '../../../shared/network/remote/DioHelper.dart';
 import 'OfferStates.dart';
 
 class OfferCubit extends Cubit<OfferStates>{
@@ -29,7 +33,7 @@ class OfferCubit extends Cubit<OfferStates>{
     "fiat": false,
     "other": true
   };
-  Map<String, bool> moreBrands = {
+  Map<String, bool> bodyTypes = {
     "Convertible": true,
     "Coupe": false,
     "Hatchback": false,
@@ -41,6 +45,8 @@ class OfferCubit extends Cubit<OfferStates>{
   final ImagePicker picker = ImagePicker();
   var img;
   List<String> imgs = [];
+
+  List<File> imgsFile = [];
 
   var items = {};
   String language = "English";
@@ -87,6 +93,7 @@ class OfferCubit extends Cubit<OfferStates>{
 
       for(int i = 0; i < images!.length; i++){
         var temp = File(images![i].path);
+        imgsFile.add(temp);
         //var temp2 = Image.file(temp);
         Uint8List temp3 = temp.readAsBytesSync();
         print("adding the image to list");
@@ -100,7 +107,10 @@ class OfferCubit extends Cubit<OfferStates>{
     }
   }
 
+  String finalBrand = "others";
+
   void changeBrand({required String brand}) {
+    finalBrand = brand;
     for (var m in brands.entries) {
       if (m.key == brand) {
         brands[m.key] = true;
@@ -111,16 +121,43 @@ class OfferCubit extends Cubit<OfferStates>{
     }
     emit(SelectCarBrand());
   }
-  void changeMoreBrand({required String brand}) {
-    for (var m in moreBrands.entries) {
-      if (m.key == brand) {
-        moreBrands[m.key] = true;
+  String bodyType = "Convertible";
+  void changeBodyType({required String body_type}) {
+    bodyType = body_type;
+    for (var m in bodyTypes.entries) {
+      if (m.key == body_type) {
+        bodyTypes[m.key] = true;
       }
       else {
-        moreBrands[m.key] = false;
+        bodyTypes[m.key] = false;
       }
     }
     emit(SelectMoreCarBrand());
   }
+  void createNewCar({
+    required Map<String, dynamic> query,
+    required BuildContext context
+  }) async{
+    String token = await CachHelper.getData(key: 'token') as String;
+    ToastContext toast = ToastContext();
+    DioHelper.postDataVer(
+      url: "cars",
+      data: query, token: token,
+    ).then((value) {
+      CachHelper.saveData(key: 'token', value: value.data['token']);
+      emit(state);
+      toast.init(context);
+      Toast.show("${items['offer added']??""}",
+          duration: Toast.lengthShort, backgroundColor: Colors.green
+      );
+      navigateAndFinish(context: context, screen: HomePageScreen(language: language));
+    }).catchError((error) {
+      toast.init(context);
+      Toast.show("${items['error']??""}",
+          duration: Toast.lengthShort, backgroundColor: Colors.red
+      );
+      print("************************************************************************");
+      print(error.toString());
+    });
+  }
 }
-

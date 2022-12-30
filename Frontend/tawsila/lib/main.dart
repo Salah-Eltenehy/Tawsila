@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tawsila/layout/cubit/AppProvider.dart';
 import 'package:tawsila/layout/cubit/AppStates.dart';
 import 'package:tawsila/modules/home-page/HomePage.dart';
+import 'package:tawsila/modules/log-in/SignInScreen.dart';
 import 'package:tawsila/modules/on-boarding/OnBoardingScreen.dart';
 import 'package:tawsila/modules/search-result/SearchResultScreen.dart';
 import 'package:tawsila/shared/bloc_observer.dart';
@@ -17,6 +18,8 @@ import 'package:tawsila/shared/network/remote/DioHelper.dart';
 import 'layout/CurrentScreen.dart';
 import 'modules/Language/ChooseLanguage.dart';
 import 'modules/filter/FilterScreen.dart';
+import 'modules/forget-password/ForgetPassword.dart';
+import 'modules/forget-password/RestPassword.dart';
 
 void main() async {
 
