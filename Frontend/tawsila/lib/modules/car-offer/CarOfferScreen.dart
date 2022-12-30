@@ -132,14 +132,12 @@ class CarOfferScreen extends StatelessWidget{
                                         ),
                                         child: Stack(
                                           children: [
-
                                             Image.file(
                                               offerCubit.imgsFile[index],
                                               width: double.infinity,
                                               height: double.infinity,
                                               fit: BoxFit.cover,
                                             ),
-
                                             Center(
                                               child: Column(
                                                 children: [

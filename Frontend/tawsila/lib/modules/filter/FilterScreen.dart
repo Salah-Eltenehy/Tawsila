@@ -4,6 +4,7 @@ import 'package:tawsila/modules/search-result/SearchResultScreen.dart';
 import 'package:tawsila/shared/components/Components.dart';
 
 import '../../shared/network/local/Cachhelper.dart';
+import '../home-page/Map.dart';
 
 class FilterSearchResultsScreen extends StatefulWidget {
   @override
@@ -53,8 +54,29 @@ class _FilterSearchResultsScreenState extends State<FilterSearchResultsScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         leading: IconButton(
-          onPressed: () {
-            Navigator.of(context).pop();
+          onPressed: () async {
+            double latitude = await CachHelper.getData(key: "latitude") as double;
+            double longitude = await CachHelper.getData(key: "longitude") as double;
+            Map<String, dynamic> query = {
+              "brands": "",
+              "fuelTypes": "",
+              "hasAbs": "",
+              "hasAirConditioning": "",
+              "hasRadio": "",
+              "hasSunroof": "",
+              "latitude": latitude,
+              "longitude": longitude,
+              "maxPrice":"",
+              "maxYear":"",
+              "minPrice":"",
+              "minYear":"",
+              "models":"",
+              "offset": "",
+              "seatsCount": "",
+              "sortBy":"",
+              "transmission":"",
+            };
+            navigateTo(context: context, screen: SearchResultScreen(query: query, lang: "English",));
           },
           icon: Icon(Icons.arrow_back, color: Colors.black,),
         ),
@@ -620,11 +642,34 @@ class _FilterSearchResultsScreenState extends State<FilterSearchResultsScreen> {
                         ),
                       ],
                     ),
+                    Container(
+                      color: Colors.blue,
+                      alignment: Alignment.center,
+                      child: TextButton(
+                          style:const ButtonStyle(
+                          ),
+                          onPressed: (){
+                            navigateTo(context: context, screen: MapScreen());
+                          },
+                          child: const Text(
+                              "set location",
+                              style:TextStyle(
+                                color: Colors.white,
+                                // backgroundColor: Colors.blue,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              )
+
+                          )
+                      ),
+                    ),
                   ],
                 ),
                 InkWell(
-                  onTap: () {
+                  onTap: () async {
                     if(formKey.currentState!.validate()) {
+                      double la = await CachHelper.getData(key: "latitude");
+                      double lo = await CachHelper.getData(key: "longitude");
                       Map<String, dynamic> query = {
                         "brands": finalBrand,
                         "fuelTypes": gasoline ? "gasoline": "natural_gas",
@@ -632,8 +677,8 @@ class _FilterSearchResultsScreenState extends State<FilterSearchResultsScreen> {
                         "hasAirConditioning": options['Air'],
                         "hasRadio": options['Radio'],
                         "hasSunroof": options['Sunroof'],
-                        "latitude": 27.5667,//latitude,
-                        "longitude": 53.9,//longitude,
+                        "latitude": la,//27.5667,//latitude,
+                        "longitude": lo,//53.9,//longitude,
                         "maxPrice": toPriceController.text,
                         "maxYear": toModelController.text,
                         "minPrice": fromModelController.text,
@@ -646,7 +691,7 @@ class _FilterSearchResultsScreenState extends State<FilterSearchResultsScreen> {
                       };
                       navigateAndFinish(
                           context: context,
-                          screen: SearchResultScreen(query: query)
+                          screen: SearchResultScreen(query: query, lang: 'English',)
                       );
                     }
                   },
@@ -762,7 +807,7 @@ class _FilterSearchResultsScreenState extends State<FilterSearchResultsScreen> {
       "sortBy": "",
       "transmission": automatic? "automatic": "manual",
     };
-    navigateAndFinish(context: context, screen: SearchResultScreen(query: query));
+    navigateAndFinish(context: context, screen: SearchResultScreen(query: query, lang: "English",));
   }
 }
 

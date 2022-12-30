@@ -77,6 +77,8 @@ class HomePageCubit extends Cubit<HomePageStates> {
       print("value --------------------");
       usersInfo = value.data['users'][0];
       print(usersInfo);
+      CachHelper.saveData(
+          key: 'avatar', value: usersInfo['avatar']);
       print("kkkkkkkkkkkkkkkkk");
       emit(GetUserInfoState());
     }).catchError((error) {

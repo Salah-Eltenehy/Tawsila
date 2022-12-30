@@ -9,11 +9,13 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:tawsila/shared/components/Components.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../shared/network/local/Cachhelper.dart';
 import 'Comments.dart';
+import 'SearchResultScreen.dart';
 class ViewCarScreen extends StatelessWidget {
   final id;
-
-  ViewCarScreen({super.key, required this.id});
+  var title = "";
+  ViewCarScreen({super.key, required this.id,required this.title});
 
   var boardController = PageController();
   @override
@@ -28,6 +30,41 @@ class ViewCarScreen extends StatelessWidget {
         builder: (context, state) {
           var viewCarCubit = SearchCubit.get(context);
           return Scaffold(
+            appBar: AppBar(
+              leading: IconButton(
+                onPressed: () async {
+                  double latitude = await CachHelper.getData(key: "latitude") as double;
+                  double longitude = await CachHelper.getData(key: "longitude") as double;
+                  Map<String, dynamic> query = {
+                    "brands": "",
+                    "fuelTypes": "",
+                    "hasAbs": "",
+                    "hasAirConditioning": "",
+                    "hasRadio": "",
+                    "hasSunroof": "",
+                    "latitude": latitude,
+                    "longitude": longitude,
+                    "maxPrice":"",
+                    "maxYear":"",
+                    "minPrice":"",
+                    "minYear":"",
+                    "models":"",
+                    "offset": "",
+                    "seatsCount": "",
+                    "sortBy":"",
+                    "transmission":"",
+                  };
+                  navigateTo(context: context, screen: SearchResultScreen(query: query, lang: "English",));
+                  //navigateAndFinish(context: context, screen: (id: carID,));
+                },
+                icon: const Icon(
+                  Icons.arrow_back,
+                  color: Colors.white,
+                ),
+              ),
+              title: Text(title.toString()),
+              backgroundColor: Colors.blue,
+            ),
             persistentFooterButtons: [
               Row(
                 children: [
@@ -40,7 +77,7 @@ class ViewCarScreen extends StatelessWidget {
                           //FlutterOpenWhatsapp.sendSingleMessage("${viewCarCubit.userInfo['phoneNumber']}", "Hello");
                           print("Call whats app");
                         },
-                        icon: const Icon(Icons.whatshot, color: Colors.green,)
+                        icon: const Icon(Icons.whatsapp, color: Colors.green,)
                     ),
                   ),
                   Expanded(
@@ -114,7 +151,7 @@ class ViewCarScreen extends StatelessWidget {
                                           dotWidth: 10,
                                           spacing: 5.0,
                                         ),
-                                        count: viewCarCubit.car["images"].length,
+                                        count: viewCarCubit.count,
                                       ),
                                       const SizedBox(height: 6,)
                                     ],
@@ -124,7 +161,7 @@ class ViewCarScreen extends StatelessWidget {
                             ),
                           );
                         },
-                        itemCount: viewCarCubit.car["images"].length,
+                        itemCount: viewCarCubit.count,
                       ),
                     ),
                     const SizedBox(height: 10,),
@@ -228,7 +265,7 @@ class ViewCarScreen extends StatelessWidget {
                                 Text(
                                   // replace
                                   //"${viewCarCubit.car['location']}",
-                                  "${viewCarCubit.carCity}",
+                                  "${viewCarCubit.carCity.split(' ')[0]}",
                                   style: const TextStyle(
                                     color: Colors.black45,
                                     fontSize: 20,
@@ -388,7 +425,7 @@ class ViewCarScreen extends StatelessWidget {
                     const SizedBox(height: 10,),
                     TextButton(
                         onPressed: (){navigateAndFinish(context: context, screen:
-                          TestMe(language: "English", id: viewCarCubit.userInfo['id'],));},
+                          TestMe(language: "English", id: viewCarCubit.userInfo['id'].toString(), carID: id, title: title,));},
                         child: const Text(
                           "Reviews",
                           style: TextStyle(

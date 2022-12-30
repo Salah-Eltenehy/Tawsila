@@ -152,8 +152,8 @@ class HomePageScreen extends StatelessWidget {
                                   "hasAirConditioning": "",
                                   "hasRadio": "",
                                   "hasSunroof": "",
-                                  "latitude": 27.5667,//latitude,
-                                  "longitude": 53.9,//longitude,
+                                  "latitude": latitude,
+                                  "longitude": longitude,
                                   "maxPrice":"",
                                   "maxYear":"",
                                   "minPrice":"",
@@ -164,7 +164,7 @@ class HomePageScreen extends StatelessWidget {
                                   "sortBy":"",
                                   "transmission":"",
                                 };
-                                navigateTo(context: context, screen: SearchResultScreen(query: query,));
+                                navigateTo(context: context, screen: SearchResultScreen(query: query, lang: language,));
                               },
                               child: Container(
                                 height: 40,
