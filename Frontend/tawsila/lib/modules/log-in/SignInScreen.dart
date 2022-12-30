@@ -137,19 +137,23 @@ class SignInScreen extends StatelessWidget{
                                   sss.init(context);
                                   String token = await CachHelper.getData(
                                       key: 'token') as String;
-                                  Map<String, dynamic> tokenInfo = parseJwt(
-                                      token);
-                                  print(tokenInfo[VERIFYUSER]);
-                                  if (tokenInfo[VERIFYUSER] ==
-                                      "UnverifiedUser") {
+                                  Map<String, dynamic> tokenInfo = parseJwt(token);
+                                  if (tokenInfo[VERIFYUSER] == "UnverifiedPasswordResetter") {
                                     Toast.show("please verify your account",
                                         duration: Toast.lengthShort,
                                         gravity: Toast.bottom,
-                                        backgroundColor: Colors.green);
+                                        backgroundColor: Colors.green
+                                    );
                                     navigateAndFinish(context: context,
-                                        screen: Verification(
-                                            language: language));
-                                    print(value);
+                                        screen: Verification(language: language, reset: true));
+                                  } else if (tokenInfo[VERIFYUSER] == "UnverifiedUser") {
+                                    Toast.show("please verify your account",
+                                        duration: Toast.lengthShort,
+                                        gravity: Toast.bottom,
+                                        backgroundColor: Colors.green
+                                    );
+                                    navigateAndFinish(context: context,
+                                        screen: Verification(language: language, reset: false));
                                   } else {
                                     Toast.show("Log In Successfully",
                                         duration: Toast.lengthShort,
@@ -166,8 +170,6 @@ class SignInScreen extends StatelessWidget{
                                   Toast.show("Invalid email or password",
                                       duration: Toast.lengthLong,
                                       gravity:  Toast.bottom,backgroundColor: Colors.red);
-
-                                  print("#############");
                                 });
                               }
                             },
@@ -182,9 +184,7 @@ class SignInScreen extends StatelessWidget{
                             Text(
                               "${signUpCubit.items['doNotHaveAnAccount']??""}",
                             ),
-
                             TextButton(onPressed: (){
-                              print("HHHHHHHHHHHHHHHHHHHHHHHHHHH");
                               navigateAndFinish(context: context, screen: SignUpScreen(language: language));
                             },
                                 child: Text(

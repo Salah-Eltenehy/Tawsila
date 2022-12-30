@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tawsila/shared/network/remote/DioHelper.dart';
 import 'package:toast/toast.dart';
 
 import '../signup/cubit/SignUpCubit.dart';
@@ -10,8 +11,9 @@ import '../signup/cubit/SignUpStates.dart';
 
 class Verification extends StatelessWidget{
   final String language;
+  final bool reset;
   String res = "ffffff";
-  Verification({super.key, required this.language});
+  Verification({super.key, required this.language, required this.reset});
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -156,9 +158,24 @@ class Verification extends StatelessWidget{
                               onChanged: (value){
                                 if(value.length == 1) {
                                   res = replaceCharAt(res, 5, value);
-
                                   if(!res.contains("f")) {
-                                    signUpCubit.verify(query: {"emailVerificationCode": res}, context: context);
+                                    if (reset == false) {
+                                      signUpCubit.verify(query: {"emailVerificationCode": res}, context: context);
+                                    } else {
+                                      DioHelper.postData(
+                                          url: 'users/recover/verify',
+                                          data: {
+                                            "verificationCode": res,
+                                          },
+                                      ).then((value) {
+                                        Toast.show(
+                                            "Email valid",
+                                            duration: Toast.lengthShort,
+                                            gravity: Toast.bottom,
+                                            backgroundColor: Colors.green
+                                        );
+                                      });
+                                    }
                                     //navigateAndFinish(context: context, screen: HomePageScreen(language: language));
                                   }
                                 }

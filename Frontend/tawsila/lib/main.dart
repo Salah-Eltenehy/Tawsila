@@ -17,6 +17,7 @@ import 'package:tawsila/shared/network/remote/DioHelper.dart';
 import 'layout/CurrentScreen.dart';
 import 'modules/Language/ChooseLanguage.dart';
 import 'modules/filter/FilterScreen.dart';
+import 'modules/forget-password/ForgetPassword.dart';
 
 void main() async {
 
@@ -46,7 +47,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(),
+      home: ForgetPasswordScreen(),
       debugShowCheckedModeBanner: false,
     );
   }

@@ -285,7 +285,7 @@ class SignUpScreen extends StatelessWidget {
                                       Toast.show("email created Successfully",
                                           duration: Toast.lengthShort,
                                           gravity:  Toast.bottom,backgroundColor: Colors.green);
-                                navigateAndFinish(context: context, screen: Verification(language: language,));
+                                navigateAndFinish(context: context, screen: Verification(language: language, reset: false,));
                                 print(value);
                               }).catchError((error) {
                                 print("ERRORRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");
