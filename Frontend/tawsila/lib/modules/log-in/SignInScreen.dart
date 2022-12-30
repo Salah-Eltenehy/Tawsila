@@ -13,6 +13,7 @@ import 'package:toast/toast.dart';
 
 import '../../shared/end-points.dart';
 import '../VerificationScreen/verification.dart';
+import '../forget-password/ForgetPassword.dart';
 
 class SignInScreen extends StatelessWidget{
 
@@ -198,8 +199,7 @@ class SignInScreen extends StatelessWidget{
                         ),
                         TextButton(
                             onPressed: () {
-                              print("Don't have an account");
-
+                              navigateTo(context: context, screen: ForgetPasswordScreen());
                             },
                             child: Text(
                               "${signUpCubit.items['forgetPassword']??''}",

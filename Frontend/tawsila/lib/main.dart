@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tawsila/layout/cubit/AppProvider.dart';
 import 'package:tawsila/layout/cubit/AppStates.dart';
 import 'package:tawsila/modules/home-page/HomePage.dart';
+import 'package:tawsila/modules/log-in/SignInScreen.dart';
 import 'package:tawsila/modules/on-boarding/OnBoardingScreen.dart';
 import 'package:tawsila/modules/search-result/SearchResultScreen.dart';
 import 'package:tawsila/shared/bloc_observer.dart';
@@ -47,7 +48,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: ForgetPasswordScreen(),
+      home: ChooseLanguage(),
       debugShowCheckedModeBanner: false,
     );
   }

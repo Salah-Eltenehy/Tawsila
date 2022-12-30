@@ -4,6 +4,8 @@ import 'package:tawsila/shared/network/local/Cachhelper.dart';
 import 'package:tawsila/shared/network/remote/DioHelper.dart';
 import 'package:toast/toast.dart';
 
+import '../VerificationScreen/verification.dart';
+
 class ForgetPasswordScreen extends StatelessWidget {
 
   var emailController = TextEditingController();
@@ -12,61 +14,39 @@ class ForgetPasswordScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      persistentFooterButtons: [
-        Row(
-          children: [
-            const Text(""),
-            const Spacer(),
-            TextButton(
-                onPressed: () {
-                  toastContext.init(context);
-                  if(formKey.currentState!.validate()) {
-                    DioHelper.postData(
-                        url: 'users/recover/identify',
-                        data: {
-                          "email": emailController.text
-                        }
-                    ).then((value) async {
-                      Toast.show(
-                          "Email valid",
-                          duration: Toast.lengthShort,
-                          gravity: Toast.bottom,
-                          backgroundColor: Colors.green
-                      );
-                      await CachHelper.saveData(key: 'token', value: value.data['token']);
-                    }).catchError((onError) {
-                      print(onError.toString());
-                      Toast.show(
-                          "Email Invalid",
-                          duration: Toast.lengthShort,
-                          gravity: Toast.bottom,
-                          backgroundColor: Colors.red
-                      );
-                    });
-                  }
-                },
-                child: Container(
-                  height: 60,
-                  width: 100,
-                  decoration: BoxDecoration(
-                    color: Colors.blue,
-                    borderRadius: BorderRadius.circular(10)
-                  ),
-                  child: const Center(
-                    child: Text(
-                      "Next",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 30
-                      ),
-                    ),
-                  ),
-                ),
-            )
-          ],
+      floatingActionButton: CircleAvatar(
+        radius: 30,
+        child: IconButton(onPressed: () {
+          toastContext.init(context);
+          if(formKey.currentState!.validate()) {
+            DioHelper.postData(
+                url: 'users/recover/identify',
+                data: {
+                  "email": emailController.text
+                }
+            ).then((value) async {
+              Toast.show(
+                  "Email valid",
+                  duration: Toast.lengthShort,
+                  gravity: Toast.bottom,
+                  backgroundColor: Colors.green
+              );
+              await CachHelper.saveData(key: 'token', value: value.data['token']);
+              navigateAndFinish(context: context, screen: Verification(language: 'English',reset: true,));
+            }).catchError((onError) {
+              print(onError.toString());
+              Toast.show(
+                  "Email Invalid",
+                  duration: Toast.lengthShort,
+                  gravity: Toast.bottom,
+                  backgroundColor: Colors.red
+              );
+            });
+          }
+        }, icon: const Icon(Icons.arrow_right_alt_sharp),
         ),
-      ],
+      ),
+
       appBar: AppBar(),
       body: Form(
         key: formKey,

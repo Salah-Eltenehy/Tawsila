@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tawsila/shared/components/Components.dart';
+import 'package:tawsila/shared/network/local/Cachhelper.dart';
 import 'package:tawsila/shared/network/remote/DioHelper.dart';
 import 'package:toast/toast.dart';
 
+import '../forget-password/RestPassword.dart';
 import '../signup/cubit/SignUpCubit.dart';
 import '../signup/cubit/SignUpStates.dart';
 
@@ -155,25 +158,30 @@ class Verification extends StatelessWidget{
                             height: 60,
                             width: 60,
                             child: TextFormField(
-                              onChanged: (value){
+                              onChanged: (value) async{
                                 if(value.length == 1) {
                                   res = replaceCharAt(res, 5, value);
                                   if(!res.contains("f")) {
+                                    String token = await CachHelper.getData(key: 'token');
                                     if (reset == false) {
                                       signUpCubit.verify(query: {"emailVerificationCode": res}, context: context);
                                     } else {
-                                      DioHelper.postData(
+                                      DioHelper.postDataVer(
                                           url: 'users/recover/verify',
                                           data: {
                                             "verificationCode": res,
-                                          },
-                                      ).then((value) {
+                                          }, token: token,
+                                      ).then((value) async {
+                                        ToastContext toastContext = ToastContext();
+                                        toastContext.init(context);
                                         Toast.show(
-                                            "Email valid",
+                                            "Successful",
                                             duration: Toast.lengthShort,
                                             gravity: Toast.bottom,
                                             backgroundColor: Colors.green
                                         );
+                                        await CachHelper.saveData(key: 'token', value: value.data['token']);
+                                        navigateAndFinish(context: context, screen: ResetPassword());
                                       });
                                     }
                                     //navigateAndFinish(context: context, screen: HomePageScreen(language: language));
@@ -220,10 +228,28 @@ class Verification extends StatelessWidget{
                               fontSize: 20,
                             ),
                           ),
-                          onPressed: () {
+                          onPressed: () async{
+                            String token = await CachHelper.getData(key: 'token');
                             if(!res.contains("f")) {
-                              signUpCubit.verify(query: {"emailVerificationCode": res}, context: context);
-                              //navigateAndFinish(context: context, screen: HomePageScreen(language: language));
+                              if (reset == false) {
+                                signUpCubit.verify(query: {"emailVerificationCode": res}, context: context);
+                              } else {
+                                DioHelper.postDataVer(
+                                  url: 'users/recover/verify',
+                                  data: {
+                                    "verificationCode": res,
+                                  }, token: token,
+                                ).then((value) {
+                                  ToastContext toastContext = ToastContext();
+                                  toastContext.init(context);
+                                  Toast.show(
+                                      "Successful",
+                                      duration: Toast.lengthShort,
+                                      gravity: Toast.bottom,
+                                      backgroundColor: Colors.green
+                                  );
+                                });
+                              }
                             }
                             else{
                               Toast.show("${signUpCubit.items['error']??""}",
