@@ -153,8 +153,10 @@ class SignInScreen extends StatelessWidget{
                                         gravity: Toast.bottom,
                                         backgroundColor: Colors.green
                                     );
-                                    navigateAndFinish(context: context,
-                                        screen: Verification(language: language, reset: false));
+                                    navigateAndFinish(
+                                        context: context,
+                                        screen: Verification(language: language, reset: false)
+                                    );
                                   } else {
                                     Toast.show("Log In Successfully",
                                         duration: Toast.lengthShort,
