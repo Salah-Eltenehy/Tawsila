@@ -1,12 +1,6 @@
-﻿using Backend.Controllers;
-using Backend.Models.Exceptions;
+﻿using Backend.Models.Exceptions;
 using Backend.Repositories;
 using Backend.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Tests.Reviews.Service
 {
@@ -22,7 +16,7 @@ namespace Tests.Reviews.Service
             var mockUserService = new Mock<IUserService>();
             var review = ReviewHelper.GetTestReview(id);
             mockRepo.Setup(x => x.GetReview(id)).ReturnsAsync(review);
-            var reviewService = new ReviewService(mockRepo.Object, mockUserService.Object);
+            var reviewService = new ReviewService(mockRepo.Object);
 
             // Act 
             var result = await reviewService.GetReview(id);
@@ -39,7 +33,7 @@ namespace Tests.Reviews.Service
             int id = 1;
             var mockRepo = new Mock<IReviewRepo>();
             var mockUserService = new Mock<IUserService>();
-            var reviewService = new ReviewService(mockRepo.Object, mockUserService.Object);
+            var reviewService = new ReviewService(mockRepo.Object);
             mockRepo.Setup(x => x.GetReview(id)).Throws(new NotFoundException("")); ;
 
             // Act

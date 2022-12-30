@@ -212,7 +212,7 @@ app.Use(
                 );
                 var dbContext = context.RequestServices.GetRequiredService<TawsilaContext>();
                 var user = dbContext.Users.Find(userId);
-                if (user == null)
+                if (user == null || user.IsDeleted)
                 {
                     context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                     context.Response.ContentType = "application/json";

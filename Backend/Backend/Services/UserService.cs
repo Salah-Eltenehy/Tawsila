@@ -109,7 +109,7 @@ public class UserService : IUserService
             PhoneNumber = req.PhoneNumber,
             HasWhatsapp = req.HasWhatsapp
         };
-        await _userRepo.RegisterUser(user);
+        user = await _userRepo.RegisterUser(user);
         return await _jwtService.SendVerificationCode(user);
     }
 

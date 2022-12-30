@@ -1,11 +1,8 @@
 ﻿using Backend.Contexts;
-using Backend.Models;
 using Backend.Models.DTO.Review;
 using Backend.Models.Entities;
 using Backend.Models.Exceptions;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Org.BouncyCastle.Ocsp;
 
 namespace Backend.Repositories;
 
@@ -29,45 +26,53 @@ public class ReviewRepo : IReviewRepo
     public async Task<Review> GetReview(int id)
     {
         var review = await _context.Reviews.FindAsync(id);
+        if (review == null || review.IsDeleted)
+        {
+            throw new NotFoundException("Review not found");
+        }
+
         return review;
     }
 
     public async Task<Review> CreateReview(Review review)
     {
-        _context.Reviews.Add(review);
+        Review trackedReview = (Review)review.Clone();
+        _context.Reviews.Add(trackedReview);
         await _context.SaveChangesAsync();
-        return review;
-    }
-
-    public async Task DeleteReview(int id)
-    {
-        var review = await _context.Reviews.FindAsync(id);
-        if (review == null)
-        {
-            throw new NotFoundException("Review not found");
-        }
-
-        _context.Reviews.Remove(review);
-        await _context.SaveChangesAsync();
+        _context.Entry(trackedReview).State = EntityState.Detached;
+        return trackedReview;
     }
 
     public bool ReviewExists(int id)
     {
-        return _context.Reviews.Any(e => e.Id == id);
+        return _context.Reviews.Any(e => e.Id == id && !e.IsDeleted);
     }
 
     public async Task<Review> UpdateReview(int id, UpdateReviewRequest req)
     {
         var review = await _context.Reviews.FindAsync(id);
-        if (review == null)
+        if (review == null || review.IsDeleted)
         {
             throw new NotFoundException("Review not found");
         }
+
         review.Rating = req.Rating;
         review.Comment = req.Comment;
         review.UpdatedAt = DateTime.UtcNow;
         await _context.SaveChangesAsync();
         _context.Entry(review).State = EntityState.Detached;
         return review;
+    }
+
+    public async Task DeleteReview(int id)
+    {
+        var review = await _context.Reviews.FindAsync(id);
+        if (review == null || review.IsDeleted)
+        {
+            throw new NotFoundException("Review not found");
+        }
+
+        review.IsDeleted = true;
+        await _context.SaveChangesAsync();
     }
 }
