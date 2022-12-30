@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:tawsila/modules/mange-offer/ManageOfferScreen.dart';
 import 'package:tawsila/shared/bloc_observer.dart';
@@ -93,13 +92,12 @@ class EditCarScreen extends StatelessWidget{
                                         child: Stack(
                                           children: [
 
-                                            Image.memory(
-                                              editCubit.imgsFile[index],
+                                            Image(
+                                              image: NetworkImage(editCubit.carResponse['images'][index]),
                                               width: double.infinity,
                                               height: double.infinity,
                                               fit: BoxFit.cover,
                                             ),
-
                                             Center(
                                               child: Column(
                                                 children: [
@@ -885,16 +883,6 @@ class EditCarScreen extends StatelessWidget{
 
     );
   }
-
-  List<String> images64(List<XFile> imgs){
-    List<String> images = <String>[];
-    for(var i = 0; i < imgs.length; i++){
-      final bytes = File(imgs[i].path).readAsBytesSync();
-      images.add(base64Encode(bytes));
-    }
-    return images;
-  }
-
 }
 
 
