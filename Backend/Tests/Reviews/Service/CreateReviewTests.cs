@@ -1,14 +1,6 @@
-﻿using Backend.Controllers;
-using Backend.Models.Entities;
-using Backend.Models.Exceptions;
+﻿using Backend.Models.Entities;
 using Backend.Repositories;
 using Backend.Services;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Tests.Reviews.Service
 {
@@ -27,7 +19,7 @@ namespace Tests.Reviews.Service
             mockUserService.Setup(x => x.GetUsers(It.IsAny<int[]>())).ReturnsAsync(new User[1]);
             var reviewReq = ReviewHelper.GetTestReviewRequest();
             mockRepo.Setup(x => x.CreateReview(It.IsAny<Review>())).ReturnsAsync(review);
-            var reviewService = new ReviewService(mockRepo.Object, mockUserService.Object);
+            var reviewService = new ReviewService(mockRepo.Object);
 
             // Act
             var result = await reviewService.CreateReview(userId, reviewReq);

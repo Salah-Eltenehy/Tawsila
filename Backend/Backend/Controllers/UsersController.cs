@@ -123,10 +123,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Verify(
-        [FromRoute] int id,
-        [FromBody] VerifyUserRequest req
-    )
+    public async Task<IActionResult> Verify([FromRoute] int id, [FromBody] VerifyUserRequest req)
     {
         var claims = HttpContext.User.Claims.ToArray();
         var claimedId = int.Parse(claims.First(c => c.Type == ClaimTypes.Name).Value);

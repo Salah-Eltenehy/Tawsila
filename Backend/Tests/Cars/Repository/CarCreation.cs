@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using Backend.Models.Entities;
 using Backend.Repositories;
 using Backend.Contexts;
-using Backend.Services;
 using Backend.Models.Exceptions;
 
 namespace Tests.Cars.Repository;

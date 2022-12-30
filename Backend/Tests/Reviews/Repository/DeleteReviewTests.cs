@@ -3,14 +3,6 @@ using Backend.Models.Entities;
 using Backend.Models.Exceptions;
 using Backend.Repositories;
 using Microsoft.EntityFrameworkCore;
-using NuGet.Frameworks;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Tests.Reviews;
-using Tests.Reviews.Controller;
 
 namespace Tests.Cars.Repository;
 public class DeleteReviewTests : IDisposable
@@ -48,7 +40,7 @@ public class DeleteReviewTests : IDisposable
         await _context.SaveChangesAsync();
         await reviewRepo.DeleteReview(1);
         var result = await _context.Reviews.FindAsync(1);
-        Assert.Null(result);
+        Assert.True(result.IsDeleted);
     }
 
 

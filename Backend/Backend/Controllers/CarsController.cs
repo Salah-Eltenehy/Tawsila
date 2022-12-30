@@ -4,9 +4,6 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Backend.Models.API;
 using Backend.Services;
-using Backend.Models.Exceptions;
-using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.Extensions.Logging;
 
 namespace Backend.Controllers
 {

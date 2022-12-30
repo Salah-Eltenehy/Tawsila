@@ -18,6 +18,9 @@ public class Review
     public string Comment { get; set; } = null!;
 
     [Required]
+    public bool IsDeleted { get; set; }
+
+    [Required]
     public DateTime CreatedAt { get; set; }
 
     [Required]
@@ -30,4 +33,19 @@ public class Review
     [ForeignKey("Reviewee")]
     public int RevieweeId { get; set; }
     public User Reviewee { get; set; } = null!;
+
+    public object Clone()
+    {
+        return new Review
+        {
+            Id = Id,
+            Rating = Rating,
+            Comment = Comment,
+            IsDeleted = IsDeleted,
+            CreatedAt = CreatedAt,
+            UpdatedAt = UpdatedAt,
+            ReviewerId = ReviewerId,
+            RevieweeId = RevieweeId,
+        };
+    }
 }
