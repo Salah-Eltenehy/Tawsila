@@ -24,7 +24,7 @@ var configuration = builder.Configuration;
 builder.Services.AddDbContext<TawsilaContext>(options =>
 {
     #if DEBUG
-    options.UseInMemoryDatabase(databaseName: "TawsilaDB");
+        options.UseInMemoryDatabase(databaseName: "TawsilaDB");
     #else
     options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
     #endif
@@ -78,6 +78,14 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy(
         "VerifiedUser",
         policy => policy.RequireClaim(ClaimTypes.Role, "VerifiedUser")
+    );
+    options.AddPolicy(
+        "UnverifiedPasswordResetter",
+        policy => policy.RequireClaim(ClaimTypes.Role, "UnverifiedPasswordResetter")
+    );
+    options.AddPolicy(
+        "VerifiedPasswordResetter",
+        policy => policy.RequireClaim(ClaimTypes.Role, "VerifiedPasswordResetter")
     );
 });
 

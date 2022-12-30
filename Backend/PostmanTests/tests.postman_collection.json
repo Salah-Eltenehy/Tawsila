@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "4372fbbb-d640-45b8-93cc-47a3f7f2a6f2",
+		"_postman_id": "1e1eec12-98b5-4d4c-983f-14598ceda83a",
 		"name": "Tests",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "18969165"
@@ -95,6 +95,52 @@
 								"users",
 								"5",
 								"verify"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Recover Identify (non-existent user)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Error message is correct\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.message).to.eql('User not found');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"demo@example.com\",\r\n    \"password\": \"123456789GOODpassword*\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/recover/identify",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"recover",
+								"identify"
 							]
 						}
 					},
@@ -506,6 +552,283 @@
 					"response": []
 				},
 				{
+					"name": "Recover Identify",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"JWT is sent correctly\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.token).to.be.a('string');\r",
+									"    pm.collectionVariables.set('token', jsonData.token);\r",
+									"    var parsedToken = CryptoJS.enc.Base64.parse(jsonData.token.split('.')[1]);\r",
+									"    var decodedToken = CryptoJS.enc.Utf8.stringify(parsedToken);\r",
+									"    var jsonToken = JSON.parse(decodedToken);\r",
+									"    var claimedEmail = jsonToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'];\r",
+									"    var claimedRole = jsonToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];\r",
+									"    pm.expect(claimedEmail).to.eql('demo@example.com');\r",
+									"    pm.expect(claimedRole).to.eql('UnverifiedPasswordResetter');\r",
+									"});\r",
+									"\r",
+									"pm.test('Verfication code is sent', function() {\r",
+									"    var interval = setInterval(() => {}, Number.MAX_SAFE_INTEGER);\r",
+									"    new Promise((resolve, reject) => {\r",
+									"        pm.sendRequest('http://localhost:8025/api/v2/messages?limit=1', (error, response) => {\r",
+									"            if (error) {\r",
+									"                reject();\r",
+									"            } else {\r",
+									"                var jsonData = response.json();\r",
+									"                var verificationCode = /Your password reset verification code is (\\d+)/.exec(jsonData.items[0].Content.Body)[1];\r",
+									"                pm.expect(verificationCode).to.have.lengthOf(6);\r",
+									"                pm.collectionVariables.set('verificationCode', verificationCode);\r",
+									"                resolve();\r",
+									"            }\r",
+									"        });\r",
+									"    }).then(() => clearInterval(interval));\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"demo@example.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/recover/identify",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"recover",
+								"identify"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Recover verify",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"JWT is sent correctly\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.token).to.be.a('string');\r",
+									"    pm.collectionVariables.set('token', jsonData.token);\r",
+									"    var parsedToken = CryptoJS.enc.Base64.parse(jsonData.token.split('.')[1]);\r",
+									"    var decodedToken = CryptoJS.enc.Utf8.stringify(parsedToken);\r",
+									"    var jsonToken = JSON.parse(decodedToken);\r",
+									"    var claimedEmail = jsonToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'];\r",
+									"    var claimedRole = jsonToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];\r",
+									"    pm.expect(claimedEmail).to.eql('demo@example.com');\r",
+									"    pm.expect(claimedRole).to.eql('VerifiedPasswordResetter');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"verificationCode\": \"{{verificationCode}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/recover/verify",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"recover",
+								"verify"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Recover reset password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"JWT is sent correctly\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.token).to.be.a('string');\r",
+									"    pm.collectionVariables.set('token', jsonData.token);\r",
+									"    var parsedToken = CryptoJS.enc.Base64.parse(jsonData.token.split('.')[1]);\r",
+									"    var decodedToken = CryptoJS.enc.Utf8.stringify(parsedToken);\r",
+									"    var jsonToken = JSON.parse(decodedToken);\r",
+									"    var claimedEmail = jsonToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'];\r",
+									"    var claimedRole = jsonToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];\r",
+									"    pm.expect(claimedEmail).to.eql('demo@example.com');\r",
+									"    pm.expect(claimedRole).to.eql('VerifiedUser');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"password\": \"123456789GOODNEWpass*\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/recover/reset-password",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"recover",
+								"reset-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login user (old password)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Error message is correct\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.message).to.eql('Invalid email or password');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"demo@example.com\",\r\n    \"password\": \"123456789GOODpassword*\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login user (new password)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"JWT is sent correctly\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.token).to.be.a('string');\r",
+									"    pm.collectionVariables.set('token', jsonData.token);\r",
+									"    var parsedToken = CryptoJS.enc.Base64.parse(jsonData.token.split('.')[1]);\r",
+									"    var decodedToken = CryptoJS.enc.Utf8.stringify(parsedToken);\r",
+									"    var jsonToken = JSON.parse(decodedToken);\r",
+									"    var claimedEmail = jsonToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'];\r",
+									"    var claimedRole = jsonToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];\r",
+									"    pm.expect(claimedEmail).to.eql('demo@example.com');\r",
+									"    pm.expect(claimedRole).to.eql('VerifiedUser');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"demo@example.com\",\r\n    \"password\": \"123456789GOODNEWpass*\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Get user (not exists)",
 					"event": [
 						{
@@ -667,7 +990,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"demo@example.com\",\r\n    \"firstName\": \"Bill\",\r\n    \"lastName\": \"Doe\",\r\n    \"phoneNumber\": \"00201126456789\",\r\n    \"hasWhatsapp\": false\r\n}",
+							"raw": "{\r\n    \"email\": \"demo@example.com\",\r\n    \"firstName\": \"Bill\",\r\n    \"lastName\": \"Doe\",\r\n    \"avatar\": \"\",\r\n    \"phoneNumber\": \"00201126456789\",\r\n    \"hasWhatsapp\": false\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1219,7 +1542,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"demo@example.com\",\r\n    \"password\": \"123456789GOODpassword*\"\r\n}",
+							"raw": "{\r\n    \"email\": \"demo@example.com\",\r\n    \"password\": \"123456789GOODNEWpass*\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1264,7 +1587,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"password\": \"123456789GOODpassword*\"\r\n}",
+							"raw": "{\r\n    \"password\": \"123456789GOODNEWpass*\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2413,6 +2736,820 @@
 							"path": [
 								"cars",
 								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Reviews",
+			"item": [
+				{
+					"name": "Register forth user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"JWT is sent correctly\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.token).to.be.a('string');\r",
+									"    pm.collectionVariables.set('token', jsonData.token);\r",
+									"    var parsedToken = CryptoJS.enc.Base64.parse(jsonData.token.split('.')[1]);\r",
+									"    var decodedToken = CryptoJS.enc.Utf8.stringify(parsedToken);\r",
+									"    var jsonToken = JSON.parse(decodedToken);\r",
+									"    var claimedEmail = jsonToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'];\r",
+									"    var claimedRole = jsonToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];\r",
+									"    pm.expect(claimedEmail).to.eql('forth_user@example.com');\r",
+									"    pm.expect(claimedRole).to.eql('UnverifiedUser');\r",
+									"});\r",
+									"\r",
+									"pm.test('Verfication code is sent', function() {\r",
+									"    var interval = setInterval(() => {}, Number.MAX_SAFE_INTEGER);\r",
+									"    new Promise((resolve, reject) => {\r",
+									"        pm.sendRequest('http://localhost:8025/api/v2/messages?limit=1', (error, response) => {\r",
+									"            if (error) {\r",
+									"                reject();\r",
+									"            } else {\r",
+									"                var jsonData = response.json();\r",
+									"                var verificationCode = /Your verification code is (\\d+)/.exec(jsonData.items[0].Content.Body)[1];\r",
+									"                pm.expect(verificationCode).to.have.lengthOf(6);\r",
+									"                pm.collectionVariables.set('verificationCode', verificationCode);\r",
+									"                resolve();\r",
+									"            }\r",
+									"        });\r",
+									"    }).then(() => clearInterval(interval));\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"forth_user@example.com\",\r\n    \"firstName\": \"Bill\",\r\n    \"lastName\": \"Doe\",\r\n    \"password\": \"987654321SUPERpassword*\",\r\n    \"phoneNumber\": \"00201162856789\",\r\n    \"hasWhatsapp\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify forth user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"JWT is sent correctly\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.token).to.be.a('string');\r",
+									"    pm.collectionVariables.set('token', jsonData.token);\r",
+									"    var parsedToken = CryptoJS.enc.Base64.parse(jsonData.token.split('.')[1]);\r",
+									"    var decodedToken = CryptoJS.enc.Utf8.stringify(parsedToken);\r",
+									"    var jsonToken = JSON.parse(decodedToken);\r",
+									"    var claimedEmail = jsonToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'];\r",
+									"    var claimedRole = jsonToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];\r",
+									"    pm.expect(claimedEmail).to.eql('forth_user@example.com');\r",
+									"    pm.expect(claimedRole).to.eql('VerifiedUser');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"emailVerificationCode\": \"{{verificationCode}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/4/verify",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"4",
+								"verify"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login forth user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"JWT is sent correctly\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.token).to.be.a('string');\r",
+									"    pm.collectionVariables.set('token', jsonData.token);\r",
+									"    var parsedToken = CryptoJS.enc.Base64.parse(jsonData.token.split('.')[1]);\r",
+									"    var decodedToken = CryptoJS.enc.Utf8.stringify(parsedToken);\r",
+									"    var jsonToken = JSON.parse(decodedToken);\r",
+									"    var claimedEmail = jsonToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'];\r",
+									"    var claimedRole = jsonToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];\r",
+									"    pm.expect(claimedEmail).to.eql('forth_user@example.com');\r",
+									"    pm.expect(claimedRole).to.eql('VerifiedUser');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"forth_user@example.com\",\r\n    \"password\": \"987654321SUPERpassword*\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register fifth user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"JWT is sent correctly\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.token).to.be.a('string');\r",
+									"    pm.collectionVariables.set('token', jsonData.token);\r",
+									"    var parsedToken = CryptoJS.enc.Base64.parse(jsonData.token.split('.')[1]);\r",
+									"    var decodedToken = CryptoJS.enc.Utf8.stringify(parsedToken);\r",
+									"    var jsonToken = JSON.parse(decodedToken);\r",
+									"    var claimedEmail = jsonToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'];\r",
+									"    var claimedRole = jsonToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];\r",
+									"    pm.expect(claimedEmail).to.eql('fifth_user@example.com');\r",
+									"    pm.expect(claimedRole).to.eql('UnverifiedUser');\r",
+									"});\r",
+									"\r",
+									"pm.test('Verfication code is sent', function() {\r",
+									"    var interval = setInterval(() => {}, Number.MAX_SAFE_INTEGER);\r",
+									"    new Promise((resolve, reject) => {\r",
+									"        pm.sendRequest('http://localhost:8025/api/v2/messages?limit=1', (error, response) => {\r",
+									"            if (error) {\r",
+									"                reject();\r",
+									"            } else {\r",
+									"                var jsonData = response.json();\r",
+									"                var verificationCode = /Your verification code is (\\d+)/.exec(jsonData.items[0].Content.Body)[1];\r",
+									"                pm.expect(verificationCode).to.have.lengthOf(6);\r",
+									"                pm.collectionVariables.set('verificationCode', verificationCode);\r",
+									"                resolve();\r",
+									"            }\r",
+									"        });\r",
+									"    }).then(() => clearInterval(interval));\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"fifth_user@example.com\",\r\n    \"firstName\": \"Bill\",\r\n    \"lastName\": \"Doe\",\r\n    \"password\": \"987654321SUPERpassword*\",\r\n    \"phoneNumber\": \"00201162856789\",\r\n    \"hasWhatsapp\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify fifth user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"JWT is sent correctly\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.token).to.be.a('string');\r",
+									"    pm.collectionVariables.set('token', jsonData.token);\r",
+									"    var parsedToken = CryptoJS.enc.Base64.parse(jsonData.token.split('.')[1]);\r",
+									"    var decodedToken = CryptoJS.enc.Utf8.stringify(parsedToken);\r",
+									"    var jsonToken = JSON.parse(decodedToken);\r",
+									"    var claimedEmail = jsonToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'];\r",
+									"    var claimedRole = jsonToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];\r",
+									"    pm.expect(claimedEmail).to.eql('fifth_user@example.com');\r",
+									"    pm.expect(claimedRole).to.eql('VerifiedUser');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"emailVerificationCode\": \"{{verificationCode}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/5/verify",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"5",
+								"verify"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login fifth user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"JWT is sent correctly\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.token).to.be.a('string');\r",
+									"    pm.collectionVariables.set('token', jsonData.token);\r",
+									"    var parsedToken = CryptoJS.enc.Base64.parse(jsonData.token.split('.')[1]);\r",
+									"    var decodedToken = CryptoJS.enc.Utf8.stringify(parsedToken);\r",
+									"    var jsonToken = JSON.parse(decodedToken);\r",
+									"    var claimedEmail = jsonToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'];\r",
+									"    var claimedRole = jsonToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];\r",
+									"    pm.expect(claimedEmail).to.eql('fifth_user@example.com');\r",
+									"    pm.expect(claimedRole).to.eql('VerifiedUser');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"fifth_user@example.com\",\r\n    \"password\": \"987654321SUPERpassword*\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get forth user reviews (no reviews)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"No reviews returned\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.reviews).to.be.lengthOf(0);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Reviews total count is zero\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.totalCount).to.eql(0);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Cars offset is zero\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.offset).to.eql(0);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/4/reviews",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"4",
+								"reviews"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Review forth user (by fifth user)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Success message is correct\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.message).to.eql('Review created successfully');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"rating\": 5,\r\n    \"comment\": \"Great service\",\r\n    \"reviewee\": 4\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/reviews",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get forth user reviews",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Exactly one review is returned\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.reviews).to.be.lengthOf(1);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Review 1 info is correct\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.reviews[0]).to.include({\r",
+									"        \"rating\": 5,\r",
+									"        \"content\": \"Great service\",\r",
+									"        \"reviewerId\": 5,\r",
+									"        \"reviewerFirstName\": \"Bill\",\r",
+									"        \"reviewerLastName\": \"Doe\",\r",
+									"        \"reviewerAvatar\": \"\"\r",
+									"    })\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Reviews total count is one\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.totalCount).to.eql(1);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Reviews offset is zero\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.offset).to.eql(0);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/4/reviews",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"4",
+								"reviews"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get sixth user reviews (non-existent user)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Error message is correct\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.message).to.eql('User not found');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/6/reviews",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"6",
+								"reviews"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update review (not exists)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Error message is correct\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.message).to.eql('You can only update your reviews');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"rating\": 3,\r\n    \"comment\": \"Not so good!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/reviews/3",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update review",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Success message is correct\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.message).to.eql('Review updated successfully');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"rating\": 3,\r\n    \"comment\": \"Not so good!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/reviews/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get forth user reviews (updated)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Exactly one review is returned\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.reviews).to.be.lengthOf(1);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Review 1 info is correct\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.reviews[0]).to.include({\r",
+									"        \"rating\": 3,\r",
+									"        \"content\": \"Not so good!\",\r",
+									"        \"reviewerId\": 5,\r",
+									"        \"reviewerFirstName\": \"Bill\",\r",
+									"        \"reviewerLastName\": \"Doe\",\r",
+									"        \"reviewerAvatar\": \"\"\r",
+									"    })\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Reviews total count is one\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.totalCount).to.eql(1);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Reviews offset is zero\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.offset).to.eql(0);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/4/reviews",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"4",
+								"reviews"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update review (not exists)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Error message is correct\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.message).to.eql('You can only delete your reviews');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/reviews/3",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete review",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"User deleted successfully\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.message).to.eql('Review deleted successfully');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/reviews/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get forth user reviews (no reviews)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"No reviews returned\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.reviews).to.be.lengthOf(0);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Reviews total count is zero\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.totalCount).to.eql(0);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Cars offset is zero\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.offset).to.eql(0);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/4/reviews",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"4",
+								"reviews"
 							]
 						}
 					},

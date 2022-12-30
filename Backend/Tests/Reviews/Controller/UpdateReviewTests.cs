@@ -1,5 +1,6 @@
 ﻿using Backend.Controllers;
 using Backend.Models.Exceptions;
+using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;

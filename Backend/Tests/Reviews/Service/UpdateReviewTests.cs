@@ -1,6 +1,7 @@
 ﻿using Backend.Controllers;
 using Backend.Models.Entities;
 using Backend.Models.Exceptions;
+using Backend.Repositories;
 using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -79,7 +80,7 @@ namespace Tests.Reviews.Service
             var result = async () => await carService.UpdateReview(modifierId, reviewId, reviewReq);
 
             // Assert
-            UnauthorizedAccessException exception = Assert.ThrowsAsync<UnauthorizedAccessException>(result).Result; ;
+            UnauthorizedException exception = Assert.ThrowsAsync<UnauthorizedException>(result).Result; ;
         }
 
     }

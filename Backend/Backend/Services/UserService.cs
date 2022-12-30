@@ -4,6 +4,7 @@ using Backend.Models.Entities;
 using Backend.Models.Exceptions;
 using Backend.Repositories;
 using MimeKit.Text;
+using Org.BouncyCastle.Ocsp;
 
 namespace Backend.Services;
 
@@ -12,8 +13,11 @@ public interface IUserService
     public Task<User[]> GetUsers(int[] ids);
     public Task<string> LoginUser(LoginRequest req);
     public Task<string> RegisterUser(RegisterRequest req);
+    public Task<string> InitPasswordReset(string email);
     public Task<string> VerifyUser(int id, string code, DateTime time);
+    public Task<string> VerifyPasswordResetter(int id, string code, DateTime time);
     public Task<string> UpdateUser(int id, UpdateUserRequest req);
+    public Task<string> UpdateUserPassword(int id, string password);
     public Task DeleteUser(int id, DeleteUserRequest req);
     public Task<IEnumerable<Car>> GetUserCars(int id);
     public Task<GetReviewsResponse> GetUserReviews(int id, int offset);
@@ -109,21 +113,33 @@ public class UserService : IUserService
         return await _jwtService.SendVerificationCode(user);
     }
 
+    public async Task<string> InitPasswordReset(string email)
+    {
+        User user = await _userRepo.GetUser(email);
+        return await _jwtService.SendPasswordResetterVerificationCode(user);
+    }
+
     public async Task<string> UpdateUser(int id, UpdateUserRequest req)
     {
         string? avatar = req.Avatar;
-        string? avatarFileName = null;
-        if (avatar != null)
+        if (avatar != null && avatar != "")
         {
             Stream avatarStream = new MemoryStream(_imageService.DecodeBase64(avatar));
-            avatarFileName = await _storageService.UploadStream("user-avatars", avatarStream, ".jpg");
+            avatar = await _storageService.UploadStream("user-avatars", avatarStream, ".jpg");
         }
-        User user = await _userRepo.UpdateUser(id, req with { Avatar = avatarFileName });
+        User user = await _userRepo.UpdateUser(id, req with { Avatar = avatar });
         if (user.Avatar != "")
         {
             user.Avatar = _storageService.GetBlobUrl("user-avatars", user.Avatar);
         }
         return _jwtService.IssueToken(user, DateTime.UtcNow);
+    }
+
+    public async Task<string> UpdateUserPassword(int id, string password)
+    {
+        string hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
+        User user = await _userRepo.UpdateUserPassword(id, hashedPassword);
+        return await _jwtService.SendVerificationCode(user);
     }
 
     public async Task<string> VerifyUser(int id, string code, DateTime time)
@@ -134,6 +150,16 @@ public class UserService : IUserService
             throw new UnauthorizedException("Invalid or expired verification code");
         User verifiedUser = await _userRepo.VerifyUser(id);
         return _jwtService.IssueToken(verifiedUser, DateTime.UtcNow);
+    }
+
+    public async Task<string> VerifyPasswordResetter(int id, string code, DateTime time)
+    {
+        User user = await _userRepo.GetUser(id);
+        var correctCode = _jwtService.GetVerificationCode(user.Email, time);
+        if (code != correctCode)
+            throw new UnauthorizedException("Invalid or expired verification code");
+        User verifiedUser = await _userRepo.VerifyUser(id);
+        return _jwtService.IssueToken(verifiedUser, DateTime.UtcNow, "VerifiedPasswordResetter");
     }
 
     public async Task DeleteUser(int id, DeleteUserRequest req)
@@ -176,7 +202,7 @@ public class UserService : IUserService
                 review.CreatedAt, review.UpdatedAt);
             reviews[i++] = rI;  
         }
-        var averageRating =  _userRepo.GetAverageRating(id);
+        var averageRating =  await _userRepo.GetAverageRating(id);
         return new(reviews, averageRating, reviews.Length, offset);
     }
 }

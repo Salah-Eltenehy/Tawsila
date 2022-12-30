@@ -84,7 +84,7 @@ namespace Tests.Reviews
         public static async Task<PaginatedList<Review>> GetPaginatedReviewsList()
         {
             Review[] items = new Review[1];
-            PaginatedList<Review> pagniatedListReviews = new PaginatedList<Review>(items, 0, 0);
+            PaginatedList<Review> pagniatedListReviews = new(items, 0, 0);
 
             return pagniatedListReviews;
         }

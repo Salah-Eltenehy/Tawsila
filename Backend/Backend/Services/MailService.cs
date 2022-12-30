@@ -32,7 +32,7 @@ public class MailService : IMailService
         email.Body = builder.ToMessageBody();
         using var smtp = new SmtpClient();
         #if DEBUG
-            await smtp.ConnectAsync(_mailSettings.Host, _mailSettings.Port);
+                await smtp.ConnectAsync(_mailSettings.Host, _mailSettings.Port);
         #else
         await smtp.ConnectAsync(
             _mailSettings.Host,

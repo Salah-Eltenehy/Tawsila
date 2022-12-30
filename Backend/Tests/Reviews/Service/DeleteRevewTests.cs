@@ -1,5 +1,6 @@
 ﻿using Backend.Controllers;
 using Backend.Models.Exceptions;
+using Backend.Repositories;
 using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -25,12 +26,10 @@ namespace Tests.Reviews.Service
             var reviewService = new ReviewService(mockRepo.Object, mockUserService.Object);
 
             // Act
-            var result = await reviewService.DeleteReview(userId, reviewId);
-            var okResult = result as StatusCodeResult;
+            var result = await Record.ExceptionAsync(async () => await reviewService.DeleteReview(userId, reviewId));
 
             // Assert
-            Assert.NotNull(okResult);
-            Assert.Equal(200, okResult.StatusCode);
+            Assert.Null(result);
         }
 
         [Fact]
