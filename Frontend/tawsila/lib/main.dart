@@ -27,7 +27,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   UserLocation()..getLocation();
   await CachHelper.init();
-  // Bloc.observer = MyBlocObserver();
+  
   String token = await CachHelper.getData(key: 'token');
   Map<String, dynamic> tokenInfo = parseJwt(token);
   var screen;
