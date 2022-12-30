@@ -19,7 +19,9 @@ class _ResetPasswordState extends State<ResetPassword> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: const Text("Reset password"),
+      ),
       persistentFooterButtons: [
         Row(
           children: [
@@ -72,8 +74,10 @@ class _ResetPasswordState extends State<ResetPassword> {
       ],
       body: Form(
         key: formKey,
-        child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               defaultTextFormFieldColumn(
                   prefixIcon: isSecurePassword ? const Icon(Icons.lock): const Icon(Icons.lock_open),

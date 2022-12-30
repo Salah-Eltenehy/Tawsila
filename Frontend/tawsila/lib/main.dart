@@ -19,6 +19,7 @@ import 'layout/CurrentScreen.dart';
 import 'modules/Language/ChooseLanguage.dart';
 import 'modules/filter/FilterScreen.dart';
 import 'modules/forget-password/ForgetPassword.dart';
+import 'modules/forget-password/RestPassword.dart';
 
 void main() async {
 
@@ -48,7 +49,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: ChooseLanguage(),
+      home: ResetPassword(),
       debugShowCheckedModeBanner: false,
     );
   }
