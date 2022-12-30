@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tawsila/modules/EditCar/EditCarScreen.dart';
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
+import 'package:tawsila/modules/home-page/HomePage.dart';
 import 'package:tawsila/shared/components/Components.dart';
 import 'ManageOfferCubit/ManageOfferStates.dart';
 import 'ManageOfferCubit/MangeOfferCubit.dart';
@@ -25,7 +26,7 @@ class ManageOfferScreen extends StatelessWidget {
                 elevation: 0,
                 leading: IconButton(
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    navigateAndFinish(context: context, screen: HomePageScreen(language: language));
                   },
                   icon: Icon(Icons.arrow_back, color: Colors.black,),
                 ),
@@ -58,7 +59,7 @@ class ManageOfferScreen extends StatelessWidget {
                         Expanded(
                           child: ListView.separated(
                               itemBuilder: (context, index) {
-                                return buildCar(manageCubit.cars[index],context);
+                                return buildCar(manageCubit.cars[index],context,manageCubit);
                               },
                               separatorBuilder: (context, index) => const SizedBox(
                                 height: 4,
@@ -82,7 +83,7 @@ class ManageOfferScreen extends StatelessWidget {
   }
 
 
-  Widget buildCar(Map<String, dynamic> car,var context) {
+  Widget buildCar(Map<String, dynamic> car,var context,var m) {
     return Padding(
       padding: const EdgeInsets.only(left: 18, right: 18, top: 10),
       child: Container(
@@ -91,8 +92,9 @@ class ManageOfferScreen extends StatelessWidget {
         ),
         height: 200,
         child: InkWell(
-          onTap: () {
-            navigateTo(context: context, screen: EditCarScreen(language: language, id: '${car['id']}'));
+          onTap: () async {
+            Map<String, dynamic> x = await m.getCarById('${car['id']}');
+            navigateTo(context: context, screen: EditCarScreen(language: language, id: '${car['id']}', carResponse: x));
           },
           child: Stack(
             children: [

@@ -15,7 +15,6 @@ import 'Cubit/OfferStates.dart';
 class CarOfferScreen extends StatelessWidget{
 
   final String language;      //hold the language of the program(arabic-english)
-
   CarOfferScreen({super.key, required this.language});
 
   //Controllers for all text fields in the page

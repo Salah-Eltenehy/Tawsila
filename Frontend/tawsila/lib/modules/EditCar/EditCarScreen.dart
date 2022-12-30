@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:tawsila/modules/home-page/HomePage.dart';
 import 'package:tawsila/modules/mange-offer/ManageOfferScreen.dart';
 import 'package:tawsila/shared/bloc_observer.dart';
 import 'package:tawsila/shared/components/Components.dart';
@@ -16,7 +17,8 @@ class EditCarScreen extends StatelessWidget{
 
   final String language;      //hold the language of the program(arabic-english)
   final id;
-  EditCarScreen({super.key, required this.language, required this.id});
+  Map<String, dynamic> carResponse = {};
+  EditCarScreen({super.key, required this.language, required this.id,required this.carResponse});
 
   String brand = "";
   String model = "";
@@ -26,19 +28,21 @@ class EditCarScreen extends StatelessWidget{
   String rentalPeriod = "";
   String price = "";
   bool isChanged = false;
-
+  List<dynamic> imgs =  [];
   var boardController = PageController();
 
   var formKey = GlobalKey<FormState>(); //key of the form used in the page
 
   @override
   Widget build(BuildContext context) {
+    start();
     return  BlocProvider(
-      create: (context) => EditCarCubit()..setLanguage(l: language)..readJson('editPage')..getCarById(id),
+      create: (context) => EditCarCubit()..setLanguage(l: language)..readJson('offerPage')..updateInfo(carResponse),
       child: BlocConsumer<EditCarCubit, EditCarStates>(
           listener: (context, state){},
           builder: (context, state){
             var editCubit = EditCarCubit.get(context);
+            print("33333333333333333333333333333333333333333333333333333333333");
             return Directionality(
               textDirection: editCubit.language == "English" ? TextDirection.ltr: TextDirection.rtl,
               child: Scaffold(
@@ -46,7 +50,7 @@ class EditCarScreen extends StatelessWidget{
                     backgroundColor: Colors.white,
                     leading: IconButton(
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        navigateAndFinish(context: context, screen: ManageOfferScreen(language: language));
                       },
                       icon: const Icon(Icons.arrow_back, color: Colors.black,),
                     ),
@@ -72,6 +76,7 @@ class EditCarScreen extends StatelessWidget{
                           child: SingleChildScrollView(
                             child: Column(
                               children: [
+                                //start(editCubit),
                                 Container(
                                   height: 214,
                                   width:500 ,
@@ -82,7 +87,7 @@ class EditCarScreen extends StatelessWidget{
                                       borderRadius: BorderRadius.circular(10)
                                   ),
 
-                                  child: editCubit.imgsFile.isNotEmpty? PageView.builder(
+                                  child: imgs.isNotEmpty? PageView.builder(
                                     physics: const BouncingScrollPhysics(),
                                     controller: boardController,
                                     itemBuilder: (context, index) {
@@ -93,8 +98,8 @@ class EditCarScreen extends StatelessWidget{
                                         child: Stack(
                                           children: [
 
-                                            Image.memory(
-                                              editCubit.imgsFile[index],
+                                            Image(
+                                              image: NetworkImage(carResponse['images'][index]),
                                               width: double.infinity,
                                               height: double.infinity,
                                               fit: BoxFit.cover,
@@ -114,7 +119,7 @@ class EditCarScreen extends StatelessWidget{
                                                       dotWidth: 10,
                                                       spacing: 5.0,
                                                     ),
-                                                    count: editCubit.imgsFile.length>5?5:editCubit.imgsFile.length,
+                                                    count: imgs.length>5?5:imgs.length,
                                                   ),
                                                   const SizedBox(height: 6,)
                                                 ],
@@ -124,10 +129,10 @@ class EditCarScreen extends StatelessWidget{
                                         ),
                                       );
                                     },
-                                    itemCount: editCubit.imgsFile.length>5?5:editCubit.imgsFile.length,
+                                    itemCount: imgs.length>5?5:imgs.length,
                                   )
                                       :const Text(
-                                          "no images for this car",
+                                    "no images for this car",
                                   ),
                                 ),
 
@@ -163,6 +168,7 @@ class EditCarScreen extends StatelessWidget{
                                             ),
                                             value: editCubit.brands['lada'],
                                             onChanged: (value) {
+                                              isChanged = true;
                                               editCubit.changeBrand(brand: 'lada');
                                             },
                                           ),
@@ -175,6 +181,7 @@ class EditCarScreen extends StatelessWidget{
                                             ),
                                             value: editCubit.brands['verna'],
                                             onChanged: (value) {
+                                              isChanged = true;
                                               editCubit.changeBrand(brand: 'verna');
                                             },
                                           ),
@@ -192,6 +199,7 @@ class EditCarScreen extends StatelessWidget{
                                             ),
                                             value: editCubit.brands['daewoo'],
                                             onChanged: (value) {
+                                              isChanged = true;
                                               editCubit.changeBrand(brand: 'daewoo');
                                             },
                                           ),
@@ -204,6 +212,7 @@ class EditCarScreen extends StatelessWidget{
                                             ),
                                             value: editCubit.brands['nissan'],
                                             onChanged: (value) {
+                                              isChanged = true;
                                               editCubit.changeBrand(brand: 'nissan');
                                             },
                                           ),
@@ -221,6 +230,7 @@ class EditCarScreen extends StatelessWidget{
                                             ),
                                             value: editCubit.brands['elantra'],
                                             onChanged: (value) {
+                                              isChanged = true;
                                               editCubit.changeBrand(brand: 'elantra');
                                             },
                                           ),
@@ -233,6 +243,7 @@ class EditCarScreen extends StatelessWidget{
                                             ),
                                             value: editCubit.brands['kia'],
                                             onChanged: (value) {
+                                              isChanged = true;
                                               editCubit.changeBrand(brand: 'kia');
                                             },
                                           ),
@@ -250,6 +261,7 @@ class EditCarScreen extends StatelessWidget{
                                             ),
                                             value: editCubit.brands['fiat'],
                                             onChanged: (value) {
+                                              isChanged = true;
                                               editCubit.changeBrand(brand: 'fiat');
                                             },
                                           ),
@@ -262,6 +274,7 @@ class EditCarScreen extends StatelessWidget{
                                             ),
                                             value: editCubit.brands['bmw'],
                                             onChanged: (value) {
+                                              isChanged = true;
                                               editCubit.changeBrand(brand: 'bmw');
                                             },
                                           ),
@@ -279,6 +292,7 @@ class EditCarScreen extends StatelessWidget{
                                             ),
                                             value: editCubit.brands['mercedes'],
                                             onChanged: (value) {
+                                              isChanged = true;
                                               editCubit.changeBrand(brand: 'mercedes');
                                             },
                                           ),
@@ -291,6 +305,7 @@ class EditCarScreen extends StatelessWidget{
                                             ),
                                             value: editCubit.brands['other'],
                                             onChanged: (value) {
+                                              isChanged = true;
                                               editCubit.changeBrand(brand: 'other');
                                             },
                                           ),
@@ -327,6 +342,7 @@ class EditCarScreen extends StatelessWidget{
                                             ),
                                             value: editCubit.bodyTypes['Convertible'],
                                             onChanged: (value) {
+                                              isChanged = true;
                                               editCubit.changeBodyType(body_type: 'Convertible');
                                             },
                                           ),
@@ -339,6 +355,7 @@ class EditCarScreen extends StatelessWidget{
                                             ),
                                             value: editCubit.bodyTypes['Coupe'],
                                             onChanged: (value) {
+                                              isChanged = true;
                                               editCubit.changeBodyType(body_type: 'Coupe');
                                             },
                                           ),
@@ -355,6 +372,7 @@ class EditCarScreen extends StatelessWidget{
                                             ),
                                             value: editCubit.bodyTypes['Hatchback'],
                                             onChanged: (value) {
+                                              isChanged = true;
                                               editCubit.changeBodyType(body_type: 'Hatchback');
                                             },
                                           ),
@@ -367,6 +385,7 @@ class EditCarScreen extends StatelessWidget{
                                             ),
                                             value: editCubit.bodyTypes['MPV'],
                                             onChanged: (value) {
+                                              isChanged = true;
                                               editCubit.changeBodyType(body_type: 'MPV');
                                             },
                                           ),
@@ -383,6 +402,7 @@ class EditCarScreen extends StatelessWidget{
                                             ),
                                             value: editCubit.bodyTypes['SUV'],
                                             onChanged: (value) {
+                                              isChanged = true;
                                               editCubit.changeBodyType(body_type: 'SUV');
                                             },
                                           ),
@@ -395,6 +415,7 @@ class EditCarScreen extends StatelessWidget{
                                             ),
                                             value: editCubit.bodyTypes['Sedan'],
                                             onChanged: (value) {
+                                              isChanged = true;
                                               editCubit.changeBodyType(body_type: 'Sedan');
                                             },
                                           ),
@@ -410,7 +431,7 @@ class EditCarScreen extends StatelessWidget{
 
                                 //model field
                                 TextFormField(
-                                  initialValue: "${editCubit.carResponse["model"]}",
+                                  initialValue: model,
                                   decoration:  InputDecoration(
                                       border: const OutlineInputBorder(),
                                       labelText: "${editCubit.items["model"]??''}",
@@ -419,7 +440,8 @@ class EditCarScreen extends StatelessWidget{
                                   ),
 
                                   onChanged: (value){
-                                    if(value != editCubit.carResponse["model"]){isChanged |= true;}
+                                    model = value;
+                                    if(value != carResponse["model"]){isChanged |= true;}
                                     else {isChanged |= false;}
                                   },
 
@@ -437,7 +459,7 @@ class EditCarScreen extends StatelessWidget{
 
                                 //model year field
                                 TextFormField(
-                                  initialValue:"${editCubit.carResponse["year"]}",
+                                  initialValue:"${carResponse["year"]}",
                                   keyboardType: TextInputType.number,
                                   decoration: InputDecoration(
                                     border: const OutlineInputBorder(),
@@ -447,7 +469,8 @@ class EditCarScreen extends StatelessWidget{
                                   ),
 
                                   onChanged: (value){
-                                    if(value != editCubit.carResponse["year"]){isChanged |= true;}
+                                    modelYear = value;
+                                    if(value != carResponse["year"]){isChanged |= true;}
                                     else {isChanged |= false;}
                                   },
 
@@ -464,7 +487,7 @@ class EditCarScreen extends StatelessWidget{
 
                                 //seatCount field
                                 TextFormField(
-                                  initialValue:"${editCubit.carResponse["seatsCount"]}",
+                                  initialValue:"${carResponse["seatsCount"]}",
                                   keyboardType: TextInputType.number,
                                   decoration:  InputDecoration(
                                     border:const OutlineInputBorder(),
@@ -474,7 +497,8 @@ class EditCarScreen extends StatelessWidget{
                                   ),
 
                                   onChanged: (value){
-                                    if(value != editCubit.carResponse["seatsCount"]){isChanged |= true;}
+                                    seatsCount = value;
+                                    if(value != carResponse["seatsCount"]){isChanged |= true;}
                                     else {isChanged |= false;}
                                   },
                                   validator: (String? value){
@@ -490,7 +514,7 @@ class EditCarScreen extends StatelessWidget{
 
                                 //car description field
                                 TextFormField(
-                                  initialValue: "${editCubit.carResponse["description"]}",
+                                  initialValue: "${carResponse["description"]}",
                                   decoration:  InputDecoration(
                                       border: const OutlineInputBorder(),
                                       labelText: "${editCubit.items["description"]??''}",
@@ -499,7 +523,8 @@ class EditCarScreen extends StatelessWidget{
                                   ),
 
                                   onChanged: (value){
-                                    if(value != editCubit.carResponse["description"]){isChanged |= true;}
+                                    carDescription = value;
+                                    if(value != carResponse["description"]){isChanged |= true;}
                                     else {isChanged |= false;}
                                   },
 
@@ -540,6 +565,7 @@ class EditCarScreen extends StatelessWidget{
                                           value: "automatic",
                                           groupValue: editCubit.transmission,
                                           onChanged: (value) {
+                                            isChanged = true;
                                             editCubit.toggleTransmissionButton(value);
                                           },
                                         ),
@@ -553,6 +579,7 @@ class EditCarScreen extends StatelessWidget{
                                           value: "manual",
                                           groupValue: editCubit.transmission,
                                           onChanged: (value) {
+                                            isChanged = true;
                                             editCubit.toggleTransmissionButton(value);
                                           },
                                         ),
@@ -590,6 +617,7 @@ class EditCarScreen extends StatelessWidget{
                                           toggleable: true,
                                           groupValue: editCubit.fuelType,
                                           onChanged: (value) {
+                                            isChanged = true;
                                             editCubit.toggleGasButton(value);
                                           },
                                         ),
@@ -604,6 +632,7 @@ class EditCarScreen extends StatelessWidget{
                                           toggleable: true,
                                           groupValue: editCubit.fuelType,
                                           onChanged: (value) {
+                                            isChanged = true;
                                             editCubit.toggleGasButton(value);
                                           },
                                         ),
@@ -642,6 +671,7 @@ class EditCarScreen extends StatelessWidget{
                                             selected: editCubit.options[0],
                                             value: editCubit.options[0],
                                             onChanged: (bool? value){
+                                              isChanged = true;
                                               editCubit.toggleOption(0);
                                             }
                                         ),
@@ -660,6 +690,7 @@ class EditCarScreen extends StatelessWidget{
                                               selected: editCubit.options[1],
                                               value: editCubit.options[1],
                                               onChanged: (bool? value){
+                                                isChanged = true;
                                                 editCubit.toggleOption(1);
                                               }
                                           ),
@@ -684,6 +715,7 @@ class EditCarScreen extends StatelessWidget{
                                             selected: editCubit.options[2],
                                             value: editCubit.options[2],
                                             onChanged: (bool? value){
+                                              isChanged = true;
                                               editCubit.toggleOption(2);
                                             }
                                         ),
@@ -702,6 +734,7 @@ class EditCarScreen extends StatelessWidget{
                                               selected: editCubit.options[3],
                                               value: editCubit.options[3],
                                               onChanged: (bool? value){
+                                                isChanged = true;
                                                 editCubit.toggleOption(3);
                                               }
                                           ),
@@ -757,7 +790,7 @@ class EditCarScreen extends StatelessWidget{
 
                                 //rental period field
                                 TextFormField(
-                                  initialValue: "${editCubit.carResponse["period"]}",
+                                  initialValue: "${carResponse["period"]}",
                                   keyboardType: TextInputType.number,
                                   decoration:  InputDecoration(
                                       border:const OutlineInputBorder(),
@@ -766,7 +799,8 @@ class EditCarScreen extends StatelessWidget{
                                       floatingLabelBehavior: FloatingLabelBehavior.always
                                   ),
                                   onChanged: (value){
-                                    if(value != editCubit.carResponse["period"]){isChanged |= true;}
+                                    rentalPeriod = value;
+                                    if(value != carResponse["period"]){isChanged |= true;}
                                     else {isChanged |= false;}
                                   },
                                   validator: (String? value){
@@ -782,7 +816,7 @@ class EditCarScreen extends StatelessWidget{
 
                                 //price field
                                 TextFormField(
-                                  initialValue: "${editCubit.carResponse["price"]}",
+                                  initialValue: "${carResponse["price"].toString()}",
                                   keyboardType: TextInputType.number,
                                   decoration:  InputDecoration(
                                       border:const OutlineInputBorder(),
@@ -791,7 +825,8 @@ class EditCarScreen extends StatelessWidget{
                                       floatingLabelBehavior: FloatingLabelBehavior.always
                                   ),
                                   onChanged: (value){
-                                    if(value != editCubit.carResponse["price"]){isChanged |= true;}
+                                    price = value;
+                                    if(value != carResponse["price"]){isChanged |= true;}
                                     else {isChanged |= false;}
                                   },
 
@@ -835,15 +870,14 @@ class EditCarScreen extends StatelessWidget{
                                               "description": carDescription,
                                               "longitude":await CachHelper.getData(key: "longitude") as double,
                                               "latitude":await CachHelper.getData(key: "latitude") as double,
-                                              "images": editCubit.imgs,
                                             };
 
-
-
-                                            editCubit.updateCar(id: editCubit.carResponse["id"], query: query);
+                                            print("22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222");
+                                            print(query);
+                                            await editCubit.updateCar(id: carResponse["id"], query: query);
                                         }
                                         }
-                                        navigateTo(context: context, screen: ManageOfferScreen(language: language));
+                                        navigateTo(context: context, screen: HomePageScreen(language: language));
                                       },
                                         child: Row(
                                            children: const [
@@ -858,9 +892,9 @@ class EditCarScreen extends StatelessWidget{
                                     Container(
                                       color: Colors.red,
                                       child: TextButton(
-                                        onPressed: (){
-                                          editCubit.deleteCarById(editCubit.carResponse["id"]);
-                                          navigateTo(context: context, screen: ManageOfferScreen(language: language));
+                                        onPressed: () async {
+                                          await editCubit.deleteCarById(carResponse["id"]);
+                                          navigateTo(context: context, screen: HomePageScreen(language: language));
                                         },
                                         child: Row(
                                           children: const [
@@ -894,31 +928,16 @@ class EditCarScreen extends StatelessWidget{
     }
     return images;
   }
-
-}
-
-
-void main() async {
-
-  WidgetsFlutterBinding.ensureInitialized();
-
-  Bloc.observer = MyBlocObserver();
-
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  // This widget is the root of application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Tawsila',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: EditCarScreen(language: "English", id: 3),
-      debugShowCheckedModeBanner: false,
-    );
+  void start(){
+    model = carResponse['model'];
+    modelYear = carResponse['year'].toString();
+    seatsCount = carResponse['seatsCount'].toString();
+    carDescription =carResponse['description'];
+    rentalPeriod = carResponse['period'].toString();
+    price = carResponse['price'].toString();
+    imgs = carResponse['images'];
   }
-
 }
+
+
+

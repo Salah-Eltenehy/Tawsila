@@ -46,7 +46,7 @@ class EditCarCubit extends Cubit<EditCarStates>{
   final ImagePicker picker = ImagePicker();
 
   var img;
-  List<String> imgs = [];
+  List<dynamic> imgs = [];
 
   List<Uint8List> imgsFile = [];
 
@@ -65,6 +65,8 @@ class EditCarCubit extends Cubit<EditCarStates>{
     print(fileName);
     final String response = await rootBundle.loadString('assets/languages/${fileName}.json');
     final data = await json.decode(response);
+    print("ssssssssssssssssssssssssssssssssssssssssss");
+    print(data);
     items = data[get];
     emit(GetLanguageFromDatabaseState());
   }
@@ -123,7 +125,7 @@ class EditCarCubit extends Cubit<EditCarStates>{
         query: {}
     ).then((value) async {
       print(value.data);
-      carResponse = value.data['car'];
+      carResponse = value.data;
       updateInfo(carResponse);
       emit(GetCarSuccessfully());
     });
@@ -157,14 +159,16 @@ class EditCarCubit extends Cubit<EditCarStates>{
         fuelType = car["fuelType"];
         imgs = car["images"];
 
-        for(String i in imgs){
-          imgsFile.add(Base64Decoder().convert(i));
-        }
+        // for(String i in imgs){
+        //   imgsFile.add(Base64Decoder().convert(i));
+        // }
   }
 
 
-  Future<void> updateCar({required String id, required query}) async{
+  Future<void> updateCar({required int id, required query}) async{
     String token = await CachHelper.getData(key:"token") as String;
+    print("ddddddddddddddddddddddddddddddddd");
+    print(query);
     DioHelper.putData(
         url: "cars/${id}",
         token: token,
@@ -172,7 +176,9 @@ class EditCarCubit extends Cubit<EditCarStates>{
     ).then((value) async{
        print(value.data);
        emit(UpdateCarSuccessfully());
-    });
+    }).catchError((error){
+      print(error.toString());}
+      );
   }
 
   Future<void> deleteCarById(id) async{

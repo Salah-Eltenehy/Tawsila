@@ -125,11 +125,11 @@ class SearchCubit extends Cubit<SearchStates> {
 
       reviews = List<Map<String, dynamic>>.from(value.data['reviews']);
       print(reviews);
-      print("whuuuuuuuuuuuuuuuuuuuuuuuu");
+      //print("whuuuuuuuuuuuuuuuuuuuuuuuu");
       averageRating = value.data['averageRating'];
       offset = value.data['offset'] + value.data['totalCount'];
       tot = value.data['totalCount'];
-      print("reeeeeviewwwwwwwwwwwwwwwwwwwwww");
+      //print("reeeeeviewwwwwwwwwwwwwwwwwwwwww");
       print(tot);
       emit(GetUserReviewsByIdSuccessState());
     }).catchError((error) {

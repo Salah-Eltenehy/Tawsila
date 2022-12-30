@@ -681,14 +681,15 @@ class _FilterSearchResultsScreenState extends State<FilterSearchResultsScreen> {
                         "longitude": lo,//53.9,//longitude,
                         "maxPrice": toPriceController.text,
                         "maxYear": toModelController.text,
-                        "minPrice": fromModelController.text,
+                        "minPrice": fromPriceController.text,
                         "minYear": fromModelController.text,
                         "models": finalMoreBrands,
                         "offset": "0",
                         "seatsCount": "4",
-                        "sortBy": "PRICE_ASC",
+                        "sortBy": "",
                         "transmission": automatic ? "automatic" : "manual",
                       };
+                      print(query);
                       navigateAndFinish(
                           context: context,
                           screen: SearchResultScreen(query: query, lang: 'English',)
@@ -735,10 +736,12 @@ class _FilterSearchResultsScreenState extends State<FilterSearchResultsScreen> {
 
   void changeBrand({required String brand}) {
     for (var m in brands.entries) {
-      if (m.key == brand)
+      if (m.key == brand) {
         brands[m.key] = true;
-      else
+        finalBrand = brand;
+      } else {
         brands[m.key] = false;
+      }
     }
   }
   void changeMoreBrand({required String brand}) {

@@ -203,7 +203,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                   SizedBox(height: 5,),
                   buildButton(
                       color: Colors.white,
-                      title: "Create free accout",
+                      title: language=="English"? "Create free accout":"انشاء حساب مجانا",
                       titleColor: Colors.black,
                       function: () {
                         navigateTo(context: context, screen: SignUpScreen(language: language));
@@ -211,7 +211,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                   SizedBox(height: 5,),
                   buildButton(
                       color: Colors.blue,
-                      title: "Login",
+                      title: language=="English"?"Login":"تسجيل الدخول",
                       titleColor: Colors.white,
                       function: () {
                         navigateAndFinish(context: context, screen: SignInScreen(language: language));

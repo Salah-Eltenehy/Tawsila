@@ -11,6 +11,7 @@ import 'package:tawsila/shared/components/Components.dart';
 import '../../shared/network/local/Cachhelper.dart';
 import '../Setting/SettingsScreen.dart';
 import '../car-offer/CarOfferScreen.dart';
+import '../mange-offer/ManageOfferScreen.dart';
 
 class HomePageScreen extends StatelessWidget {
   final language;
@@ -73,15 +74,17 @@ class HomePageScreen extends StatelessWidget {
                                 buildPageItem(
                                   title1: homePageCubit.items['offerCar1']??'',
                                   title2: homePageCubit.items['offerCar2']??'',
-                                  image: const AssetImage('assets/images/car.png'),
+                                  image: AssetImage('assets/images/car.png'),
                                   onTapFunc: () {
                                     navigateTo(context: context, screen: CarOfferScreen(language: language));
+                                    print("Offer Car page");
+                                    print("Width = ${imageSize}");
                                   },
                                   imageSize: imageSize,
-                                  fontSize: fontSize, language: homePageCubit.language,
+                                  fontSize: fontSize,
                                 ),
 
-                                const SizedBox(
+                                SizedBox(
                                   width: 10,
                                 ),//NetworkImage('https://th.bing.com/th/id/R.280fb39f068a60a24a394031803a8e57?rik=dN2s3DxSChBFvw&pid=ImgRaw&r=0')
                                 buildPageItem(
@@ -89,11 +92,12 @@ class HomePageScreen extends StatelessWidget {
                                   title2: homePageCubit.items['offers2']??'',
                                   image: AssetImage('assets/images/label.png'),
                                   onTapFunc: () {
+                                    navigateTo(context: context, screen: ManageOfferScreen(language: language,));
                                     print("Manage Your offer page");
                                     print("Width = ${imageSize}");
                                   },
                                   imageSize: imageSize,
-                                  fontSize: fontSize, language: homePageCubit.language,
+                                  fontSize: fontSize,
                                 )
                               ],
                             ),
@@ -107,7 +111,7 @@ class HomePageScreen extends StatelessWidget {
                                   fontSize: 20
                               ),
                             ),
-                            const SizedBox(
+                            SizedBox(
                               height: 8,
                             ),
                             Text(
@@ -130,6 +134,7 @@ class HomePageScreen extends StatelessWidget {
                                     navigateTo(context: context, screen: MapScreen());
                                   },
                                   child: const Image(
+                                    // image: NetworkImage('https://th.bing.com/th/id/OIP.3g6HqqAnz-PK2SmNWsUfbwHaHa?w=178&h=180&c=7&r=0&o=5&pid=1.7')
                                     image: AssetImage('assets/images/map.png'),
                                   ),
                                 ),
@@ -178,12 +183,12 @@ class HomePageScreen extends StatelessWidget {
                                         Icons.search,
                                         color: Colors.white,
                                       ),
-                                      const SizedBox(
+                                      SizedBox(
                                         width: 5,
                                       ),
                                       Text(
                                         "${homePageCubit.items['searchResults'??'']}",
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                             color: Colors.white,
                                             fontWeight: FontWeight.bold
                                         ),
@@ -214,63 +219,59 @@ class HomePageScreen extends StatelessWidget {
     required Function onTapFunc,
     required double imageSize,
     required double fontSize,
-    required String language
   }) => Expanded(
-    child: Directionality(
-      textDirection: language == "English" ? TextDirection.ltr: TextDirection.rtl,
-      child: InkWell(
-        onTap: () {
-          onTapFunc();
-        },
-        child: Container(
+    child: InkWell(
+      onTap: () {
+        onTapFunc();
+      },
+      child: Container(
 
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: Colors.black,
-          ),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  alignment: Alignment.topLeft,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title1,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                          color: Colors.white,
-                        ),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.black,
+        ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                alignment: Alignment.topLeft,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "${title1}",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                        color: Colors.white,
                       ),
-                      Text(
-                        title2,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: fontSize,
-                          color: Colors.white,
-                        ),
+                    ),
+                    Text(
+                      "${title2}",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: fontSize,
+                        color: Colors.white,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-              Row(
-                children: [
-                  const Text(''),
-                  const Spacer(),
-                  Image(
-                      width: imageSize,
-                      height: imageSize,
-                      alignment: Alignment.bottomRight,
-                      image: image
-                  ),
-                ],
-              ),
-            ],
-          ),
+            ),
+            Row(
+              children: [
+                Text(''),
+                Spacer(),
+                Image(
+                    width: imageSize,
+                    height: imageSize,
+                    alignment: Alignment.bottomRight,
+                    image: image
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     ),
