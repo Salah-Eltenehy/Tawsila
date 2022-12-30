@@ -1,6 +1,7 @@
 ﻿using Backend.Controllers;
 using Backend.Models.Entities;
 using Backend.Models.Exceptions;
+using Backend.Repositories;
 using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;

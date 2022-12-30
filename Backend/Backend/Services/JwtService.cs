@@ -11,9 +11,10 @@ namespace Backend.Services;
 
 public interface IJwtService
 {
-    public string IssueToken(User user, DateTime notBefore, string? verificationCode = null);
+    public string IssueToken(User user, DateTime notBefore, string? role = null);
     public string GetVerificationCode(string email, DateTime time);
     public Task<string> SendVerificationCode(User user);
+    public Task<string> SendPasswordResetterVerificationCode(User user);
 }
 
 public class JwtService : IJwtService
@@ -32,7 +33,7 @@ public class JwtService : IJwtService
         _mailService = mailService;
     }
 
-    public string IssueToken(User user, DateTime notBefore, string? verificationCode = null)
+    public string IssueToken(User user, DateTime notBefore, string? role = null)
     {
         List<Claim> claims = new()
         {
@@ -41,7 +42,7 @@ public class JwtService : IJwtService
             new(ClaimTypes.Surname, user.LastName),
             new(ClaimTypes.Email, user.Email),
             new(ClaimTypes.MobilePhone, user.PhoneNumber),
-            new(ClaimTypes.Role, user.IsEmailVerified ? "VerifiedUser" : "UnverifiedUser"),
+            new(ClaimTypes.Role, role ?? (user.IsEmailVerified ? "VerifiedUser" : "UnverifiedUser")),
         };
         JwtSecurityToken token = new(
             issuer: _jwtSettings.Issuer,
@@ -73,6 +74,18 @@ public class JwtService : IJwtService
             "Verification Code",
             $"Your verification code is {code}"
         );
-        return IssueToken(user, timeNow, code);
+        return IssueToken(user, timeNow);
+    }
+
+    public async Task<string> SendPasswordResetterVerificationCode(User user)
+    {
+        DateTime timeNow = DateTime.UtcNow;
+        string code = GetVerificationCode(user.Email, timeNow);
+        await _mailService.SendEmailAsync(
+            user.Email,
+            "Password Reset",
+            $"Your password reset verification code is {code}"
+        );
+        return IssueToken(user, timeNow, "UnverifiedPasswordResetter");
     }
 }

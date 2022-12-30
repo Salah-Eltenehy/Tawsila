@@ -3,7 +3,6 @@ using Backend.Models.API.User;
 using Backend.Models.Entities;
 using Backend.Models.Exceptions;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 
 namespace Backend.Repositories;
 
@@ -17,10 +16,11 @@ public interface IUserRepo
     Task RegisterUser(User user);
     Task<User> VerifyUser(int id);
     Task<User> UpdateUser(int id, UpdateUserRequest update);
+    Task<User> UpdateUserPassword(int id, string password);
     Task DeleteUser(int id);
     Task<Car[]> GetUserCars(int id);
     Task<IEnumerable<Review>> GetReviews(int id, int offset, int limit);
-    double GetAverageRating(int id);
+    Task<double> GetAverageRating(int id);
 }
 
 public class UserRepo : IUserRepo
@@ -116,6 +116,20 @@ public class UserRepo : IUserRepo
         return user;
     }
 
+    public async Task<User> UpdateUserPassword(int id, string password)
+    {
+        var user = await _context.Users.FindAsync(id);
+        if (user == null)
+        {
+            throw new NotFoundException("User not found");
+        }
+
+        user.Password = password;
+        user.UpdatedAt = DateTime.UtcNow;
+        await _context.SaveChangesAsync();
+        return user;
+    }
+
     public async Task DeleteUser(int id)
     {
         var user = await _context.Users.FindAsync(id);
@@ -147,11 +161,21 @@ public class UserRepo : IUserRepo
             .Take(limit)
             .ToListAsync();
     }
-
-    public double GetAverageRating(int id)
+    
+    public async Task<double> GetAverageRating(int userId)
     {
-        return _context.Reviews
-            .Where(r => r.RevieweeId == id).Average(c => c.Rating);
-            
+        var user = await _context.Users.FindAsync(userId);
+        if (user == null)
+        {
+            throw new NotFoundException("User not found");
+        }
+
+        IQueryable<Review> reviews = _context.Reviews.Where(r => r.RevieweeId == userId);
+        if (await reviews.AnyAsync())
+        {
+            return await reviews.AverageAsync(r => r.Rating);
+        }
+
+        return 0;
     }
 }

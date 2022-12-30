@@ -19,7 +19,7 @@ public class CarSearch
     private readonly Car _dummyCar;
     public CarSearch()
     {
-        /*_carRepo = new Mock<ICarRepo>();
+        _carRepo = new Mock<ICarRepo>();
         _imageService = new Mock<IImageService>();
         _storageSercie = new Mock<IStorageService>();
         _carService = new CarService(_carRepo.Object, _imageService.Object, _storageSercie.Object);
@@ -70,7 +70,5 @@ public class CarSearch
         _carRepo.Setup(x => x.GetCars(invalidGetCarRequest)).ThrowsAsync(new BadRequestException("Maximum price cannot be less than 50"));
         BadRequestException ex = await Assert.ThrowsAsync<BadRequestException>(async () => await _carService.GetCars(invalidGetCarRequest));
         Assert.Equal("Maximum price cannot be less than 50", ex.Message);
-    }*/
     }
-
 }
