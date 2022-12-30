@@ -1,5 +1,4 @@
 import 'package:email_validator/email_validator.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -14,6 +13,7 @@ import 'package:toast/toast.dart';
 
 import '../../shared/end-points.dart';
 import '../VerificationScreen/verification.dart';
+import '../forget-password/ForgetPassword.dart';
 
 class SignInScreen extends StatelessWidget{
 
@@ -55,22 +55,22 @@ class SignInScreen extends StatelessWidget{
                               children: [
                                 Text(
                                   "${signUpCubit.items['title1']??''}",
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 40,
                                         color: Colors.black
                                     ),
                                 ),
-                                SizedBox(width: 10,),
-                                Image(image: AssetImage('assets/images/hand.png'), width: 50, height: 50,)
+                                const SizedBox(width: 10,),
+                                const Image(image: AssetImage('assets/images/hand.png'), width: 50, height: 50,)
                               ],
                             ),
 
                           ],),
-                        SizedBox(height: 20,),
+                        const SizedBox(height: 20,),
                         Text(
                           "${signUpCubit.items['welcome2']??""}",
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 20,
                                 color: Colors.grey
@@ -81,12 +81,12 @@ class SignInScreen extends StatelessWidget{
 
                         defaultTextFormFieldColumn(
                             controller: emailController,
-                            prefixIcon: Icon(Icons.email),
+                            prefixIcon: const Icon(Icons.email),
                             textInputType: TextInputType.emailAddress,
                             validatorFunction: (String? value) {
-                              if(value!.isEmpty)
+                              if(value!.isEmpty) {
                                 return "${signUpCubit.items['emailErrorEmpty']??''}";
-                              else if(!EmailValidator.validate(value, true)) {
+                              } else if(!EmailValidator.validate(value, true)) {
                                 return "${signUpCubit.items['emailError']??''}";
                               }
                             },
@@ -101,7 +101,7 @@ class SignInScreen extends StatelessWidget{
                               if(value!.length < 8)
                                 {return "${signUpCubit.items['passwordError']??''}";}
                             },
-                            prefixIcon: signUpCubit.passwordIsSecure ? Icon(Icons.lock) : Icon(Icons.lock_open),
+                            prefixIcon: signUpCubit.passwordIsSecure ? const Icon(Icons.lock) : const Icon(Icons.lock_open),
                             textInputType: TextInputType.text,
                             isSecure: signUpCubit.passwordIsSecure,
                             suffixIcon: signUpCubit.passwordIsSecure ? Icons.visibility_off : Icons.visibility,
@@ -138,19 +138,23 @@ class SignInScreen extends StatelessWidget{
                                   sss.init(context);
                                   String token = await CachHelper.getData(
                                       key: 'token') as String;
-                                  Map<String, dynamic> tokenInfo = parseJwt(
-                                      token);
-                                  print(tokenInfo[VERIFYUSER]);
-                                  if (tokenInfo[VERIFYUSER] ==
-                                      "UnverifiedUser") {
+                                  Map<String, dynamic> tokenInfo = parseJwt(token);
+                                  if (tokenInfo[VERIFYUSER] == "UnverifiedPasswordResetter") {
                                     Toast.show("please verify your account",
                                         duration: Toast.lengthShort,
                                         gravity: Toast.bottom,
-                                        backgroundColor: Colors.green);
+                                        backgroundColor: Colors.green
+                                    );
                                     navigateAndFinish(context: context,
-                                        screen: Verification(
-                                            language: language));
-                                    print(value);
+                                        screen: Verification(language: language, reset: true));
+                                  } else if (tokenInfo[VERIFYUSER] == "UnverifiedUser") {
+                                    Toast.show("please verify your account",
+                                        duration: Toast.lengthShort,
+                                        gravity: Toast.bottom,
+                                        backgroundColor: Colors.green
+                                    );
+                                    navigateAndFinish(context: context,
+                                        screen: Verification(language: language, reset: false));
                                   } else {
                                     Toast.show("Log In Successfully",
                                         duration: Toast.lengthShort,
@@ -167,8 +171,6 @@ class SignInScreen extends StatelessWidget{
                                   Toast.show("Invalid email or password",
                                       duration: Toast.lengthLong,
                                       gravity:  Toast.bottom,backgroundColor: Colors.red);
-
-                                  print("#############");
                                 });
                               }
                             },
@@ -183,9 +185,7 @@ class SignInScreen extends StatelessWidget{
                             Text(
                               "${signUpCubit.items['doNotHaveAnAccount']??""}",
                             ),
-
                             TextButton(onPressed: (){
-                              print("HHHHHHHHHHHHHHHHHHHHHHHHHHH");
                               navigateAndFinish(context: context, screen: SignUpScreen(language: language));
                             },
                                 child: Text(
@@ -199,8 +199,7 @@ class SignInScreen extends StatelessWidget{
                         ),
                         TextButton(
                             onPressed: () {
-                              print("Don't have an account");
-
+                              navigateTo(context: context, screen: ForgetPasswordScreen());
                             },
                             child: Text(
                               "${signUpCubit.items['forgetPassword']??''}",

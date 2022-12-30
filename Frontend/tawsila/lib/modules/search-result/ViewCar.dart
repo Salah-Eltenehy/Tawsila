@@ -6,6 +6,10 @@ import 'package:tawsila/modules/search-result/cubit/SearchStates.dart';
 import 'package:tawsila/modules/view-car/cubit/ViewCarCubit.dart';
 import 'package:tawsila/modules/view-car/cubit/ViewCarStates.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:tawsila/shared/components/Components.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import 'Comments.dart';
 class ViewCarScreen extends StatelessWidget {
   final id;
 
@@ -15,8 +19,9 @@ class ViewCarScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (BuildContext context) => SearchCubit()..getUserById(id)..getCarById(id)
-        ..getUserReviewsById(id),
+      create: (BuildContext context) => SearchCubit()//..getUserById(id)..getCarById(id)
+        //..getUserReviewsById(id),
+      ..getCarById(id),
       //..getuserinfo()..
       child: BlocConsumer<SearchCubit, SearchStates>(
         listener: (context, state) {},
@@ -30,17 +35,19 @@ class ViewCarScreen extends StatelessWidget {
                     flex: 1,
                     child: IconButton(
                         onPressed: () {
+                          launch(
+                              "https://wa.me/${viewCarCubit.userInfo['phoneNumber']}?text=");
                           //FlutterOpenWhatsapp.sendSingleMessage("${viewCarCubit.userInfo['phoneNumber']}", "Hello");
                           print("Call whats app");
                         },
-                        icon: const Icon(Icons.whatsapp, color: Colors.green,)
+                        icon: const Icon(Icons.whatshot, color: Colors.green,)
                     ),
                   ),
                   Expanded(
                     flex: 3,
                     child: GestureDetector(
                       onTap: () {
-
+                        launch("tel://${viewCarCubit.userInfo['phoneNumber']}");
                       },
                       child: Container(
                         height: 40,
@@ -87,8 +94,8 @@ class ViewCarScreen extends StatelessWidget {
                               children: [
                                 Image(
                                   // replace
-                                  image: AssetImage(viewCarCubit.car["images"][index]),
-                                  // image: NetworkImage(viewCarCubit.carResponse['images'][index]),
+                                  //image: AssetImage(viewCarCubit.car["images"][index]),
+                                  image: NetworkImage(viewCarCubit.carResponse['images'][index]),
                                   width: double.infinity,
                                   height: double.infinity,
                                   fit: BoxFit.cover,
@@ -126,11 +133,7 @@ class ViewCarScreen extends StatelessWidget {
                       children: [
                         CircleAvatar(
                           radius: 20,
-                          child: Image(
-                            // replace
-                            image: AssetImage(viewCarCubit.car['ownerImage']), // NetworkImage(),
-                            // image: NetworkImage(viewCarCubit.userInfo['avatar']),
-                          ),
+                          backgroundImage: NetworkImage(viewCarCubit.userInfo['avatar']??""),
                         ),
                         const SizedBox(width: 6,),
                         Column(
@@ -139,8 +142,8 @@ class ViewCarScreen extends StatelessWidget {
                           children: [
                             Text(
                               // replace
-                              "${viewCarCubit.car['ownerName']}",
-                              // "${viewCarCubit.userInfo['firstName']} ${viewCarCubit.userInfo['lastName']}",
+                              //"${viewCarCubit.car['ownerName']}",
+                              "${viewCarCubit.userInfo['firstName']??""} ${viewCarCubit.userInfo['lastName']??""}",
                               style: const TextStyle(
                                   color: Colors.black,
                                   fontSize: 16
@@ -149,7 +152,7 @@ class ViewCarScreen extends StatelessWidget {
                             RatingBar.builder(
                               itemCount: 5,
                               // replace
-                              initialRating: 4.3, // viewCarCubit.averageRating
+                              initialRating: viewCarCubit.averageRating,
                               ignoreGestures: true,
                               itemSize: 20,
                               allowHalfRating: true,
@@ -173,8 +176,8 @@ class ViewCarScreen extends StatelessWidget {
                               children: [
                                 Text(
                                   // replace
-                                  "${viewCarCubit.car['price']}",
-                                  // "${viewCarCubit.carResponse['price']}",
+                                  //"${viewCarCubit.car['price']}",
+                                  "${viewCarCubit.carResponse['price']??""}",
                                   style: const TextStyle(
                                       color: Colors.black,
                                       fontSize: 20,
@@ -194,8 +197,8 @@ class ViewCarScreen extends StatelessWidget {
                             const SizedBox(height: 6,),
                             Text(
                               // replace
-                              "${viewCarCubit.car['year']}",
-                              // "${viewCarCubit.carResponse['year']}",
+                              //"${viewCarCubit.car['year']}",
+                              "${viewCarCubit.carResponse['year']??""}",
                               style: const TextStyle(
                                   color: Colors.black,
                                   fontSize: 20,
@@ -224,11 +227,11 @@ class ViewCarScreen extends StatelessWidget {
                                 const SizedBox(width: 12,),
                                 Text(
                                   // replace
-                                  "${viewCarCubit.car['location']}",
-                                  // "${viewCarCubit.carCity}",
+                                  //"${viewCarCubit.car['location']}",
+                                  "${viewCarCubit.carCity}",
                                   style: const TextStyle(
                                     color: Colors.black45,
-                                    fontSize: 26,
+                                    fontSize: 20,
                                   ),
                                 ),
                               ],
@@ -251,11 +254,11 @@ class ViewCarScreen extends StatelessWidget {
                                 const SizedBox(width: 12,),
                                 Text(
                                   // replace
-                                  "Up to ${viewCarCubit.car['maxDays']} days",
-                                  // "Up to ${viewCarCubit.carResponse['period']} days",
+                                  //"Up to ${viewCarCubit.car['maxDays']} days",
+                                  "Up to ${viewCarCubit.carResponse['period']??""} days",
                                   style: const TextStyle(
                                     color: Colors.black45,
-                                    fontSize: 26,
+                                    fontSize: 20,
                                   ),
                                 ),
                               ],
@@ -283,8 +286,8 @@ class ViewCarScreen extends StatelessWidget {
                                 const SizedBox(width: 12,),
                                 Text(
                                   // replace
-                                  "${viewCarCubit.car['fuelType']}",
-                                  // "${viewCarCubit.carResponse['fuelType']}",
+                                  //"${viewCarCubit.car['fuelType']}",
+                                  "${viewCarCubit.carResponse['fuelType']??""}",
                                   style: const TextStyle(
                                     color: Colors.black45,
                                     fontSize: 26,
@@ -309,8 +312,8 @@ class ViewCarScreen extends StatelessWidget {
                                 const SizedBox(width: 12,),
                                 Text(
                                   // replace
-                                  "${viewCarCubit.car['seatsCount']}",
-                                  // "${viewCarCubit.carResponse['seatsCount']}",
+                                  //"${viewCarCubit.car['seatsCount']}",
+                                  "${viewCarCubit.carResponse['seatsCount']??""}",
                                   style: const TextStyle(
                                     color: Colors.black45,
                                     fontSize: 26,
@@ -341,8 +344,8 @@ class ViewCarScreen extends StatelessWidget {
                                 const SizedBox(width: 12,),
                                 Text(
                                   // replace
-                                  "${viewCarCubit.car['gear']}",
-                                  // "${viewCarCubit.carResponse['transmission']}",
+                                  //"${viewCarCubit.car['gear']}",
+                                  "${viewCarCubit.carResponse['transmission']??""}",
                                   style: const TextStyle(
                                     color: Colors.black45,
                                     fontSize: 26,
@@ -379,33 +382,37 @@ class ViewCarScreen extends StatelessWidget {
                     // description content
                     Text(
                       // replace
-                      "${viewCarCubit.car['description']}",
-                      // "${viewCarCubit.carResponse['description']}",
+                      //"${viewCarCubit.car['description']}",
+                      "${viewCarCubit.carResponse['description']??""}",
                     ),
                     const SizedBox(height: 10,),
-                    const Text(
-                      "Reviews",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 24
-                      ),
-                    ),
-                    const SizedBox(height: 10,),
-                    ListView.separated(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        primary: false,
-                        // replace
-                        itemBuilder: (context, index) => buildReview(viewCarCubit.car['reviews'][index]),
-                        // itemBuilder: (context, index) => buildReview(viewCarCubit.reviews[index]),
-                        separatorBuilder: (context, index) => Container(
-                          height: 2,
-                          width: double.infinity,
-                          color: Colors.grey[300],
+                    TextButton(
+                        onPressed: (){navigateAndFinish(context: context, screen:
+                          TestMe(language: "English", id: viewCarCubit.userInfo['id'],));},
+                        child: const Text(
+                          "Reviews",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24
+                          ),
                         ),
-                        // replace
-                        itemCount: viewCarCubit.car['reviews'].length // viewCarCubit.reviews.length
-                    )
+                    ),
+                    //const SizedBox(height: 10,),
+                    // ListView.separated(
+                    //     physics: const NeverScrollableScrollPhysics(),
+                    //     shrinkWrap: true,
+                    //     primary: false,
+                    //     // replace
+                    //     itemBuilder: (context, index) => buildReview(viewCarCubit.car['reviews'][index]),
+                    //     // itemBuilder: (context, index) => buildReview(viewCarCubit.reviews[index]),
+                    //     separatorBuilder: (context, index) => Container(
+                    //       height: 2,
+                    //       width: double.infinity,
+                    //       color: Colors.grey[300],
+                    //     ),
+                    //     // replace
+                    //     itemCount: viewCarCubit.car['reviews'].length // viewCarCubit.reviews.length
+                    // )
                   ],
                 ),
               ),
@@ -415,55 +422,55 @@ class ViewCarScreen extends StatelessWidget {
       ),
     );
   }
-  Widget buildReview(Map<String, dynamic> review) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 20,
-            child: Image(
-              // replace
-              image: AssetImage(review['image']),
-              // image: NetworkImage(review['reviewerAvatar']),
-              width: double.infinity,
-              height: double.infinity,
-              fit: BoxFit.cover,
-            ),
-          ),
-          const SizedBox(width: 10,),
-          Column(
-            children: [
-              Text(
-                "${review['reviewerFirstName']}  ${review['reviewerLastName']}",
-                style: const TextStyle(
-                    fontWeight: FontWeight.bold
-                ),
-              ),
-              const SizedBox(height: 6,),
-              Text(
-                "${review['content']}",
-              ),
-              const SizedBox(height: 6,),
-              RatingBar.builder(
-                itemCount: 5,
-                allowHalfRating: true,
-                initialRating: review['rating']/1.0,
-                ignoreGestures: true,
-                itemSize: 20,
-                itemBuilder: (context, index) {
-                  return const Icon(
-                    Icons.star,
-                    color: Colors.amber,
-                  );
-                },
-                onRatingUpdate: (rating) {},
-              ),
-            ],
-          ),
-
-        ],
-      ),
-    );
-  }
+  // Widget buildReview(Map<String, dynamic> review) {
+  //   return Padding(
+  //     padding: const EdgeInsets.all(8.0),
+  //     child: Row(
+  //       children: [
+  //         CircleAvatar(
+  //           radius: 20,
+  //           child: Image(
+  //             // replace
+  //             //image: AssetImage(review['image']),
+  //             image: NetworkImage(review['reviewerAvatar']??""),
+  //             width: double.infinity,
+  //             height: double.infinity,
+  //             fit: BoxFit.cover,
+  //           ),
+  //         ),
+  //         const SizedBox(width: 10,),
+  //         Column(
+  //           children: [
+  //             Text(
+  //               "${review['reviewerFirstName']}  ${review['reviewerLastName']}",
+  //               style: const TextStyle(
+  //                   fontWeight: FontWeight.bold
+  //               ),
+  //             ),
+  //             const SizedBox(height: 6,),
+  //             Text(
+  //               "${review['content']}",
+  //             ),
+  //             const SizedBox(height: 6,),
+  //             RatingBar.builder(
+  //               itemCount: 5,
+  //               allowHalfRating: true,
+  //               initialRating: review['rating']/1.0,
+  //               ignoreGestures: true,
+  //               itemSize: 20,
+  //               itemBuilder: (context, index) {
+  //                 return const Icon(
+  //                   Icons.star,
+  //                   color: Colors.amber,
+  //                 );
+  //               },
+  //               onRatingUpdate: (rating) {},
+  //             ),
+  //           ],
+  //         ),
+  //
+  //       ],
+  //     ),
+  //   );
+  // }
 }
