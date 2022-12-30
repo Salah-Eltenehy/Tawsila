@@ -242,7 +242,7 @@ class SignUpScreen extends StatelessWidget {
                                       }, 
                                       child: Text(
                                         "${signUpCubit.items['termsAndConditionsPage']??""}",
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           color: Colors.blue,
                                         ),
                                       ),),
@@ -261,17 +261,11 @@ class SignUpScreen extends StatelessWidget {
                               signUpCubit.changeHasWhatsApp();
                               return;
                             }
-
                             if(!signUpCubit.termsAndConditions) {
                               signUpCubit.agreeTermsAndConditionsColor();
                               return;
                             }
-
                             if(formKey.currentState!.validate()) {
-                              //navigateAndFinish(context: context, screen: Verification(language: language,));
-                              print('###################');
-                              print(phoneController.text.replaceAll("+", "00"));
-                              print("#########################");
                               DioHelper.postData(url: 'users/register',
                                   data: {
                                       'email' : emailController.text,
@@ -285,17 +279,14 @@ class SignUpScreen extends StatelessWidget {
                                       Toast.show("email created Successfully",
                                           duration: Toast.lengthShort,
                                           gravity:  Toast.bottom,backgroundColor: Colors.green);
-                                navigateAndFinish(context: context, screen: Verification(language: language,));
+                                navigateAndFinish(context: context, screen: Verification(language: language, reset: false,));
                                 print(value);
                               }).catchError((error) {
-                                print("ERRORRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");
                                 print(error.toString());
                                 sss.init(context);
                                 Toast.show("email is not valid",
                                     duration: Toast.lengthLong,
                                     gravity:  Toast.bottom,backgroundColor: Colors.red);
-
-                                print("#############");
                               });
 
                             }
