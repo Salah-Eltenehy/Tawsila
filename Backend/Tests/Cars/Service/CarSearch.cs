@@ -1,10 +1,7 @@
-using Microsoft.EntityFrameworkCore;
 using Backend.Models.Entities;
 using Backend.Repositories;
-using Backend.Contexts;
 using Backend.Services;
 using Backend.Models.Exceptions;
-using Microsoft.AspNetCore.Mvc;
 using Backend.Models.API.CarAPI;
 using Backend.Models;
 
@@ -71,5 +68,4 @@ public class CarSearch
         BadRequestException ex = await Assert.ThrowsAsync<BadRequestException>(async () => await _carService.GetCars(invalidGetCarRequest));
         Assert.Equal("Maximum price cannot be less than 50", ex.Message);
     }
-
 }

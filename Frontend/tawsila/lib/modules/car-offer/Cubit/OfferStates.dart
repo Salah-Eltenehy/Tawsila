@@ -17,3 +17,5 @@ class SelectImage extends OfferStates{}
 class SetLanguageState extends OfferStates{}
 
 class GetLanguageFromDatabaseState extends OfferStates {}
+
+class TokenState extends OfferStates{}

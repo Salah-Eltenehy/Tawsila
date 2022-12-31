@@ -28,7 +28,7 @@ public class CarRepo : ICarRepo
     public async Task<Car> GetCar(int id)
     {
         var car = await _context.Cars.FindAsync(id);
-        if (car == null)
+        if (car == null || car.IsDeleted)
         {
             throw new NotFoundException("Car not found");
         }
@@ -117,7 +117,7 @@ public class CarRepo : ICarRepo
             );
         }
 
-        IQueryable<Car> cars = _context.Cars.AsNoTracking().Where(c => c.IsListed == true);
+        IQueryable<Car> cars = _context.Cars.AsNoTracking().Where(c => c.IsListed && !c.IsDeleted);
 
         if (brands.Length > 0)
         {
@@ -287,7 +287,7 @@ public class CarRepo : ICarRepo
     public async Task<Car> UpdateCar(int id, UpdateCarRequest update)
     {
         var car = await _context.Cars.FindAsync(id);
-        if (car == null)
+        if (car == null || car.IsDeleted)
         {
             throw new NotFoundException("Car not found");
         }
@@ -346,12 +346,12 @@ public class CarRepo : ICarRepo
     public async Task DeleteCar(int id)
     {
         var car = await _context.Cars.FindAsync(id);
-        if (car == null)
+        if (car == null || car.IsDeleted)
         {
             throw new NotFoundException("Car not found");
         }
 
-        _context.Cars.Remove(car);
+        car.IsDeleted = true;
         await _context.SaveChangesAsync();
     }
 }

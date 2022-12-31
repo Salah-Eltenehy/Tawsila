@@ -62,6 +62,9 @@ public class Car : ICloneable
     public bool IsListed { get; set; } = true;
 
     [Required]
+    public bool IsDeleted { get; set; }
+
+    [Required]
     public DateTime CreatedAt { get; set; }
 
     [Required]

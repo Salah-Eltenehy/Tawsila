@@ -1,20 +1,17 @@
-using Microsoft.EntityFrameworkCore;
 using Backend.Models.Entities;
 using Backend.Repositories;
-using Backend.Contexts;
 using Backend.Services;
 using Backend.Models.Exceptions;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Tests.Cars.Service;
-public class CarCreation
+public class CarDeletion
 {
     private readonly Mock<ICarRepo> _carRepo;
     private readonly Mock<IImageService> _imageService;
     private readonly Mock<IStorageService> _storageSercie;
     private readonly ICarService _carService;
     private readonly Car _dummyCar;
-    public CarCreation()
+    public CarDeletion()
     {
         _carRepo = new Mock<ICarRepo>();
         _imageService = new Mock<IImageService>();

@@ -65,6 +65,9 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsListed")
                         .HasColumnType("bit");
 
@@ -123,6 +126,9 @@ namespace Backend.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<int>("Rating")
                         .HasColumnType("int");
 
@@ -174,6 +180,9 @@ namespace Backend.Migrations
                     b.Property<bool>("HasWhatsapp")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsEmailVerified")
                         .HasColumnType("bit");
 
@@ -199,6 +208,9 @@ namespace Backend.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });

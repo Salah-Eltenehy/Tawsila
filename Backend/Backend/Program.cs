@@ -24,7 +24,7 @@ var configuration = builder.Configuration;
 builder.Services.AddDbContext<TawsilaContext>(options =>
 {
     #if DEBUG
-    options.UseInMemoryDatabase(databaseName: "TawsilaDB");
+        options.UseInMemoryDatabase(databaseName: "TawsilaDB");
     #else
     options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
     #endif
@@ -79,6 +79,14 @@ builder.Services.AddAuthorization(options =>
         "VerifiedUser",
         policy => policy.RequireClaim(ClaimTypes.Role, "VerifiedUser")
     );
+    options.AddPolicy(
+        "UnverifiedPasswordResetter",
+        policy => policy.RequireClaim(ClaimTypes.Role, "UnverifiedPasswordResetter")
+    );
+    options.AddPolicy(
+        "VerifiedPasswordResetter",
+        policy => policy.RequireClaim(ClaimTypes.Role, "VerifiedPasswordResetter")
+    );
 });
 
 builder.Services.AddControllers();
@@ -92,7 +100,8 @@ builder.Services.AddScoped<ICarService, CarService>();
 builder.Services.AddScoped<ICarRepo, CarRepo>();
 
 builder.Services.AddScoped<ReviewsController>();
-builder.Services.AddScoped<ReviewRepo>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<IReviewRepo, ReviewRepo>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -203,7 +212,7 @@ app.Use(
                 );
                 var dbContext = context.RequestServices.GetRequiredService<TawsilaContext>();
                 var user = dbContext.Users.Find(userId);
-                if (user == null)
+                if (user == null || user.IsDeleted)
                 {
                     context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                     context.Response.ContentType = "application/json";

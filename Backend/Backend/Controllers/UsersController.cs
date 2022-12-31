@@ -6,7 +6,6 @@ using Backend.Models.API.User;
 using Backend.Models.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
-using Backend.Models.API.CarAPI;
 using Backend.Models.DTO.User;
 using Backend.Services;
 
@@ -74,16 +73,57 @@ public class UsersController : ControllerBase
         return Ok(new TokenResponse(token));
     }
 
+    [AllowAnonymous]
+    [HttpPost("recover/identify")]
+    [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> RecoverIdentify([FromBody] RecoverIdentifyRequest req)
+    {
+        var token = await _userService.InitPasswordReset(req.Email);
+        return Ok(new TokenResponse(token));
+    }
+
+    [Authorize(Policy = "UnverifiedPasswordResetter")]
+    [HttpPost("recover/verify")]
+    [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> RecoverVerify([FromBody] RecoverVerifyRequest req)
+    {
+        var claims = HttpContext.User.Claims.ToArray();
+        var claimedId = int.Parse(claims.First(c => c.Type == ClaimTypes.Name).Value);
+        var notBefore = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        notBefore = notBefore.AddSeconds(
+            double.Parse(claims.First(c => c.Type == "nbf").Value, CultureInfo.InvariantCulture)
+        );
+        var token = await _userService.VerifyPasswordResetter(claimedId, req.VerificationCode, notBefore);
+        return Ok(new TokenResponse(token));
+    }
+    
+    [Authorize(Policy = "VerifiedPasswordResetter")]
+    [HttpPost("recover/reset-password")]
+    [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> RecoverResetPassword([FromBody] RecoverResetPasswordRequest req)
+    {
+        var claims = HttpContext.User.Claims;
+        var claimedId = int.Parse(claims.First(c => c.Type == ClaimTypes.Name).Value);
+        var token = await _userService.UpdateUserPassword(claimedId, req.Password);
+        return Ok(new TokenResponse(token));
+    }
+
     [Authorize(Policy = "UnverifiedUser")]
     [HttpPost("{id:int}/verify")]
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Verify(
-        [FromRoute] int id,
-        [FromBody] VerifyUserRequest req
-    )
+    public async Task<IActionResult> Verify([FromRoute] int id, [FromBody] VerifyUserRequest req)
     {
         var claims = HttpContext.User.Claims.ToArray();
         var claimedId = int.Parse(claims.First(c => c.Type == ClaimTypes.Name).Value);
@@ -166,6 +206,20 @@ public class UsersController : ControllerBase
             )
             .ToArray();
         return Ok(new GetUserCarsResponse(carItems));
+    }
+
+    [Authorize(Policy = "VerifiedUser")]
+    [HttpGet("{id:int}/reviews")]
+    [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetReviews([FromRoute] int id, [FromRoute] int offset)
+    {
+        var ReviewsList = await _userService.GetUserReviews(id, offset);
+        
+        return Ok(ReviewsList);
     }
 
     [ApiExplorerSettings(IgnoreApi = true)]

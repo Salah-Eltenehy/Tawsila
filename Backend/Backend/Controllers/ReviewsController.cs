@@ -1,76 +1,63 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Backend.Contexts;
-using Backend.Models;
-using Backend.Models.API.Review;
-using Backend.Models.Entities;
-using Backend.Repositories;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Backend.Models.DTO.Review;
+using System.Security.Claims;
+using Backend.Models.API;
+using Backend.Services;
 
-namespace Backend.Controllers
+namespace Backend.Controllers;
+
+[Route("[controller]")]
+[ApiController]
+public class ReviewsController : ControllerBase
 {
-    [Route("[controller]")]
-    [ApiController]
-    public class ReviewsController : ControllerBase
+    private readonly IReviewService _reviewService;
+
+    public ReviewsController(IReviewService reviewService)
     {
-        private readonly ReviewRepo _reviewRepo;
+        _reviewService = reviewService;
+    }
 
-        public ReviewsController(ReviewRepo reviewRepo)
-        {
-            _reviewRepo = reviewRepo;
-        }
+    [HttpPost]
+    [Authorize(Policy = "VerifiedUser")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> CreateReview([FromBody] CreateReviewRequest reviewReq)
+    {
+        var claims = HttpContext.User.Claims;
+        var UserId = int.Parse(claims.First(c => c.Type == ClaimTypes.Name).Value);
+        await _reviewService.CreateReview(UserId, reviewReq);
+        return Ok(new GenericResponse("Review created successfully"));
+    }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Review>>> GetReviews()
-        {
-            return await _reviewRepo.GetReviews();
-        }
+    [HttpDelete("{id}")]
+    [Authorize(Policy = "VerifiedUser")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> DeleteReview([FromRoute] int id)
+    {
+        var claims = HttpContext.User.Claims.ToArray();
+        var claimedId = int.Parse(claims.First(c => c.Type == ClaimTypes.Name).Value);
+        await _reviewService.DeleteReview(claimedId, id);
+        return Ok(new GenericResponse("Review deleted successfully"));
+    }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Review>> GetReview(int id)
-        {
-            var review = await _reviewRepo.GetReview(id);
-
-            if (review == null)
-            {
-                return NotFound();
-            }
-
-            return review;
-        }
-
-        [HttpPost]
-        public async Task<ActionResult<Review>> PostReview(ReviewRequest reviewRc)
-        {
-            Review review = new Review();
-            review.RevieweeId = reviewRc.reviewee;
-            review.Rating = reviewRc.rating;
-            review.Comment = reviewRc.comment;
-            review.ReviewerId = reviewRc.reviewer;
-            await _reviewRepo.PostReview(review);
-
-            return CreatedAtAction("GetReview", new { id = review.Id }, review);
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteReview(int id)
-        {
-            var review = await _reviewRepo.DeleteReview(id);
-            if (review == null)
-            {
-                return NotFound();
-            }
-
-            return NoContent();
-        }
-
-        private bool ReviewExists(int id)
-        {
-            return _reviewRepo.ReviewExists(id);
-        }
+    [HttpPut("{id}")]
+    [Authorize(Policy = "VerifiedUser")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UpdateReview([FromRoute] int id, [FromBody] UpdateReviewRequest req)
+    {
+        var claims = HttpContext.User.Claims.ToArray();
+        var claimedId = int.Parse(claims.First(c => c.Type == ClaimTypes.Name).Value);
+        await _reviewService.UpdateReview(claimedId, id, req);
+        return Ok(new GenericResponse("Review updated successfully"));
     }
 }

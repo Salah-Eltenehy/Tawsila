@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using Backend.Models.Entities;
 using Backend.Repositories;
 using Backend.Contexts;
-using Backend.Services;
 using Backend.Models.Exceptions;
 
 namespace Tests.Cars.Repository;
@@ -54,7 +53,7 @@ public class CarDeletion : IDisposable
         await _context.SaveChangesAsync();
         await _carRepo.DeleteCar(1);
         var car = await _context.Cars.FindAsync(1);
-        Assert.Null(car);
+        Assert.True(car.IsDeleted);
     }
 
     [Fact]

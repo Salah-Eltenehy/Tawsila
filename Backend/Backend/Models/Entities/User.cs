@@ -45,6 +45,9 @@ public class User
     public bool IsEmailVerified { get; set; }
 
     [Required]
+    public bool IsDeleted { get; set; }
+
+    [Required]
     public DateTime CreatedAt { get; set; }
 
     [Required]
@@ -55,4 +58,23 @@ public class User
 
     [InverseProperty("Reviewee")]
     public virtual List<Review> Reviews { get; set; } = null!;
+
+    public object Clone()
+    {
+        return new User
+        {
+            Id = Id,
+            Email = Email,
+            Password = Password,
+            FirstName = FirstName,
+            LastName = LastName,
+            PhoneNumber = PhoneNumber,
+            Avatar = Avatar,
+            HasWhatsapp = HasWhatsapp,
+            IsEmailVerified = IsEmailVerified,
+            IsDeleted = IsDeleted,
+            CreatedAt = CreatedAt,
+            UpdatedAt = UpdatedAt,
+        };
+    }
 }
